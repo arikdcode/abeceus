@@ -1,0 +1,14 @@
+# Build output
+public/
+
+# Obsidian
+wiki/.obsidian/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*~

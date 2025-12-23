@@ -1,0 +1,9 @@
+services:
+  wiki:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./wiki:/quartz/content
+    environment:
+      - NODE_ENV=development
