@@ -24,7 +24,7 @@ I don't want to have the D&D approach where classes lock you into certain paths.
 
 Equipment should also be a big part of a characters identity. Stats, skills and traits/perks should definitely have a major impact as well. Physical stats should be improvable. Mental stats less so.
 
-## Fog of war 
+## Fog of war
 
 Yes fog of war definitely needs to be a thing.
 
@@ -38,9 +38,9 @@ Resource management should be realistic. Everything has weight, including ammuni
 
 Players will have to make decisions with tradeoffs about what kinds of containers they wish to use, and what kind of gear they wish to carry.
 
-Every bit of ammo will get tracked, whether its bullets, battery charge, flamer fuel, missiles, grenades etc. Medical supplies will also get tracked and in some detail. For example, there won't just be "First Aid Kits", there might be stimulants, biogels, guaze bandages, tensor bandages, combat surgery tools, etc. There may be other consumables as well such as combat/recon drone batteries, utility grenades (smokes, flashes, other exotic grenades), 
+Every bit of ammo will get tracked, whether its bullets, battery charge, flamer fuel, missiles, grenades etc. Medical supplies will also get tracked and in some detail. For example, there won't just be "First Aid Kits", there might be stimulants, biogels, guaze bandages, tensor bandages, combat surgery tools, etc. There may be other consumables as well such as combat/recon drone batteries, utility grenades (smokes, flashes, other exotic grenades),
 
-A lot of the varied medical supplies will come in kits, so players won't have to worry about thinking of every single item themselves, but they will have to track the individual usage of the kits supplies. 
+A lot of the varied medical supplies will come in kits, so players won't have to worry about thinking of every single item themselves, but they will have to track the individual usage of the kits supplies.
 
 Their armor may also have plates or pads that need to get swapped when damaged.
 
@@ -63,4 +63,3 @@ I'm picturing that for much of the campaign the players will probably have a shi
 ## Final Thoughts
 
 The main thing I'm still uncertain about is the turn structure. I'm leaning towards Initiatve-based, but I would have to playtest it and see how it feels before making a final decision. In the end, whatever we decide should support the central design philosophy. It needs to feel like a gritty, dangerous, realistic milsim set in the future. There should be consequences, characters can die, but I don't want my players getting one-shot every other encounter purely because of bad luck, or just because they didn't roll a super-soldier character.
-

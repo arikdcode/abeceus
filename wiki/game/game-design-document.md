@@ -342,4 +342,3 @@ Every item has weight and volume. Exceeding capacity:
 ---
 
 *See also: [[game/design-notes-raw|Raw Design Notes]] for original brainstorming.*
-
