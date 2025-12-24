@@ -11,4 +11,3 @@ tags:
 A pirate clan operating from [[locations/oziri/index|Oziri]].
 
 *Details to be expanded.*
-

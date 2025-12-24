@@ -10,4 +10,3 @@ tags:
 A spacecraft manufacturing corporation.
 
 *Details to be expanded.*
-

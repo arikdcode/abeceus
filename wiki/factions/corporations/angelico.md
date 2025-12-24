@@ -10,4 +10,3 @@ tags:
 A weapons manufacturing corporation.
 
 *Details to be expanded.*
-
