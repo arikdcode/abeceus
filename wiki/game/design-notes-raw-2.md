@@ -6,7 +6,7 @@
 
 ## Agency Clarification
 
-There's a subtlety to this. The players should not always see danger coming if they made poor decisions. For example, if the players fail to conduct recon when entering an area when they've been given reasonable clues that enemies could be operating in that area, then the GM is within their rights to place the PC's into an ambush. 
+There's a subtlety to this. The players should not always see danger coming if they made poor decisions. For example, if the players fail to conduct recon when entering an area when they've been given reasonable clues that enemies could be operating in that area, then the GM is within their rights to place the PC's into an ambush.
 
 What I want to avoid is situations that are "unwinnable". E.g. the players are in a very safe city district but the GM springs an ambush on them conducted by commandos that party wipes them in the first round. Or the players anticipate an upcoming fight and maneuver into good positions, but a very lucky shot from the enemies blows the combat veterans head off. That kind of thing is really frustrating.
 
@@ -25,7 +25,7 @@ I think that players should be able to aim their shots at various body parts. Bu
 Basically, the algorithm that decides the outcome of an attack will take into account a number of things including:
 
 - the attackers stats and equipment
-- the attackers specific target 
+- the attackers specific target
 - the attackers type of attack (if relevant, e.g burst shot vs single shot)
 - the body layout of the defender (what regions are near the target that might also be hit)
 - the defenders stats and equipment
@@ -45,4 +45,3 @@ The morale states, pain states, bleed states and physical states that I've menti
 I'm happy with the skill list you've come up with for now. One thing I'd like to somehow model in our skill system though is the idea of "related skills". It's always annoyed me when games have an SMG skill and an Assault Rifles skill, and the character is an expert at one and hapless at the other. There is a degree of transferability between these skills that those systems fail to capture. And it feels limiting for your character, because the player has the intuitive sense that their character should be fairly capable at something but the system disagrees. So I kind of like the idea of having a generic "shooting/marksman" skill, but with the option for some specializations. For example, a grunt rifleman could probably use a sniper rifle in a pinch and land hits, especially at medium ranges. But a master sniper is going to be able to take into account bullet-drop, wind speeds, their own breathing rhythm etc. to consistently land longshots.
 
 So we can sort of have skill grouping and specific skills be part of the system itself.
-

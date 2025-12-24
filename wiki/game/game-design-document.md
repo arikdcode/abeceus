@@ -234,48 +234,111 @@ The key is **visibility and choice**:
 
 *Physical attributes can improve through training. Mental attributes are largely fixed.*
 
-### Skills (Granular List—To Be Consolidated)
+### Skill Levels
 
-Start comprehensive, then group for gameplay:
+Skills use **discrete levels** (not 0-100 sliding scales). Each level represents a qualitative jump in capability, not a gradual improvement.
 
-**Combat:**
-- Rifles, Pistols, Heavy Weapons, Melee, Throwing
-- Tactics, Suppression, Breaching, Zero-G Combat
+| Level | Label | Description |
+|-------|-------|-------------|
+| 0 | Untrained | No formal training; rely on raw attributes |
+| 1 | Novice | Basic training; knows fundamentals |
+| 2 | Competent | Solid practitioner; reliable under normal conditions |
+| 3 | Proficient | Experienced; handles stress and complexity well |
+| 4 | Expert | Exceptional skill; recognized specialist |
+| 5 | Master | Elite; among the best in the system |
 
-**Technical:**
-- Mechanical Engineering, Electrical Engineering, Software
-- Demolitions, Lockpicking, Security Systems
-- Sensors, Communications, ECM/ECCM
+**Design rationale:** When a character levels up a skill, it should *feel* significant. Leveling from 2 to 3 is a real milestone—not just +2% to some formula. Each level may unlock new capabilities or breakpoints in addition to improving base performance.
 
-**Medical:**
-- First Aid, Combat Medicine, Surgery
-- Pharmacology, Cybernetics, Xenobiology
+### Skill Groups
 
-**Piloting:**
-- Spacecraft, Atmospheric Craft, Ground Vehicles
-- Drones, EVA, Docking/Navigation
+Characters have broad **Skill Groups** that cover related competencies. Within a group, related actions share competence—a rifleman can pick up an SMG and use it reasonably well.
 
-**Social:**
-- Negotiation, Intimidation, Deception, Persuasion
-- Streetwise, Contacts, Investigation
+| Skill Group | Covers |
+|-------------|--------|
+| **Firearms** | Rifles, pistols, SMGs, shotguns, mounted weapons |
+| **Heavy Weapons** | Support weapons, launchers, emplaced weapons |
+| **Melee** | Blades, bludgeons, unarmed, improvised |
+| **Throwing** | Grenades, knives, improvised |
+| **Tactics** | Squad coordination, breaching, ambush, defense |
+| **Engineering** | Mechanical, electrical, structural |
+| **Software** | Programming, hacking, AI systems |
+| **Electronics** | Sensors, comms, ECM/ECCM |
+| **Demolitions** | Breaching, traps, bomb disposal |
+| **Security** | Locks, alarms, safes, countermeasures |
+| **Medicine** | First aid, combat medicine, surgery |
+| **Pharmacology** | Drugs, stims, poisons, anesthetics |
+| **Cybernetics** | Installation, repair, diagnostics |
+| **Spacecraft** | Small craft, capital ships, docking |
+| **Atmospheric Flight** | Fixed wing, rotary, VTOL |
+| **Ground Vehicles** | Wheeled, tracked, walkers |
+| **Drones** | Recon, combat, utility |
+| **Persuasion** | Negotiation, diplomacy, seduction |
+| **Deception** | Lying, disguise, misdirection |
+| **Intimidation** | Threats, interrogation, presence |
+| **Streetwise** | Contacts, black market, criminal culture |
+| **Awareness** | Observation, alertness, search |
+| **Stealth** | Concealment, silent movement, camouflage |
+| **Navigation** | Pathfinding, tracking, orienteering |
+| **Environment** | Vacuum, toxic, extreme temp, zero-G |
 
-**Survival:**
-- Navigation, Tracking, Stealth, Foraging
-- Environmental Adaptation (vacuum, toxic, extreme temp)
+### Specializations (Perk-Like Unlocks)
+
+**Specializations** are not separate skills with their own levels. They are **unlockable capabilities** that enhance a skill group for specific applications.
+
+**How they work:**
+- You either **have** a specialization or you **don't**
+- Having a specialization grants bonuses/capabilities for that specific use case
+- The specialization's effectiveness **scales with your base skill level**
+- Some advanced techniques **require** a specialization to even attempt
+
+**Example: Precision Shooting (specialization for Firearms)**
+
+A character with Firearms 3 and no specializations:
+- Uses a sniper rifle competently at medium range
+- Performance drops significantly at extreme range
+- Cannot account for bullet drop, wind, breathing rhythm
+
+A character with Firearms 3 + *Precision Shooting*:
+- Full effectiveness at long range
+- Can account for environmental factors
+- Unlocks "called shot" techniques at extreme distance
+
+A character with Firearms 5 + *Precision Shooting*:
+- Master-level sniper
+- Can make shots others consider impossible
+
+A character with Firearms 5 and no *Precision Shooting*:
+- Still better than Firearms 3 at long range
+- But experiences significant dropoff compared to a specialist
+- Cannot use advanced sniping techniques
+
+**Sample Specializations:**
+
+| Skill Group | Specializations |
+|-------------|-----------------|
+| Firearms | Precision Shooting, Rapid Fire, Close Quarters, Mounted Weapons |
+| Heavy Weapons | Anti-Armor, Suppression Tactics, Indirect Fire |
+| Melee | Blade Fighting, Grappling, Improvised Weapons |
+| Tactics | Breaching, Ambush, Fire Team Leader, Zero-G Combat |
+| Medicine | Trauma Surgery, Combat Stims, Field Prosthetics |
+| Software | Intrusion, AI Manipulation, Cryptography |
+| Spacecraft | Combat Maneuvers, Stealth Operations, Emergency Procedures |
+| Stealth | Assassination, Infiltration, Counter-Surveillance |
 
 ### Traits/Perks
 
-Examples of good trait design:
+Beyond specializations, **Traits** provide unique capabilities that don't fit the skill system.
 
 **Qualitative (new capability):**
-- *Thermal Cloak Mastery*: Invisible to thermal sensors when stationary
-- *Breach Specialist*: Can breach locked doors silently
+- *Thermal Signature Masking*: Invisible to thermal sensors when stationary
+- *Breach Expert*: Can breach locked doors silently
 - *Zero-G Native*: No penalties in microgravity
+- *Iron Constitution*: Resistant to poisons and drugs
 
 **Quantitative but Impactful:**
-- *Marksman*: +50% damage on aimed headshots
-- *Iron Will*: Double stress threshold
-- *Combat Medic*: Stabilize wounds in half the time
+- *Killer Instinct*: Major bonus on finishing shots against wounded targets
+- *Iron Will*: Double stress threshold before first breakpoint
+- *Quick Hands*: Weapon swaps and reloads take half time
 
 ---
 
@@ -417,74 +480,141 @@ The system determines:
 
 ## Wound System
 
-### Design Philosophy
+### Core Concept: Wounds vs. Wound Effects
 
-Wounds are not just "damage to HP." They are **specific injuries** with **specific effects**—physical, functional, and psychological.
+There is a critical distinction:
 
-### Wound Categories
+- **Wounds** are narrative descriptors: *".22 caliber gunshot wound to the left thigh"* or *"Acetylene torch burn on right forearm"*
+- **Wound Effects** are the mechanical impacts: bleeding, pain, impairment, stress
+
+Wounds are **tracked as single healable entities** with a narrative description. Wound effects are the **gameplay consequences** drawn from a well-defined system. This allows varied, realistic injuries while keeping the mechanical impact manageable.
+
+### Wound Generation (Algorithmic)
+
+Wounds are **not selected from a lookup table**. They are **dynamically generated** based on:
+
+**Inputs:**
+- Weapon characteristics (caliber, energy, damage type)
+- Body region hit
+- Armor/mitigation (reduced penetration = less severe wound)
+- Hit quality (grazing vs. solid vs. critical)
+
+**Output:**
+- A narrative wound description
+- A bundle of wound effects with severities
+- Healing requirements
+
+**Example:** A .22 pistol round hits an unarmored left leg.
+
+*Generated wound:* ".22 caliber GSW, left thigh (muscle)"
+
+*Effects:*
+- Bleeding: Light
+- Pain: Moderate
+- Impairment: Limping (movement penalty)
+- Stress: Moderate
+
+**Example:** Same round, but target has light leg armor.
+
+*Generated wound:* ".22 caliber GSW, left thigh (superficial, armor-mitigated)"
+
+*Effects:*
+- Bleeding: Minimal
+- Pain: Minor
+- Impairment: None
+- Stress: Light
+
+### Wound Effect Types
+
+These are the **mechanical effects** wounds can produce. A wound may produce several effects simultaneously.
 
 #### Bleeding
-Wounds that cause blood loss over time.
 
-| Severity | Effect |
-|----------|--------|
-| Light | Slow bleed; ignorable short-term |
-| Moderate | Steady bleed; needs treatment within minutes |
-| Severe | Rapid bleed; needs immediate treatment or death |
-| Arterial | Critical; seconds to unconsciousness without tourniquet |
+Blood loss over time. Multiple bleeds stack.
 
-**Blood Loss Track:** Characters have a blood meter. Multiple bleeds stack—more wounds = faster drain. Breakpoints impose escalating debuffs (weakness, dizziness, unconsciousness, death).
+| Severity | Rate | Urgency |
+|----------|------|---------|
+| Minimal | Negligible | Self-resolving |
+| Light | Slow drain | Minutes to address |
+| Moderate | Steady drain | Needs treatment soon |
+| Severe | Rapid drain | Immediate treatment required |
+| Arterial | Critical | Seconds to unconsciousness |
+
+**Blood Loss Track:** Characters have a blood meter with breakpoints:
+- 75%: Minor debuffs (weakness)
+- 50%: Moderate debuffs (dizziness, reduced accuracy)
+- 25%: Severe debuffs (near-collapse, impaired cognition)
+- 0%: Unconsciousness → death
 
 #### Pain
-All wounds cause pain. Pain imposes penalties mitigated by character toughness.
 
-| Severity | Effect |
-|----------|--------|
-| Minor | Small penalty; tough characters shrug it off |
-| Moderate | Noticeable penalty; affects accuracy, focus |
-| Severe | Major penalty; hard to function |
-| Overwhelming | Incapacitating; only the toughest can act |
+Imposes penalties mitigated by character toughness (Endurance).
+
+| Severity | Base Effect | Tough Character |
+|----------|-------------|-----------------|
+| Minor | Small penalty | Shrugged off |
+| Moderate | Noticeable penalty | Small penalty |
+| Severe | Major penalty | Moderate penalty |
+| Overwhelming | Incapacitating | Major penalty |
 
 #### Physical Impairment
 
-| Wound Type | Effect |
-|------------|--------|
-| Limping | Reduced movement speed |
-| Arm wound | Penalty to actions using that arm |
-| Hand wound | Severe penalty to fine manipulation |
-| Broken bone | Limb unusable until set/healed |
-| Lost limb | Permanent until augmentation |
-| Torso wound | General debuff, internal bleeding risk |
+Functional limitations based on wound location.
+
+| Type | Cause | Effect |
+|------|-------|--------|
+| Limping | Leg/foot wound | Movement speed reduced |
+| Arm impairment | Arm/shoulder wound | Penalty to actions using that arm |
+| Hand impairment | Hand/wrist wound | Severe penalty to manipulation |
+| Immobilized limb | Broken bone, tendon damage | Limb unusable |
+| Lost limb | Traumatic amputation | Permanent (until augmentation) |
+| Torso trauma | Organ damage | General debuffs, internal bleeding |
 
 #### Sensory Impairment
 
-| Wound Type | Effect |
-|------------|--------|
-| Blinded (temporary) | Flash, blood in eyes—clears with time |
-| Blinded (permanent) | Eye destruction—requires augmentation |
-| Deafened | Explosion, sonic—communication/awareness penalty |
-| Concussion | Disorientation, nausea, penalty to all actions |
+| Type | Cause | Effect | Duration |
+|------|-------|--------|----------|
+| Dazzled | Flash, bright light | Accuracy penalty | Short |
+| Blurred vision | Blood in eyes, concussion | Perception penalty | Until cleared |
+| Partial blindness | Eye damage | Severe perception penalty | Permanent |
+| Full blindness | Both eyes destroyed | Cannot target visually | Permanent |
+| Hearing impaired | Explosion, sonic | Communication/awareness penalty | Variable |
+| Concussed | Head trauma | Penalty to all actions | Hours–days |
 
-#### Critical/Fatal
+#### Stress/Morale Impact
 
-| Wound Type | Effect |
-|------------|--------|
-| Headshot | Fatal (unarmored) or severe trauma (armored) |
-| Heart shot | Fatal |
-| Spine hit | Paralysis or death |
-| Massive trauma | Limb destruction, torso breach—often fatal |
+All wounds cause stress in addition to physical effects:
 
-### Morale Effects from Wounds
+| Wound Severity | Stress Impact |
+|----------------|---------------|
+| Minor wound | Light stress |
+| Moderate wound | Moderate stress |
+| Severe wound | Heavy stress |
+| Near-fatal wound | Extreme stress |
 
-Wounds also damage morale/stress:
+### Critical/Fatal Wounds
 
-| Trigger | Stress Impact |
-|---------|---------------|
-| Taking any wound | Moderate stress |
-| Seeing ally wounded | Light stress |
-| Seeing ally killed | Heavy stress |
-| Taking severe wound | Heavy stress |
-| Near-death experience | Extreme stress |
+Some wounds are immediately life-threatening or fatal:
+
+| Location | Unarmored Result | Armored Result |
+|----------|------------------|----------------|
+| Head (CNS) | Fatal | Severe trauma, possible death |
+| Heart | Fatal | Severe trauma, possible death |
+| Spine | Paralysis or death | Severe trauma |
+| Major artery | Fatal in seconds | Arterial bleed |
+| Organ rupture | Fatal without surgery | Severe internal damage |
+
+### Healing
+
+Healing is also **dynamic based on wound characteristics**:
+
+| Wound Type | Field Treatment | Medbay Treatment | Natural Healing |
+|------------|-----------------|------------------|-----------------|
+| Superficial | First aid clears | Quick | Days |
+| Moderate | Stabilizes, debuffs remain | Full recovery | Weeks |
+| Severe | Stabilizes only | Full recovery (slow) | Months |
+| Critical | Buys time only | Possible recovery | Not possible |
+| Lost limb | Stabilize stump | Augmentation required | N/A |
 
 ### Morale Breakpoints
 
@@ -503,83 +633,6 @@ As stress accumulates, behavior becomes restricted:
 - Rally actions from leaders reduce stress
 - Stims can temporarily suppress effects
 - Reaching safety reduces stress over time
-
----
-
-## Skill System
-
-### Design Philosophy: Skill Groups with Specializations
-
-Skills should reflect **transferable competence**. A rifleman picking up an SMG shouldn't be helpless—the core skills transfer. But a dedicated SMG specialist has advantages the rifleman lacks.
-
-### Structure
-
-```
-Skill Group (broad competence)
-└── Specialization (advanced techniques)
-```
-
-**Example: Firearms**
-```
-Firearms (base skill)
-├── Rifles (specialization)
-├── Pistols (specialization)
-├── SMGs (specialization)
-├── Shotguns (specialization)
-└── Precision Shooting (specialization)
-```
-
-A character with high **Firearms** can use any firearm competently. But a character with **Firearms + Precision Shooting** can account for bullet drop, wind, breathing rhythm—making long-range shots others can't.
-
-### How It Works
-
-- **Base skill** applies to all related actions
-- **Specialization** adds bonus for specific applications
-- Untrained in specialization = use base skill only
-- Advanced techniques may *require* specialization
-
-**Example:** 
-- Grunt rifleman (Firearms 60, no specializations): Can use sniper rifle at medium range, hits reasonably
-- Sniper (Firearms 60, Precision Shooting 40): At long range, accounts for environmental factors, lands shots the grunt can't
-
-### Skill Groups (Draft)
-
-**Combat**
-- Firearms → Rifles, Pistols, SMGs, Shotguns, Precision Shooting
-- Heavy Weapons → Support Weapons, Launchers, Emplaced Weapons
-- Melee → Blades, Bludgeons, Unarmed, Improvised
-- Throwing → Grenades, Knives, Improvised
-- Tactics → Squad Tactics, Breaching, Ambush, Defense
-
-**Technical**
-- Engineering → Mechanical, Electrical, Structural
-- Software → Programming, Hacking, AI Systems
-- Electronics → Sensors, Communications, ECM/ECCM
-- Demolitions → Breaching, Traps, Bomb Disposal
-- Security → Locks, Alarms, Safes, Countermeasures
-
-**Medical**
-- Medicine → First Aid, Combat Medicine, Surgery
-- Pharmacology → Drugs, Stims, Poisons
-- Cybernetics → Installation, Repair, Diagnostics
-
-**Piloting**
-- Spacecraft → Small Craft, Capital Ships, Docking
-- Atmospheric → Fixed Wing, Rotary, VTOL
-- Ground Vehicles → Wheeled, Tracked, Walkers
-- Drones → Recon, Combat, Utility
-
-**Social**
-- Persuasion → Negotiation, Diplomacy, Seduction
-- Deception → Lying, Disguise, Misdirection
-- Intimidation → Threats, Interrogation, Presence
-- Streetwise → Contacts, Black Market, Criminal Culture
-
-**Survival**
-- Awareness → Observation, Alertness, Search
-- Stealth → Concealment, Silent Movement, Camouflage
-- Navigation → Pathfinding, Tracking, Orienteering
-- Environment → Vacuum, Toxic, Extreme Temp, Zero-G
 
 ---
 
