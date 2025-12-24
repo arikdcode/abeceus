@@ -29,3 +29,4 @@ Core constraints and tone for the Abeceus setting.
 
 - [[setting/history|History & Timeline]]
 - [[setting/oziri-conflict|The Oziri Conflict]]
+- [[setting/economy/index|Economics & Trade]] — How goods, money, and power flow
