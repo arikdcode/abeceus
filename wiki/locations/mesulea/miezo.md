@@ -9,21 +9,41 @@ tags:
 
 # Miezo
 
-The capital moon of the Mesulean Lunar Empire, second largest of Mesulea's 113 moons.
+The capital moon of the [[factions/mesulea|Mesulean Lunar Empire]], second largest of [[locations/mesulea/index|Mesulea's]] 113 moons. Tidally locked with Mesulea.
 
 ## Geography
 
-- Tidally locked with Mesulea
-- **Inward hemisphere**: Calcium carbonates, limestone cave networks (colonized)
-- **Outward hemisphere**: Sulfuric plains, mining operations
+### Inward Hemisphere (Mesulea-facing)
+- Abundant in **calcium carbonates**
+- Large **limestone cave networks** colonized by early settlers
+- The soft limestone bedrock can be efficiently excavated, allowing significant expansion over centuries
+
+### Outward Hemisphere
+- Covered in large **sulfuric plains**
+- Mostly populated by **sulfur dune mining operations**
+- Otherwise devoid of habitats
 
 ## Settlement
 
-Early settlers sealed off the large limestone cave networks and used them for shelters. The soft bedrock allowed efficient excavation and expansion over centuries.
+Early settlers sealed off the large limestone cave networks and used them for shelters. As the industrial capability of the MLE improved, surface residential buildings became cheaper and more popular.
 
-- Only 17% of population lives above ground
-- Largest city: **Karo** (capital buildings)
+**Population Distribution:**
+- Only **17%** of Miezo's population lives above ground
+- The majority live in the expanded underground cave networks
+
+## Karo
+
+The largest city on Miezo is **Karo**, located on the inward hemisphere. This is where the **capital buildings** of the Mesulean Lunar Empire reside.
 
 ## Minos Crater
 
-On the outward hemisphere lies the massive [[locations/mesulea/minos-crater|Minos Crater]]—a sealed atmospheric basin that is effectively opaque to scanning, rumored to host classified facilities.
+On the outward hemisphere, in the middle of the sulfur dunes, lies the massive [[locations/mesulea/minos-crater|Minos Crater]].
+
+### Characteristics
+- Crater rim is so high that there is **no interaction** between the atmosphere inside and outside the crater
+- Interior atmosphere composed of **dense poisonous gas**
+- Impossible to get real-time imaging through
+- Surface topography has been mapped, but real-time observation is impractical
+
+### Significance
+Rumored to host a [[factions/mesulea|Mesulean]] black-site run by a compartmented "dark bureaucracy."

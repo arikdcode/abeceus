@@ -22,4 +22,3 @@ The leader of the [[factions/pirate-clans/warren-dwellers|Warren Dwellers]].
 | Trait | Bitter and wrathful |
 | Desire | Promotion |
 | Problem | Drug addiction |
-

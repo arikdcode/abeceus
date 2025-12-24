@@ -30,4 +30,3 @@ Over centuries, new cylinders were constructed nearby by various corporations an
 ## Significance
 
 A major hub for belt commerce and a common stopping point for ships traveling to and from the asteroid belt. [[characters/hai-jun|Hai Jun]] frequented this station during his early pirate career.
-

@@ -18,4 +18,3 @@ Sume is the only Mesulean moon with a breathable atmosphere. The atmosphere was 
 ## Economy
 
 The entire surface is covered in farms, providing the majority of sustenance for the MLE as well as exports to [[locations/atruna/index|Atruna]] and [[locations/nuilea/index|Nuilea]].
-

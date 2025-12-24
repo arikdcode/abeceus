@@ -9,8 +9,23 @@ tags:
 
 The unary star of the Abecean System. Similar to Earth's Sun in spectral band and luminosity, but somewhat smaller and less massive.
 
-## Significance
+## Abecean Flares
+
+Abecean flares are **frequent**, emitting large bursts of x-rays into the system.
+
+### Effects on Spacecraft
+Spacecraft's vulnerable communications and sensory equipment must be **shielded during these events**, restricting their capabilities.
+
+### Exploitation by Pirates
+Flares give pirates a window to:
+- Attack
+- Board
+- Retreat
+
+All before distress calls can be sent. This has made piracy a persistent problem throughout the system's history.
+
+## Strategic Significance
 
 - Primary energy source for the entire system
-- Target of Nuilea's [[projects/janus|Janus II Project]] (Dyson Swarm)
-- Abecean flares are frequent, emitting large bursts of x-rays that force spacecraft to shield sensitive equipment—creating windows exploited by pirates
+- Target of [[factions/nuilea|Nuilea's]] [[projects/janus|Janus II Project]]
+- Potential site for a future Dyson Swarm to break [[factions/mesulea|Mesulean]] helium-3 hegemony

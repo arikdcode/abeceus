@@ -26,4 +26,3 @@ Head of Security at [[locations/oziri/hai-juns-estate|Hai Jun's Estate]].
 ## Affiliation
 
 [[factions/pirate-clans/spike-reavers|Spike Reavers]]
-

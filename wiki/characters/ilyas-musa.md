@@ -22,4 +22,3 @@ A henchman for the [[factions/pirate-clans/spike-reavers|Spike Reavers]].
 | Trait | Loves his daughter |
 | Desire | Satisfied |
 | Problem | Sick (smokes too much) |
-

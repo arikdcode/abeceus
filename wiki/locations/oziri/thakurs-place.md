@@ -13,4 +13,3 @@ The residence of [[characters/thakur-trivedi|Thakur Trivedi]], a [[factions/pira
 Located in the Habitation District of The Hive.
 
 *Details to be expanded.*
-

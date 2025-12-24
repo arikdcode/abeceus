@@ -44,4 +44,3 @@ The estate rests inside a dome. The ceiling is a massive screen displaying the n
 - 3 maids
 - 1 IT guy
 - 1 technician/mechanic
-

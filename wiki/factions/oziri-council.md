@@ -8,55 +8,111 @@ tags:
 
 # Oziri Council
 
-The governing body of [[locations/oziri/index|Oziri]], composed of representatives from the most powerful factions (mostly pirate lords and aligned syndicates).
+The governing body of [[locations/oziri/index|Oziri]], composed of representatives chosen by the most powerful factions on Oziri—mostly pirate lords.
 
-## Oziri's Nature
+## Nature of Oziri Governance
 
-Oziri's pirate clans are not merely raiders. They function as the **governing class** of a fortified city-world.
+Oziri's pirate clans are not merely raiders. They function as the **governing class** of a fortified city-world embedded in an alien megastructure.
 
 Oziri's survival depends on being:
-- Profitable enough that outsiders tolerate it
-- Orderly enough that commerce keeps flowing
-- Dangerous enough that coercion is too costly
+- **Profitable enough** that outsiders tolerate it
+- **Orderly enough** that commerce keeps flowing
+- **Dangerous enough** that coercion is too costly
 
 ## Council Responsibilities
 
-- Docking rights and lane assignment
-- Taxation/fees and maintenance obligations
-- Policing and neutral-ground enforcement
-- Resource stockpile management (food, water, air, industrial consumables)
-- Foreign policy (especially during corridor windows)
-- Space patrol contributions and defensive readiness
+The Council oversees policy decisions affecting Oziri as a whole:
 
-Council decisions are not democratic. They are **negotiated power settlements**.
+| Domain | Description |
+|--------|-------------|
+| **Space patrol** | Each faction contributes military units to patrol Oziri space, protecting from imperial incursions |
+| **Docking rights** | Assignment of docks and lanes |
+| **Taxation** | Fees and maintenance obligations |
+| **Policing** | Neutral-ground enforcement |
+| **Resource stockpiles** | Management of food, water, air, industrial consumables |
+| **Corporate immunity** | Determining which corporations are protected from raiding |
+| **Foreign policy** | Especially critical during [[projects/oziri-corridor|corridor windows]] |
 
-## Law and Order
+## Decision Making
 
-Stability is enforced through:
-- Reputation and economic incentives
-- Selective brutality (high certainty punishment for red lines)
-- Private enforcement arms aligned with Council factions
-
-### The Pattern
-- Violence tolerated in the "right places"
-- Commerce protected in neutral districts and lanes
-- Killing on protected ground triggers severe, rapid retaliation
-
-Oziri's order is not moral. It is **functional**.
+Council decisions are **not democratic**. They are **negotiated power settlements** between factions with competing interests.
 
 ## The Pirate Compact
 
-After the failed Oziri Conflict, pirate lords formalized restraint:
+Following the [[locations/oziri/index#The Oziri Conflict|Oziri Conflict]], the Pirate Lords formalized their approach in a written agreement:
+
+### Core Terms
 - Select targets carefully
-- Never raid the same corporations too often
-- Violators face the wrath of other pirates for bringing danger upon all
+- Never raid the same corporations too often or too close together
+- **If any Pirate Lord or independent pirate becomes too greedy, they face the wrath of the others** for bringing danger upon all
+
+### Neutral Ground Rules
+The Compact stipulates restrictions on altercations on **neutral ground**:
+
+**Protected Areas:**
+- Commercial districts
+- Residential districts
+- Administration districts
+- Oziri shipping lanes
+- Space above commercial docks
+
+**Enforcement:**
+- Brawls between warring factions on neutral ground are **generally ignored**
+- **Killing on neutral ground earns a death sentence**
+
+This restriction allows parties doing business on Oziri to feel insulated from violence, preventing loss of business for all factions.
+
+## Law and Order
+
+Stability is enforced through a mix of:
+- **Reputation and economic incentives**
+- **Selective brutality**: High-certainty punishment for certain "red lines"
+- **Private enforcement arms** aligned with Council factions
+
+### The Pattern
+- Violence is tolerated in the "right places"
+- Commerce is protected in designated neutral districts and lanes
+- Killing on protected ground triggers severe, rapid retaliation
+
+**Oziri's order is not moral. It is functional.**
 
 ## Logistics Reality
 
-To survive, Oziri must secure food, water, air, medical supplies, replacement parts, technicians, and labor through:
+To survive, Oziri must secure:
+- Food, water, air processing
+- Medical supply chains
+- Replacement parts and industrial feedstocks
+- Technicians and labor
+
+This is achieved through:
 - Trade and brokerage (legal and illegal)
 - Protection contracts
-- Selective raiding
-- Internal production
+- Selective raiding that avoids triggering total war
+- Internal production in districts capable of manufacturing and recycling
 
-Oziri looks less like a gang hideout and more like a **rough port-state**.
+Oziri looks less like a gang hideout and more like a **rough port-state**: markets, labor, security, and bureaucracy, all run by criminals with incentives to keep the machine running.
+
+## Corporate Relationships
+
+The relationships between pirates and corporations are dynamic and complex:
+
+- Some corporations are **targeted by raids**
+- Corporations doing business on Oziri are **protected from raiding** by the Council
+- Getting **immunity status** can be politically tricky:
+  - Some factions may want to do business with a corporation
+  - Others may want to raid them
+- Most factions are involved in other commerce besides raiding, creating **diverse interests**
+- Different interests and schemes are what **lead factions into war with each other**
+
+## Corridor Windows
+
+During [[projects/oziri-corridor|corridor windows]], Oziri governance shifts into **"truce mode"**:
+- More centralized lane control
+- Stricter neutral-ground enforcement
+- Aggressive counter-sabotage
+- Heavy emphasis on predictable, profitable operations
+
+Outside windows, Oziri reverts to its normal pattern:
+- Opportunistic raiding (carefully bounded)
+- Factional feuds contained to non-critical zones
+- Commerce as the constant glue holding it together

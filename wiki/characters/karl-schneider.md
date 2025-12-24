@@ -36,4 +36,3 @@ When Jun made his play for independence and stole the advanced drive from [[fact
 ## Residence
 
 [[locations/oziri/hai-juns-estate|Hai Jun's Estate]] in [[locations/oziri/zirta|Zirta]]
-

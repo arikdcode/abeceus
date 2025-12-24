@@ -18,4 +18,3 @@ This story covers:
 - The daring raid on [[locations/clusters/alucorp-station|Alucorp Station]]
 - The founding of the [[factions/pirate-clans/spike-reavers|Spike Reavers]]
 - The events leading to the [[setting/history#The Oziri Conflict|Oziri Conflict]]
-

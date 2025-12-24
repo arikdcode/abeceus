@@ -35,8 +35,10 @@ Mesulea's de facto monopoly on helium-3 gives them major leverage over their riv
 
 ## Key Locations
 
-- [[locations/mesulea/aeolus-station|Aeolus Station]] — Storm mining platform
+- [[locations/mesulea/aeolus-station|Aeolus Station]] — Storm mining platform on Mesulea
+- [[locations/mesulea/karo|Karo]] — Capital city on Miezo
 - [[locations/mesulea/minos-crater|Minos Crater]] — Black site on Miezo
+- [[locations/mesulea/he3-orbital-complex|Helium-3 Orbital Complex]] — Central distribution hub
 
 ## Government
 

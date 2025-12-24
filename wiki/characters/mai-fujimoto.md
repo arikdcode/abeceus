@@ -23,4 +23,3 @@ Wife of [[characters/hai-jun|Hai Jun]], the Pirate Lord of the [[factions/pirate
 ## Residence
 
 [[locations/oziri/hai-juns-estate|Hai Jun's Estate]] in [[locations/oziri/zirta|Zirta]]
-

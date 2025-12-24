@@ -24,4 +24,3 @@ The spacer union is run by three prominent families.
 ## Notable People
 
 - [[characters/hai-jun|Hai Jun]] was born here before leaving for [[locations/nuilea/index|Nuilea]]
-

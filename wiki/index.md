@@ -4,7 +4,7 @@ title: Abeceus System Wiki
 
 # The Abeceus System
 
-A unary star system colonized by humans from Earth over a millennium ago. After **The Scream** severed contact with Earth, the colonists built a civilization from scratch across multiple worlds and moons.
+A unary star system colonized by humans from Earth over a millennium ago. Cut off from Earth and its vast pool of expertise, the colonists built a civilization from scratch across multiple worlds and moons.
 
 ## Major Powers
 

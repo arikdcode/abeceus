@@ -31,4 +31,3 @@ Thakur wants to rise into the leadership of the Reavers and has taken on the ris
 ## Location
 
 [[locations/oziri/thakurs-place|Thakur's Place]] in the Habitation District of [[locations/oziri/the-hive|The Hive]]
-

@@ -10,51 +10,146 @@ tags:
 
 # Oziri
 
-The outermost planet, transformed by an ancient alien civilization into a **planetary megafortress**. Now home to a sprawling pirate nation-state.
+The outermost planet in the Abeceus system, transformed by an ancient alien civilization into a **planetary megafortress**. Now home to a sprawling pirate nation-state.
 
-## The Shell
+## Planetary Characteristics
 
-100–300 meters below Oziri's dark, frozen surface lies a **planetary shell**:
-- 300 meters thick
-- Multiple layers of previously unknown super-alloys, perfect down to the last atom
-- Colossal metal supports connect distant sections
-- Complex carbon networks weave through the structure, providing flexibility
+Long ago Oziri was a world under the sway of a long forgotten alien empire of near limitless technological capabilities. Vast intraplanetary networks of tunnels and dwelling spaces lie beneath its dark and frozen surface.
 
-The shell could withstand concentrated direct hits from the entire Mesulean arsenal. Tunnel networks branch off in fractal patterns, flexing gracefully in response to bombardment.
+### The Shell
 
-## The Builders
+Oziri's defining feature lies 100–300 meters below its crust: a thick multi-layered metal shell encasing the entire inner portion of the planet.
 
-The shell was constructed by the **[[species/vey|Vey]]**—a long-vanished alien civilization. No sign of their technology beyond the civil engineering has been found. No sign of why they abandoned Oziri either.
+**Specifications:**
+- **Thickness**: 300 meters
+- **Composition**: Multiple layers of previously unknown super-alloys, perfect down to the last atom
+- **Support structure**: Colossal metal supports connect distant sections of the shell
+- **Flexibility**: Complex planetary-spanning carbon networks weave through the entire shell structure, including the planetary supports, giving flexibility
 
-## Why Pirates Took It
+**Defensive Capability:**
 
-- Lacks critical resources for self-sufficient industry
-- Remote location made it unattractive for government colonization
-- **Uniquely defensible** but too far from anything valuable for military use
-- When wealthy pirates acquired advanced drives, they retreated here
-- The labyrinthine warrens proved impossible to root them out of
+The carbon weave's flexibility coupled with the tensile and shear strengths of the metal layers mean that the planetary shell could withstand concentrated direct hits from the entire Mesulean arsenal and still remain unbreached at the point of impact. Tunnel networks and dwellings branch off the planetary superstructure in fractal patterns, like tendrils, flexing gracefully in response to orbital bombardments.
+
+### The Builders
+
+The shell was constructed by the **[[species/vey|Vey]]**—a long-vanished alien civilization. Other than the phenomenal displays of civil engineering and material sciences, no other sign of the shell makers' technology has been found. No sign of what caused them to abandon Oziri has been found either.
+
+## Background
+
+Aside from the remarkable megafortress hidden beneath the surface, Oziri is lacking in many critical resources required for a self-sufficient industrial base. This lack of useful materials coupled with its remoteness made it an unattractive target for early government colonization projects.
+
+Oziri was heavily studied by scientists of many disciplines over the centuries. In recent times however, without further clues as to the shell makers' technology and methods, most believe they have exhausted all knowledge that the Oziri megastructure has to offer.
+
+While the unique defensibility of Oziri was unquestionable, [[factions/atruna|Atrunean]], [[factions/mesulea|Mesulean]], and [[factions/nuilea|Nuilean]] militaries could find little practical use for a fortress so removed from anything of value. And so Oziri remained mostly as a curiosity during early colonization efforts.
+
+## Rise in Space Piracy
+
+As the Mesulean and Nuilean colonies began to mature and space travel became much more frequent throughout the system, space piracy began to become a serious and expensive problem.
+
+### Abecean Flares
+
+[[locations/abeceus|Abecean]] flares are frequent, emitting large bursts of x-rays into the system. Spacecraft's vulnerable communications and sensory equipment must be shielded during these events, restricting their capabilities. **Flares give pirates a window to attack, board, and retreat before distress calls can be sent.**
+
+### Military Response
+
+In response to the rise in piracy, [[factions/atruna|Atruna]] and [[factions/mesulea|Mesulea]] increased their fleet sizes greatly. Despite this, they lacked the ships to provide escorts to the majority of trade vessels. The primary purpose of the fleets was to seek and destroy pirate vessels docking at pirate bases set up in the asteroid belt. There were millions of ship-sized asteroids to police, so it was a difficult task.
+
+### Pirates Acquire Advanced Drives
+
+Despite some limited success in combating piracy by the Atrunean and Mesulean militaries, the most successful pirates became wealthy enough to acquire advanced long-range drives. These drives increased the striking range of pirates considerably, allowing them to retreat to the outer solar system and beyond—including Oziri.
+
+Oziri was soon occupied by several **Pirate Lords**, rich captains who began claiming sections of the superstructure for themselves. As wealth and goods flowed into Oziri, large marketplaces for both legal and illegal trade began to appear. People of all kinds began to migrate from elsewhere in the system to find their fortunes meeting the swelling needs of this burgeoning criminal society.
 
 ## The Oziri Conflict
 
-Mesulea and Atruna attempted a massive ground assault. It failed catastrophically—the defenders knew the tunnels, the attackers walked in blind. After tens of thousands of casualties, Atruna withdrew, and Mesulea's blockade collapsed under attrition.
+As Oziri grew in power, the [[factions/mesulea|Mesuleans]] and [[factions/atruna|Atruneans]] sought to eliminate this escalating threat to their shipping lanes.
+
+### The Ground Assault
+
+With a naval bombardment being ultimately futile against the planetary shell, they attempted a massive ground assault on the structure. The attack was ill-fated, as the labyrinthine warrens of the inner structure had been designed with defense in mind:
+
+- **Signal disruption**: Chaotic twists and turns and engineered diffractive wall surfaces broke up signals, turning long-range detection attempts into pure noise
+- **Blind fighting**: Walking in blind, Atrunean marines in power armor endured a seemingly unending series of killboxes
+- **Guerrilla tactics**: As they flushed the pirates out of one hole, the pirates would escape into another
+- **Equipment disparity**: The less disciplined pirates with patchwork equipment proved extremely painful to root out
+
+### Atrunean Withdrawal
+
+Unused to war and hardship, and after **tens of thousands of casualties** with no real end in sight, the battle-weary Atrunean populace pressured their government to concede defeat.
+
+### Failed Blockade
+
+With the Atruneans out of the war, the then-frontier Mesuleans were unable to maintain a protracted ground campaign without support. The Mesulean fleet attempted a naval blockade of Oziri, but after relentless hit-and-run attacks with ground-to-orbit weapons, they gave up on that as well.
+
+## The Pirate Compact
+
+While the war had been costly for the Atruneans and Mesuleans, it had been costly for the pirates as well. They realized they had to be careful not to incur the wrath of the inner systems again.
+
+### Terms
+
+The Pirate Lords began selecting their targets carefully, making sure never to raid the same corporations too often or too close together. As the pirates faded from an escalating menace to merely a persistent nuisance—just another minor risk on the balance sheet—the inner system began to accept some level of piracy as the new normal.
+
+The Pirate Lords formalized their new approach in a written agreement: **If any Pirate Lord or independent pirate became too greedy, they would face the wrath of the others for bringing danger upon them all.**
 
 ## Modern Oziri
 
-Today, Oziri is a functioning criminal nation-state:
-- Ruled by pirate lords, corporate representatives, and local mafias
-- Crime exists but is controlled—the powers dislike competitors
-- You can get anything and find out anything here
-- Tremendous opportunity for those with wits and flexible morals
+Today, Oziri is a sprawling metropolis, ruled by a tangle of pirate lords, shadowy middle-system corporate representatives, and local mafias. Every corner of it thrums with life.
 
-## Key Locations
+Crime exists but is not as rampant as one might expect, as the local powers dislike competitors. You have to watch your back, but you can get anything and find out anything in Oziri, and there is tremendous opportunity for people who have their wits and are willing to break a few rules.
 
-- [[locations/oziri/zirta|Zirta]] — Largest city, joint-managed by the Oziri Council
-- [[locations/oziri/the-hive|The Hive]] — District
+## Docks
+
+Oziri has **dozens of docks** of various sizes.
+
+### Structure
+Each dock is structured in a **honeycomb pattern**, with each cell housing a single ship. Each cell has a retractable door. During peacetime, these cell doors tend to stay open.
+
+### Operations
+- **Minor repairs**: Conducted by vacc-suited repair crews
+- **Major repairs**: A cell can be filled with air to allow a team to work on the ship more easily
+- **Sizing**: Each dock tends to have different sized cells for different craft
+
+### Ownership
+Every dock on Oziri has been claimed by various factions.
 
 ## Governance
 
 See: [[factions/oziri-council|Oziri Council]]
 
-## The Corridor
+## Infighting
 
-See: [[projects/oziri-corridor|The Oziri Corridor]]
+Pirate factions have been known to go to war. The [[#The Pirate Compact|Pirate Compact]] drafted by the Council stipulates a restriction on altercations on **neutral ground**.
+
+### Neutral Ground
+Neutral ground is composed of:
+- Commercial districts
+- Residential districts
+- Administration districts
+- Oziri shipping lanes
+- Space above commercial docks
+
+This restriction allows parties doing business on Oziri to feel insulated from violence, preventing a loss in business for all factions.
+
+### Enforcement
+- Members of warring factions sometimes cross paths on neutral ground, commonly leading to **brawls**, which are generally ignored
+- **Killing on neutral ground earns a death sentence**
+
+## Corporate Relationships
+
+The relationships between pirates and corporations are dynamic and complex.
+
+- Some corporations are targeted by raids
+- Corporations doing business on Oziri are **protected from being raided** by the Council
+- Getting **immunity status** from the Council can be politically tricky—some factions may want to do business with a corporation, others may want to raid them
+- Most factions are involved in other commerce besides raiding, and so each has different interests
+- Different interests and schemes are what lead factions into war with each other
+
+## Interstellar Trade
+
+Being the outermost planet with highly developed markets, Oziri serves as a port for many interstellar traders via the [[projects/oziri-corridor|Oziri Corridor]].
+
+## Key Locations
+
+- [[locations/oziri/zirta|Zirta]] — Largest city, jointly managed by the Oziri Council
+- [[locations/oziri/the-hive|The Hive]] — District
+- [[locations/oziri/hai-juns-estate|Hai Jun's Estate]] — Residence of the Spike Reavers' Pirate Lord

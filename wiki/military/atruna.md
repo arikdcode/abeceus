@@ -27,4 +27,3 @@ After tens of thousands of casualties with no end in sight, the battle-weary Atr
 ## Intelligence
 
 See: [[factions/atruna#The Atrunean Intelligence Agency (AIA)|Atrunean Intelligence Agency (AIA)]]
-

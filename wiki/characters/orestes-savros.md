@@ -22,4 +22,3 @@ A low-ranking henchman for the [[factions/pirate-clans/spike-reavers|Spike Reave
 | Trait | Resentment |
 | Desire | Satisfied |
 | Problem | Bad boss |
-

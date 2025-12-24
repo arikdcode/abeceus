@@ -21,4 +21,3 @@ Just before being struck by a point defense weapon, hydra missiles blow apart, s
 ## Effectiveness
 
 During the [[locations/clusters/alucorp-station|Alucorp Station]] raid, a swarm of hydra missile fragments traveling at a sizable fraction of light speed vaporized two Atrunean cruisers before their point defense systems could react.
-

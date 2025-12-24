@@ -31,4 +31,3 @@ The [[military/mesulea|Mesulean Imperial Navy]] organizes its peacetime fleet in
 
 - [[military/mesulea|Mesulean ships]]: Elegant, fuel-rich, optimized
 - [[military/nuilea|Nuilean ships]]: Bulk, shielding, redundancy ("dirty fusion ships")
-
