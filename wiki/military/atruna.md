@@ -17,6 +17,8 @@ Militarily significant but not the dominant hegemon compared to the lunar empire
 
 ### The Oziri Conflict
 
+*Main article: [[setting/oziri-conflict|The Oziri Conflict]]*
+
 Atrunean marines in power armor participated in the ground assault on [[locations/oziri/index|Oziri]]. The campaign was costly:
 - The labyrinthine warrens defeated conventional tactics
 - Chaotic tunnels and diffractive walls broke up signals

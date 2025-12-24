@@ -39,7 +39,7 @@ Council decisions are **not democratic**. They are **negotiated power settlement
 
 ## The Pirate Compact
 
-Following the [[locations/oziri/index#The Oziri Conflict|Oziri Conflict]], the Pirate Lords formalized their approach in a written agreement:
+Following the [[setting/oziri-conflict|Oziri Conflict]], the Pirate Lords formalized their approach in a written agreement:
 
 ### Core Terms
 - Select targets carefully

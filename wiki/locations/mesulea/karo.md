@@ -26,4 +26,3 @@ Karo houses the **capital buildings** of the MLE, including:
 ## Population
 
 Part of the 17% of Miezo's population that lives above ground, though much of the city's infrastructure extends into the underground cave networks that have been expanded over centuries.
-

@@ -28,3 +28,4 @@ Core constraints and tone for the Abeceus setting.
 ## Pages
 
 - [[setting/history|History & Timeline]]
+- [[setting/oziri-conflict|The Oziri Conflict]]

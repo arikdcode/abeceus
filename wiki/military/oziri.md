@@ -33,13 +33,18 @@ Faction-aligned private forces provide:
 ## Historical Performance
 
 ### The Oziri Conflict
-When Mesulea and Atruna attempted a ground assault:
+
+*Main article: [[setting/oziri-conflict|The Oziri Conflict]]*
+
+When [[factions/mesulea|Mesulea]] and [[factions/atruna|Atruna]] attempted a joint ground assault:
 - Chaotic tunnels broke up signals and detection
 - Marines in power armor faced endless killboxes
 - Pirates knew the terrain; attackers walked in blind
 - Tens of thousands of casualties for no meaningful progress
 
 The battle-weary Atrunean populace forced withdrawal. Mesulea's subsequent blockade collapsed under attrition from ground-to-orbit weapons.
+
+The conflict proved that Oziri's defensive doctrine works.
 
 ## Current Posture
 

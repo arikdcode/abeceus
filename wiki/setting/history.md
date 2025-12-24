@@ -51,26 +51,17 @@ As the Mesulean and Nuilean colonies matured and interplanetary trade increased,
 
 ### The Oziri Conflict
 
-As Oziri grew in power, the [[factions/mesulea|Mesuleans]] and [[factions/atruna|Atruneans]] attempted to eliminate this threat to their shipping lanes.
+*Main article: [[setting/oziri-conflict|The Oziri Conflict]]*
 
-**Phase 1: Ground Assault**
-- Naval bombardment futile against planetary shell
-- Massive ground assault launched
-- Labyrinthine warrens favored defenders
-- Engineered diffractive walls broke up signals—attackers fought blind
-- Atrunean marines in power armor faced endless killboxes
-- Pirates used guerrilla tactics, escaping through tunnel networks
+As Oziri grew in power, the [[factions/mesulea|Mesuleans]] and [[factions/atruna|Atruneans]] launched a joint military campaign to eliminate this threat. The campaign ended in catastrophic failure:
 
-**Phase 2: Atrunean Withdrawal**
-- Tens of thousands of casualties
-- Battle-weary Atrunean populace pressured government to concede
-- Atruna withdrew from the conflict
+- Naval bombardment futile against the [[species/vey|Vey]]-built planetary shell
+- Ground assault faced impossible odds in the labyrinthine warrens
+- Tens of thousands of Atrunean casualties
+- Atrunean withdrawal after public pressure
+- Failed Mesulean blockade due to ground-to-orbit attrition
 
-**Phase 3: Failed Blockade**
-- Mesuleans unable to maintain ground campaign alone
-- Attempted naval blockade of Oziri
-- Relentless hit-and-run attacks with ground-to-orbit weapons
-- Blockade abandoned
+The conflict proved Oziri unconquerable and led to the [[#The Pirate Compact|Pirate Compact]].
 
 ### The Pirate Compact
 

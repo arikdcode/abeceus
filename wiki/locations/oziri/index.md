@@ -62,24 +62,18 @@ Oziri was soon occupied by several **Pirate Lords**, rich captains who began cla
 
 ## The Oziri Conflict
 
-As Oziri grew in power, the [[factions/mesulea|Mesuleans]] and [[factions/atruna|Atruneans]] sought to eliminate this escalating threat to their shipping lanes.
+*Main article: [[setting/oziri-conflict|The Oziri Conflict]]*
 
-### The Ground Assault
+As Oziri grew in power, the [[factions/mesulea|Mesuleans]] and [[factions/atruna|Atruneans]] launched a massive joint military campaign to eliminate this threat to their shipping lanes.
 
-With a naval bombardment being ultimately futile against the planetary shell, they attempted a massive ground assault on the structure. The attack was ill-fated, as the labyrinthine warrens of the inner structure had been designed with defense in mind:
+The campaign was a catastrophic failure:
+- **Naval bombardment** was futile against the planetary shell
+- **Ground assault** faced impossible odds in the labyrinthine warrens
+- **Tens of thousands of casualties** with no end in sight
+- **Atrunean withdrawal** after public pressure
+- **Failed Mesulean blockade** due to ground-to-orbit attrition
 
-- **Signal disruption**: Chaotic twists and turns and engineered diffractive wall surfaces broke up signals, turning long-range detection attempts into pure noise
-- **Blind fighting**: Walking in blind, Atrunean marines in power armor endured a seemingly unending series of killboxes
-- **Guerrilla tactics**: As they flushed the pirates out of one hole, the pirates would escape into another
-- **Equipment disparity**: The less disciplined pirates with patchwork equipment proved extremely painful to root out
-
-### Atrunean Withdrawal
-
-Unused to war and hardship, and after **tens of thousands of casualties** with no real end in sight, the battle-weary Atrunean populace pressured their government to concede defeat.
-
-### Failed Blockade
-
-With the Atruneans out of the war, the then-frontier Mesuleans were unable to maintain a protracted ground campaign without support. The Mesulean fleet attempted a naval blockade of Oziri, but after relentless hit-and-run attacks with ground-to-orbit weapons, they gave up on that as well.
+The conflict proved Oziri unconquerable and transformed it from pirate hideout to de facto sovereign state.
 
 ## The Pirate Compact
 
