@@ -8,6 +8,8 @@ tags:
 
 # Project BLUESPIRE
 
+![BLUESPIRE operation: Spire Skimmers racing toward the column as fusion pulses detonate below, Poena Station in background](assets/poena_station.png)
+
 Nuilea's flagship effort to break Mesulea's helium-3 dominance. It is not framed as a power source—it is an **energy-to-fuel conversion system**: Nuilea spends abundant stationary energy to create portable, high-energy-density fuel feedstock.
 
 BLUESPIRE is early-stage at campaign start: dangerous, expensive, throughput-limited, and politically destabilizing.
