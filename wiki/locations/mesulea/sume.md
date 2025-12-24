@@ -9,7 +9,7 @@ tags:
 
 # Sume
 
-The largest of [[locations/mesulea/index|Mesulea's]] 113 moons and the agricultural breadbasket of the [[polities/mesulea|Mesulean Lunar Empire]].
+The largest of [[locations/mesulea/index|Mesulea's]] 113 moons and the agricultural breadbasket of the [[factions/mesulea|Mesulean Lunar Empire]].
 
 ## Characteristics
 

@@ -12,6 +12,6 @@ tags:
 
 Located in Upper [[locations/oziri/zirta/index|Zirta]], the Market District contains vendors selling every conceivable good.
 
-Part of the neutral ground protected by the [[polities/oziri-council|Oziri Council]].
+Part of the neutral ground protected by the [[factions/oziri-council|Oziri Council]].
 
 *Details to be expanded.*

@@ -10,7 +10,7 @@ tags:
 
 # Karo
 
-The largest city on [[locations/mesulea/miezo|Miezo]] and the seat of government for the [[polities/mesulea|Mesulean Lunar Empire]].
+The largest city on [[locations/mesulea/miezo|Miezo]] and the seat of government for the [[factions/mesulea|Mesulean Lunar Empire]].
 
 ## Location
 

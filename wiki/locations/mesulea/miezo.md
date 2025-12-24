@@ -9,7 +9,7 @@ tags:
 
 # Miezo
 
-The capital moon of the [[polities/mesulea|Mesulean Lunar Empire]], second largest of [[locations/mesulea/index|Mesulea's]] 113 moons. Tidally locked with Mesulea.
+The capital moon of the [[factions/mesulea|Mesulean Lunar Empire]], second largest of [[locations/mesulea/index|Mesulea's]] 113 moons. Tidally locked with Mesulea.
 
 ## Geography
 
@@ -46,4 +46,4 @@ On the outward hemisphere, in the middle of the sulfur dunes, lies the massive [
 - Surface topography has been mapped, but real-time observation is impractical
 
 ### Significance
-Rumored to host a [[polities/mesulea|Mesulean]] black-site run by a compartmented "dark bureaucracy."
+Rumored to host a [[factions/mesulea|Mesulean]] black-site run by a compartmented "dark bureaucracy."

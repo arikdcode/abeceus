@@ -26,4 +26,3 @@ Sovereign governments and political entities in the Abeceus system.
 
 - [[organizations/index|Organizations]] — Non-state actors (pirate clans, corporations)
 - [[military/index|Military]] — Armed forces by polity
-

@@ -24,4 +24,4 @@ Launches from atmospheric stations must be scheduled precisely to:
 
 ## Strategic Importance
 
-The Complex is a critical chokepoint in [[polities/mesulea|Mesulea's]] helium-3 monopoly. Control of this facility and its associated infrastructure gives Mesulea significant economic leverage over the entire system, particularly [[polities/nuilea|Nuilea]].
+The Complex is a critical chokepoint in [[factions/mesulea|Mesulea's]] helium-3 monopoly. Control of this facility and its associated infrastructure gives Mesulea significant economic leverage over the entire system, particularly [[factions/nuilea|Nuilea]].

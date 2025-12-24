@@ -42,4 +42,3 @@ See: [[organizations/corporations/index|Corporation Index]]
 ## See Also
 
 - [[polities/index|Polities]] — Sovereign governments
-

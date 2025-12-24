@@ -41,4 +41,3 @@ The Compact transformed pirates from escalating menace to "persistent nuisance" 
 
 - [[polities/oziri-council|Oziri Council]] — Pirate government
 - [[locations/oziri/index|Oziri]] — Home territory
-
