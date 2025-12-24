@@ -11,6 +11,10 @@ tags:
 
 The largest and most famous of [[locations/mesulea/index|Mesulea's]] atmospheric mining ports, stationed near the edge of **Magna Fons** (colloquially "The Fountain")—the largest surface storm on Mesulea.
 
+## Concept Art
+
+![Aeolus Station over Magna Fons](assets/aeolus_station.png)
+
 ## The Fountain
 
 Helium-3 density increases by several orders of magnitude in the storms in Mesulea's upper atmosphere. A rich layer of liquid helium-3 exists several hundreds of kilometers below the 1 bar boundary (the "surface"). The vortices at the center of storms sometimes penetrate to this layer and pull large amounts of helium-3 up to the thermosphere.
