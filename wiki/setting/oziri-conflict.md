@@ -146,4 +146,3 @@ The Oziri Conflict established the political order that persists to the present 
 - [[factions/oziri-council|Oziri Council]]
 - [[military/oziri|Oziri Military]]
 - [[setting/history|History & Timeline]]
-
