@@ -374,4 +374,3 @@ No single system-wide currency:
 - Mesulean elections affect fuel contract terms
 - Nuilean program announcements affect weapons demand
 - Atrunean regulatory changes affect insurance costs
-

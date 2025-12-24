@@ -333,4 +333,3 @@ The result is an economy that:
 - **Exports**: Manufactured goods, weapons (if they'll buy)
 - **Imports**: Unknown; eager for alternatives to Mesulean He-3
 - **Character**: Hopeful; corridor windows are potential leverage
-

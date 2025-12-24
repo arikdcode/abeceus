@@ -329,4 +329,3 @@ Cultural exports create soft power and earn hard currency.
 - **Exports**: Services, luxury goods, possibly arbitration
 - **Imports**: Unknown Hesper goods
 - **Character**: Curious; corridor windows are economically interesting
-

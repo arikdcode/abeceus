@@ -77,4 +77,3 @@ Who exports what to whom:
 | **Oziri** | (gray) | (gray) | (minimal) | Strike craft | — |
 
 ★★★ = Critical dependency
-

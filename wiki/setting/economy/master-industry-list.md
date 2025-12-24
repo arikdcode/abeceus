@@ -365,4 +365,3 @@ A comprehensive catalog of every economic activity in the Abeceus system. Use th
 | Weapons trafficking | Unlicensed arms sales |
 | Human trafficking | Forced labor, slavery (if present in setting) |
 | Counterfeiting | Fake goods, currency, documents |
-

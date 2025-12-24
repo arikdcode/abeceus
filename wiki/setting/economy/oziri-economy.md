@@ -393,4 +393,3 @@ During [[projects/oziri-corridor|corridor windows]], Oziri's economy transforms:
 - Informal banking (deposits, loans within factions)
 - Asset holding (secure storage)
 - No formal arbitration—disputes resolved by power
-

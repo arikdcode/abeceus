@@ -352,4 +352,3 @@ If you want something **adjusted**, you come to the Freeholds.
 - Each cylinder or station has its own economic policy
 - Some are corporate, some are democratic, some are weird
 - Trade policy varies enormously
-
