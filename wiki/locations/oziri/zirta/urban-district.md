@@ -13,4 +13,3 @@ tags:
 Working class residential area in Lower [[locations/oziri/zirta/index|Zirta]].
 
 *Details to be expanded.*
-

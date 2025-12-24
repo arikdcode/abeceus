@@ -7,7 +7,7 @@ tags:
 
 # Atrunean Military
 
-The armed forces of [[factions/atruna|Atruna]], the original colony world.
+The armed forces of [[polities/atruna|Atruna]], the original colony world.
 
 ## Status
 
@@ -28,4 +28,4 @@ After tens of thousands of casualties with no end in sight, the battle-weary Atr
 
 ## Intelligence
 
-See: [[factions/atruna#The Atrunean Intelligence Agency (AIA)|Atrunean Intelligence Agency (AIA)]]
+See: [[polities/atruna#The Atrunean Intelligence Agency (AIA)|Atrunean Intelligence Agency (AIA)]]

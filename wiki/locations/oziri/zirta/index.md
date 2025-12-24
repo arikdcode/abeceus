@@ -8,7 +8,7 @@ tags:
 
 # Zirta
 
-The largest city on [[locations/oziri/index|Oziri]], jointly managed by the entire [[factions/oziri-council|Oziri Council]].
+The largest city on [[locations/oziri/index|Oziri]], jointly managed by the entire [[polities/oziri-council|Oziri Council]].
 
 ## The Zirta Dock
 
@@ -48,4 +48,3 @@ Rests on the floor.
 - [[locations/oziri/zirta/industrial-district|Industrial District]] — Manufacturing
 - [[locations/oziri/zirta/urban-district|Urban District]] — Working class housing
 - [[locations/oziri/zirta/slum-district|Slum District]] — The bottom of Oziri society
-

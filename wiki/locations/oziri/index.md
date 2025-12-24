@@ -40,7 +40,7 @@ Aside from the remarkable megafortress hidden beneath the surface, Oziri is lack
 
 Oziri was heavily studied by scientists of many disciplines over the centuries. In recent times however, without further clues as to the shell makers' technology and methods, most believe they have exhausted all knowledge that the Oziri megastructure has to offer.
 
-While the unique defensibility of Oziri was unquestionable, [[factions/atruna|Atrunean]], [[factions/mesulea|Mesulean]], and [[factions/nuilea|Nuilean]] militaries could find little practical use for a fortress so removed from anything of value. And so Oziri remained mostly as a curiosity during early colonization efforts.
+While the unique defensibility of Oziri was unquestionable, [[polities/atruna|Atrunean]], [[polities/mesulea|Mesulean]], and [[polities/nuilea|Nuilean]] militaries could find little practical use for a fortress so removed from anything of value. And so Oziri remained mostly as a curiosity during early colonization efforts.
 
 ## Rise in Space Piracy
 
@@ -52,7 +52,7 @@ As the Mesulean and Nuilean colonies began to mature and space travel became muc
 
 ### Military Response
 
-In response to the rise in piracy, [[factions/atruna|Atruna]] and [[factions/mesulea|Mesulea]] increased their fleet sizes greatly. Despite this, they lacked the ships to provide escorts to the majority of trade vessels. The primary purpose of the fleets was to seek and destroy pirate vessels docking at pirate bases set up in the asteroid belt. There were millions of ship-sized asteroids to police, so it was a difficult task.
+In response to the rise in piracy, [[polities/atruna|Atruna]] and [[polities/mesulea|Mesulea]] increased their fleet sizes greatly. Despite this, they lacked the ships to provide escorts to the majority of trade vessels. The primary purpose of the fleets was to seek and destroy pirate vessels docking at pirate bases set up in the asteroid belt. There were millions of ship-sized asteroids to police, so it was a difficult task.
 
 ### Pirates Acquire Advanced Drives
 
@@ -64,7 +64,7 @@ Oziri was soon occupied by several **Pirate Lords**, rich captains who began cla
 
 *Main article: [[setting/oziri-conflict|The Oziri Conflict]]*
 
-As Oziri grew in power, the [[factions/mesulea|Mesuleans]] and [[factions/atruna|Atruneans]] launched a massive joint military campaign to eliminate this threat to their shipping lanes.
+As Oziri grew in power, the [[polities/mesulea|Mesuleans]] and [[polities/atruna|Atruneans]] launched a massive joint military campaign to eliminate this threat to their shipping lanes.
 
 The campaign was a catastrophic failure:
 - **Naval bombardment** was futile against the planetary shell
@@ -108,7 +108,7 @@ Every dock on Oziri has been claimed by various factions.
 
 ## Governance
 
-See: [[factions/oziri-council|Oziri Council]]
+See: [[polities/oziri-council|Oziri Council]]
 
 ## Infighting
 
@@ -144,6 +144,6 @@ Being the outermost planet with highly developed markets, Oziri serves as a port
 
 ## Key Locations
 
-- [[locations/oziri/zirta|Zirta]] — Largest city, jointly managed by the Oziri Council
+- [[locations/oziri/zirta/index|Zirta]] — Largest city, jointly managed by the Oziri Council
 - [[locations/oziri/the-hive|The Hive]] — District
 - [[locations/oziri/hai-juns-estate|Hai Jun's Estate]] — Residence of the Spike Reavers' Pirate Lord

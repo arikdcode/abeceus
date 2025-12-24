@@ -51,4 +51,4 @@ Aneutronic reactors are ideal for powering spacecraft propulsion systems, yieldi
 
 ## Geopolitical Consequences
 
-Mesulea's de facto monopoly on helium-3 gives them major economic and military leverage over the entire system, especially [[factions/nuilea|Nuilea]].
+Mesulea's de facto monopoly on helium-3 gives them major economic and military leverage over the entire system, especially [[polities/nuilea|Nuilea]].

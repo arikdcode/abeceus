@@ -30,7 +30,7 @@ A major district on [[locations/oziri/index|Oziri]], notable for its mix of indu
 
 ## Factions
 
-The Hive is contested territory between the [[factions/pirate-clans/spike-reavers|Spike Reavers]] and the [[factions/pirate-clans/warren-dwellers|Warren Dwellers]].
+The Hive is contested territory between the [[organizations/pirate-clans/spike-reavers|Spike Reavers]] and the [[organizations/pirate-clans/warren-dwellers|Warren Dwellers]].
 
 ## Notable People
 

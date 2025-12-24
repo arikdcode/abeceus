@@ -52,7 +52,7 @@ The truce is practical, not moral: everyone benefits from trade, and violence ri
 
 ## Mesulea–Oziri Arrangement
 
-The [[factions/hespers|Hespers]] strongly value helium-3. Mesulea is the only abundant supplier. A plausible corridor-era arrangement:
+The [[polities/hespers|Hespers]] strongly value helium-3. Mesulea is the only abundant supplier. A plausible corridor-era arrangement:
 - Oziri permits Mesulean bulk He-3 shipments through
 - In exchange for fees and concessions
 - Rivalry resumes outside truce windows

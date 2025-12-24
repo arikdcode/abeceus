@@ -30,6 +30,10 @@ The modern inhabitants of the wider Abecean system are descended from the origin
 - Considered **neutral ground** for ceremonies and diplomacy
 - Mesulean and Nuilean governments integrate Atrunean ceremonial functions
 
+## Government
+
+See: [[polities/atruna|Atruna (Polity)]]
+
 ## Intelligence
 
-See: [[factions/atruna|Atrunean Intelligence Agency (AIA)]]
+See: [[organizations/aia|Atrunean Intelligence Agency (AIA)]]

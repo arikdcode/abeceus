@@ -12,4 +12,3 @@ tags:
 A power generation facility in [[locations/oziri/the-hive|The Hive]].
 
 *Details to be expanded.*
-

@@ -12,7 +12,7 @@ A unary star system colonized by humans from Earth over a millennium ago. Cut of
 - **[[locations/mesulea/index|Mesulea]]** — Gas giant empire, helium-3 hegemon
 - **[[locations/nuilea/index|Nuilea]]** — Rising power, industrial militarism
 - **[[locations/oziri/index|Oziri]]** — Pirate nation-state in an alien megastructure
-- **[[factions/freeholds|The Freeholds]]** — Inner-system third pole
+- **[[polities/freeholds|The Freeholds]]** — Inner-system third pole
 
 ## The Setting
 
@@ -20,12 +20,15 @@ The Abeceus system is **gritty and realistic**, with believable economics and ge
 
 ## Navigation
 
-- [[setting/index|Setting & Canon]]
-- [[locations/index|Locations]]
-- [[factions/index|Factions]]
-- [[characters/index|Characters]]
-- [[technology/index|Technology]]
-- [[military/index|Military]]
-- [[projects/index|Projects]]
-- [[species/index|Species]]
-- [[stories/index|Stories]]
+| Section | Description |
+|---------|-------------|
+| [[setting/index|Setting & Canon]] | Tone, history, major events |
+| [[locations/index|Locations]] | Planets, moons, stations, cities |
+| [[polities/index|Polities]] | Sovereign governments |
+| [[organizations/index|Organizations]] | Pirate clans, corporations, agencies |
+| [[characters/index|Characters]] | Named individuals |
+| [[technology/index|Technology]] | Propulsion, fusion, infrastructure |
+| [[military/index|Military]] | Armed forces, doctrine, ships |
+| [[projects/index|Projects]] | Major programs and initiatives |
+| [[species/index|Species]] | The Vey and humanity |
+| [[stories/index|Stories]] | Narrative content |

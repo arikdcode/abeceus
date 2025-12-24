@@ -14,4 +14,3 @@ The residential area of [[locations/oziri/the-hive|The Hive]].
 ## Notable Locations
 
 - [[locations/oziri/hive/thakurs-place|Thakur's Place]] — Residence of [[characters/thakur-trivedi|Thakur Trivedi]]
-

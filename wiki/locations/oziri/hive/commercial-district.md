@@ -12,4 +12,3 @@ tags:
 The commercial area of [[locations/oziri/the-hive|The Hive]].
 
 *Details to be expanded.*
-

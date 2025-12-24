@@ -29,7 +29,7 @@ tags:
 
 ### Rise of the Mesulean Lunar Empire
 
-- [[factions/mesulea|Mesulea]] grows into the dominant power through helium-3 monopoly
+- [[polities/mesulea|Mesulea]] grows into the dominant power through helium-3 monopoly
 - 113 moons developed with outposts, settlements, and cities
 - [[locations/atruna/index|Atruna]] loses position as primary power but retains cultural and diplomatic influence
 
@@ -38,7 +38,7 @@ tags:
 As the Mesulean and Nuilean colonies matured and interplanetary trade increased, space piracy became a serious problem:
 
 - **Abecean flares** gave pirates windows to attack while ships' sensors/comms were shielded
-- [[factions/atruna|Atruna]] and [[factions/mesulea|Mesulea]] expanded their fleets but couldn't escort all trade vessels
+- [[polities/atruna|Atruna]] and [[polities/mesulea|Mesulea]] expanded their fleets but couldn't escort all trade vessels
 - Military focus: seek and destroy pirate bases in the asteroid belt
 - Millions of asteroids made this nearly impossible
 
@@ -53,7 +53,7 @@ As the Mesulean and Nuilean colonies matured and interplanetary trade increased,
 
 *Main article: [[setting/oziri-conflict|The Oziri Conflict]]*
 
-As Oziri grew in power, the [[factions/mesulea|Mesuleans]] and [[factions/atruna|Atruneans]] launched a joint military campaign to eliminate this threat. The campaign ended in catastrophic failure:
+As Oziri grew in power, the [[polities/mesulea|Mesuleans]] and [[polities/atruna|Atruneans]] launched a joint military campaign to eliminate this threat. The campaign ended in catastrophic failure:
 
 - Naval bombardment futile against the [[species/vey|Vey]]-built planetary shell
 - Ground assault faced impossible odds in the labyrinthine warrens
@@ -75,13 +75,13 @@ Following the failed conflict, the Pirate Lords recognized they needed to avoid 
 ### Modern Era
 
 **Current State of Powers:**
-- [[factions/mesulea|Mesulea]]: Dominant power via helium-3 hegemony
-- [[factions/nuilea|Nuilea]]: Rising challenger pursuing independence programs
-- [[factions/atruna|Atruna]]: Diplomatic and cultural core, neutral ground
+- [[polities/mesulea|Mesulea]]: Dominant power via helium-3 hegemony
+- [[polities/nuilea|Nuilea]]: Rising challenger pursuing independence programs
+- [[polities/atruna|Atruna]]: Diplomatic and cultural core, neutral ground
 - [[locations/oziri/index|Oziri]]: Functioning criminal nation-state
-- [[factions/freeholds|The Freeholds]]: Inner-system third pole
+- [[polities/freeholds|The Freeholds]]: Inner-system third pole
 
 **Recent Developments:**
 - Discovery/stabilization of the [[projects/oziri-corridor|Oziri Corridor]]
-- [[factions/hespers|Hesper]] trade windows reshape economics
+- [[polities/hespers|Hesper]] trade windows reshape economics
 - Nuilea's [[projects/bluespire|BLUESPIRE]] and [[projects/janus|Janus II]] programs threaten status quo

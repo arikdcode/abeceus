@@ -47,4 +47,4 @@ To mitigate Mesulean market dominance, Nuilea:
 
 ## Government
 
-See: [[factions/nuilea|Nuilea]]
+See: [[polities/nuilea|Nuilea]]

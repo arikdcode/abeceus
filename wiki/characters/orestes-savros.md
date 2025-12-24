@@ -8,7 +8,7 @@ tags:
 
 # Orestes Savros
 
-A low-ranking henchman for the [[factions/pirate-clans/spike-reavers|Spike Reavers]].
+A low-ranking henchman for the [[organizations/pirate-clans/spike-reavers|Spike Reavers]].
 
 ## Profile
 

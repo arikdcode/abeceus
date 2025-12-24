@@ -9,7 +9,7 @@ tags:
 
 # Hai Jun's Estate
 
-The residence of [[characters/hai-jun|Hai Jun]], Pirate Lord of the [[factions/pirate-clans/spike-reavers|Spike Reavers]], located in Middle [[locations/oziri/zirta|Zirta]].
+The residence of [[characters/hai-jun|Hai Jun]], Pirate Lord of the [[organizations/pirate-clans/spike-reavers|Spike Reavers]], located in Middle [[locations/oziri/zirta|Zirta]].
 
 ## Layout
 

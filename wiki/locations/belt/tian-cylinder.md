@@ -9,7 +9,7 @@ tags:
 
 # Tiān Cylinder
 
-An O'Neill cylinder in the [[locations/clusters/index|Belt Cluster]], constructed by the spacer union *Hànzú Láodòng zhě* ("Workers of the Han").
+An O'Neill cylinder in the [[locations/belt/index|Belt Cluster]], constructed by the spacer union *Hànzú Láodòng zhě* ("Workers of the Han").
 
 ## Culture
 

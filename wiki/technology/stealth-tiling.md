@@ -15,4 +15,4 @@ Stealth tiling is a hull retrofit that makes spacecraft harder to detect on enem
 
 ## History
 
-[[characters/karl-schneider|Karl Schneider]] retrofitted [[characters/hai-jun|Hai Jun's]] fighter with stealth tiling at great expense. The jet black stealth fighters of the [[factions/pirate-clans/spike-reavers|Spike Reavers]] became known and feared among trading barges.
+[[characters/karl-schneider|Karl Schneider]] retrofitted [[characters/hai-jun|Hai Jun's]] fighter with stealth tiling at great expense. The jet black stealth fighters of the [[organizations/pirate-clans/spike-reavers|Spike Reavers]] became known and feared among trading barges.

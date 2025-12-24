@@ -10,4 +10,3 @@ tags:
 A space-based university cluster.
 
 *Canon status TBD. Details to be expanded.*
-

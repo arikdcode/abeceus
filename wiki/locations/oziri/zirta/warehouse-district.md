@@ -13,4 +13,3 @@ tags:
 Storage and logistics area in Upper [[locations/oziri/zirta/index|Zirta]].
 
 *Details to be expanded.*
-

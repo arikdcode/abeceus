@@ -24,4 +24,3 @@ Like all [[locations/oziri/index|Oziri]] docks:
 - **Major repairs**: Cells can be pressurized
 
 *Details to be expanded.*
-

@@ -8,7 +8,7 @@ tags:
 
 # Karl Schneider
 
-Technical Lead of the [[factions/pirate-clans/spike-reavers|Spike Reavers]] and longtime friend of [[characters/hai-jun|Hai Jun]].
+Technical Lead of the [[organizations/pirate-clans/spike-reavers|Spike Reavers]] and longtime friend of [[characters/hai-jun|Hai Jun]].
 
 ## Profile
 
@@ -31,7 +31,7 @@ The two spent hours working on Jun's ship, adding modifications that gave tactic
 
 Their illegal tech modifications became popular among other pirates, and the pair turned a tidy profit selling them.
 
-When Jun made his play for independence and stole the advanced drive from [[factions/corporations/alucorp|Alucorp]], Karl joined without hesitation as the ship's engineer.
+When Jun made his play for independence and stole the advanced drive from [[organizations/corporations/alucorp|Alucorp]], Karl joined without hesitation as the ship's engineer.
 
 ## Residence
 

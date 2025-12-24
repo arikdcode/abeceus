@@ -7,7 +7,7 @@ tags:
 
 # Oziri Military
 
-Oziri's military capability is distributed across multiple factions coordinated by the [[factions/oziri-council|Oziri Council]].
+Oziri's military capability is distributed across multiple factions coordinated by the [[polities/oziri-council|Oziri Council]].
 
 ## Defense Doctrine
 
@@ -36,7 +36,7 @@ Faction-aligned private forces provide:
 
 *Main article: [[setting/oziri-conflict|The Oziri Conflict]]*
 
-When [[factions/mesulea|Mesulea]] and [[factions/atruna|Atruna]] attempted a joint ground assault:
+When [[polities/mesulea|Mesulea]] and [[polities/atruna|Atruna]] attempted a joint ground assault:
 - Chaotic tunnels broke up signals and detection
 - Marines in power armor faced endless killboxes
 - Pirates knew the terrain; attackers walked in blind

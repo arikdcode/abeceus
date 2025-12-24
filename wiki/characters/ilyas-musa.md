@@ -8,7 +8,7 @@ tags:
 
 # Ilyas Musa
 
-A henchman for the [[factions/pirate-clans/spike-reavers|Spike Reavers]].
+A henchman for the [[organizations/pirate-clans/spike-reavers|Spike Reavers]].
 
 ## Profile
 

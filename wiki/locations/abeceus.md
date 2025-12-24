@@ -27,5 +27,5 @@ All before distress calls can be sent. This has made piracy a persistent problem
 ## Strategic Significance
 
 - Primary energy source for the entire system
-- Target of [[factions/nuilea|Nuilea's]] [[projects/janus|Janus II Project]]
-- Potential site for a future Dyson Swarm to break [[factions/mesulea|Mesulean]] helium-3 hegemony
+- Target of [[polities/nuilea|Nuilea's]] [[projects/janus|Janus II Project]]
+- Potential site for a future Dyson Swarm to break [[polities/mesulea|Mesulean]] helium-3 hegemony

@@ -13,7 +13,7 @@ The largest great power in conventional military and industrial terms, ruling ov
 ## Government Structure
 
 ### The Atrunean Emperor
-**Ceremonially**, the ruler of the MLE is the [[factions/atruna|Atrunean]] Emperor. However, this is purely ceremonial—the true face of Mesulean politics is the Regent.
+**Ceremonially**, the ruler of the MLE is the [[polities/atruna|Atrunean]] Emperor. However, this is purely ceremonial—the true face of Mesulean politics is the Regent.
 
 ### The Mesulean Regent
 - Does not officially belong to any political faction
@@ -33,7 +33,7 @@ Most inhabitants are citizens, with the exception of **landed immigrants**.
 
 - Major advantage through **helium-3 accessibility at scale**
 - De facto monopoly on the strategic fuel that powers high-performance spacecraft
-- Can pressure [[factions/nuilea|Nuilea]] economically through fuel markets
+- Can pressure [[polities/nuilea|Nuilea]] economically through fuel markets
 
 ## Signature Setpieces
 

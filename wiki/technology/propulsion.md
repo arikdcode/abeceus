@@ -32,4 +32,4 @@ Space travel in the Abeceus system is defined by **high-performance STL** (slowe
 
 ## Interstellar Travel
 
-The only known route to another star system is the [[projects/oziri-corridor|Oziri Corridor]]—a wormhole route controlled by the [[factions/hespers|Hespers]].
+The only known route to another star system is the [[projects/oziri-corridor|Oziri Corridor]]—a wormhole route controlled by the [[polities/hespers|Hespers]].

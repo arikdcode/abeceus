@@ -42,4 +42,4 @@ Mesulea's de facto monopoly on helium-3 gives them major leverage over their riv
 
 ## Government
 
-See: [[factions/mesulea|Mesulean Lunar Empire]]
+See: [[polities/mesulea|Mesulean Lunar Empire]]

@@ -9,7 +9,7 @@ tags:
 
 # Alucorp Station
 
-The metropolitan center of the [[locations/clusters/index|Belt Cluster]], founded by [[factions/corporations/alucorp|Alucorp]].
+The metropolitan center of the [[locations/belt/index|Belt Cluster]], founded by [[organizations/corporations/alucorp|Alucorp]].
 
 ## Location
 
@@ -25,7 +25,7 @@ Over centuries, new cylinders were constructed nearby by various corporations an
 
 - Corporate offices (mining, refining, manufacturing, spacecraft industries)
 - Hotels and nightlife for spacers
-- [[factions/mesulea|Mesulean]], [[factions/nuilea|Nuilean]], and [[factions/atruna|Atrunean]] consulates
+- [[polities/mesulea|Mesulean]], [[polities/nuilea|Nuilean]], and [[polities/atruna|Atrunean]] consulates
 
 ## Significance
 

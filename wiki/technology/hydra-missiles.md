@@ -16,8 +16,8 @@ Just before being struck by a point defense weapon, hydra missiles blow apart, s
 
 ## History
 
-[[characters/karl-schneider|Karl Schneider]] installed illegal hydra missiles on [[characters/hai-jun|Hai Jun's]] fighter during their early pirate days. The technology became widely adopted by the [[factions/pirate-clans/spike-reavers|Spike Reavers]] and contributed to their fearsome reputation.
+[[characters/karl-schneider|Karl Schneider]] installed illegal hydra missiles on [[characters/hai-jun|Hai Jun's]] fighter during their early pirate days. The technology became widely adopted by the [[organizations/pirate-clans/spike-reavers|Spike Reavers]] and contributed to their fearsome reputation.
 
 ## Effectiveness
 
-During the [[locations/clusters/alucorp-station|Alucorp Station]] raid, a swarm of hydra missile fragments traveling at a sizable fraction of light speed vaporized two Atrunean cruisers before their point defense systems could react.
+During the [[locations/belt/alucorp-station|Alucorp Station]] raid, a swarm of hydra missile fragments traveling at a sizable fraction of light speed vaporized two Atrunean cruisers before their point defense systems could react.

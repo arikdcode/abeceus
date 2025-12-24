@@ -8,7 +8,7 @@ tags:
 
 # James Lloyd
 
-The leader of the [[factions/pirate-clans/warren-dwellers|Warren Dwellers]].
+The leader of the [[organizations/pirate-clans/warren-dwellers|Warren Dwellers]].
 
 ## Profile
 

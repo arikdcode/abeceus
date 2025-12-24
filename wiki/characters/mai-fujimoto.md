@@ -8,7 +8,7 @@ tags:
 
 # Mai Fujimoto
 
-Wife of [[characters/hai-jun|Hai Jun]], the Pirate Lord of the [[factions/pirate-clans/spike-reavers|Spike Reavers]].
+Wife of [[characters/hai-jun|Hai Jun]], the Pirate Lord of the [[organizations/pirate-clans/spike-reavers|Spike Reavers]].
 
 ## Profile
 

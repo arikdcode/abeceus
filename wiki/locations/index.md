@@ -19,5 +19,4 @@ The Abeceus system, from the star outward.
 
 ## Other Features
 
-- [[locations/clusters/index|O'Neill Clusters]] — Independent cylinder habitats
-- The Belt — Asteroid mining region
+- [[locations/belt/index|Asteroid Belt & Clusters]] — Mining region and O'Neill habitats

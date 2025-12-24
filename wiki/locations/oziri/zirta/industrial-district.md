@@ -13,4 +13,3 @@ tags:
 The manufacturing center in Lower [[locations/oziri/zirta/index|Zirta]].
 
 *Details to be expanded.*
-

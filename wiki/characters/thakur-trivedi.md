@@ -9,7 +9,7 @@ tags:
 
 # Thakur Trivedi
 
-A [[factions/pirate-clans/spike-reavers|Spike Reaver]] agent currently stationed at [[locations/oziri/the-hive|The Hive]] to spy on the [[factions/pirate-clans/warren-dwellers|Warren Dwellers]].
+A [[organizations/pirate-clans/spike-reavers|Spike Reaver]] agent currently stationed at [[locations/oziri/the-hive|The Hive]] to spy on the [[organizations/pirate-clans/warren-dwellers|Warren Dwellers]].
 
 ## Profile
 

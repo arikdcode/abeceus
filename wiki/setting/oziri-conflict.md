@@ -10,7 +10,7 @@ tags:
 
 # The Oziri Conflict
 
-A failed joint [[factions/mesulea|Mesulean]]-[[factions/atruna|Atrunean]] military campaign to eliminate [[locations/oziri/index|Oziri]] as a pirate stronghold. The conflict ended in a humiliating withdrawal and fundamentally reshaped the political landscape of the Abeceus system.
+A failed joint [[polities/mesulea|Mesulean]]-[[polities/atruna|Atrunean]] military campaign to eliminate [[locations/oziri/index|Oziri]] as a pirate stronghold. The conflict ended in a humiliating withdrawal and fundamentally reshaped the political landscape of the Abeceus system.
 
 ## Background
 
@@ -18,7 +18,7 @@ A failed joint [[factions/mesulea|Mesulean]]-[[factions/atruna|Atrunean]] milita
 
 As the Mesulean and Nuilean colonies matured and interplanetary trade increased, space piracy became a serious and expensive problem. [[locations/abeceus|Abecean flares]] gave pirates windows to attack while ships' sensors and communications were shielded.
 
-Despite expanded fleets, [[factions/atruna|Atruna]] and [[factions/mesulea|Mesulea]] couldn't escort all trade vessels. Military focus shifted to seeking and destroying pirate bases in the asteroid belt—but with millions of asteroids to police, this was nearly impossible.
+Despite expanded fleets, [[polities/atruna|Atruna]] and [[polities/mesulea|Mesulea]] couldn't escort all trade vessels. Military focus shifted to seeking and destroying pirate bases in the asteroid belt—but with millions of asteroids to police, this was nearly impossible.
 
 ### The Turning Point
 
@@ -135,7 +135,7 @@ The conflict proved that Oziri could not be conquered at acceptable cost. This t
 
 The Oziri Conflict established the political order that persists to the present day:
 
-- [[factions/oziri-council|Oziri Council]] governs as a functioning (if criminal) state
+- [[polities/oziri-council|Oziri Council]] governs as a functioning (if criminal) state
 - The [[#The Pirate Compact|Pirate Compact]] maintains a carefully calibrated level of raiding
 - Inner systems treat Oziri as distasteful but tolerable
 - The discovery of the [[projects/oziri-corridor|Oziri Corridor]] later transformed Oziri from nuisance to **strategic hinge**
@@ -143,6 +143,6 @@ The Oziri Conflict established the political order that persists to the present 
 ## See Also
 
 - [[locations/oziri/index|Oziri]]
-- [[factions/oziri-council|Oziri Council]]
+- [[polities/oziri-council|Oziri Council]]
 - [[military/oziri|Oziri Military]]
 - [[setting/history|History & Timeline]]

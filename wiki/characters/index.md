@@ -8,7 +8,7 @@ Named individuals in the Abeceus setting.
 
 ## By Faction
 
-### [[factions/pirate-clans/spike-reavers|Spike Reavers]]
+### [[organizations/pirate-clans/spike-reavers|Spike Reavers]]
 
 | Character | Role |
 |-----------|------|
@@ -20,7 +20,7 @@ Named individuals in the Abeceus setting.
 | [[characters/ilyas-musa|Ilyas Musa]] | Henchman |
 | [[characters/orestes-savros|Orestes Savros]] | Henchman |
 
-### [[factions/pirate-clans/warren-dwellers|Warren Dwellers]]
+### [[organizations/pirate-clans/warren-dwellers|Warren Dwellers]]
 
 | Character | Role |
 |-----------|------|
