@@ -10,6 +10,14 @@ tags:
 
 The largest city on [[locations/oziri/index|Oziri]], jointly managed by the entire [[polities/oziri-council|Oziri Council]].
 
+## Concept Art
+
+![Concept art of Zirta](assets/locations/oziri/zirta/zirta-concept.png)
+
+**Image prompt (for Midjourney / SDXL / DALL·E):**
+
+> A colossal underground alien city inside a 20km × 20km × 2km cavern beneath an alien planetary shell. The city is split vertically: the upper city hangs from the ceiling like stalactites with glowing markets and hab blocks suspended by cables and supports, while the lower city rises from the floor with industrial smokestacks and dense slum housing. Between them, middle-tier structures bridge the gap. The ceiling is the underside of a 300-meter thick metallic alien shell with honeycomb docking bays visible. Dim amber and blue artificial lighting. Cyberpunk-meets-brutalist aesthetic. Massive scale, tiny figures for reference. Gritty, lived-in, functional.
+
 ## The Zirta Dock
 
 The largest dock on Oziri sits directly above the city, beneath the planetary shell. It attracts the most commercial traffic of any dock on Oziri.
