@@ -58,18 +58,21 @@ Characters are not locked into archetypes. An engineer can become a sniper. A me
 
 ### Agency & Consequences
 
-**The system should not steal agency through bad luck.**
+**The system should not create unwinnable situations through randomness or GM fiat.**
 
-- Players should see danger coming and have the chance to respond
-- Morale/stress systems should provide warning before breaking points
-- Even in ambushes, combat veterans should have limited protective options
-- Death should result from accumulated mistakes or genuinely poor decisions, not pure randomness
+This is nuanced. Players should *not* always see danger coming—especially if they made poor decisions. If players fail to conduct recon when entering an area where they've been given reasonable clues that enemies could be operating, the GM is within their rights to spring an ambush.
 
-**But consequences must be real:**
-- Characters can and will die
-- Injuries degrade performance
-- Resources deplete
-- Reckless play is punished
+**What we want to avoid:**
+- Players in a "safe" location get ambushed by commandos and party-wiped in round one with no warning
+- Players who anticipated a fight and positioned well lose a veteran to a lucky headshot
+- Deaths that feel arbitrary rather than consequential
+
+**What is acceptable:**
+- Players who skip recon walk into an ambush they could have detected
+- Reckless advances result in casualties
+- Accumulated wounds and poor resource management lead to death
+
+**Morale/stress systems should provide warning** before breaking points—players see it coming and can make decisions. **Combat veterans get protective options** even in ambushes. But consequences are real: characters can and will die from genuinely poor decisions.
 
 ### Tactical Depth
 
@@ -171,30 +174,47 @@ Characters with significant combat experience:
 
 ### Design Goal
 
-Stress should create tension and consequences without stealing player agency through arbitrary dice rolls.
+Stress should create tension and consequences without stealing player agency through arbitrary dice rolls. Players see it building and can make decisions—it's not a surprise "you panic" moment.
 
-### Proposed Approach: Visible Stress Accumulation
+### Stress Accumulation
 
-- Stressful events (taking fire, seeing allies wounded, horrific sights) add **Stress Points**
-- Players can see their stress level at all times
-- Approaching the **Breaking Point** is visible—players know they're at risk
-- At or past the breaking point, negative effects occur (shaking hands, panic, freezing)
-- Players can take actions to reduce stress (fall back, rally, use stims)
+Stress points accumulate from:
+- Taking fire (even misses)
+- Taking wounds (severity matters)
+- Seeing allies wounded
+- Seeing allies killed
+- Horrific sights
+- Extended combat without rest
+- Near-death experiences
 
-### Stress Tolerance
+Players can see their stress level **at all times**. Approaching a breakpoint is visible—players know they're at risk.
 
-- Raw recruits: Low tolerance, break easily
-- Experienced soldiers: Moderate tolerance
-- Veterans: High tolerance
-- Elite operators: May be immune to normal combat stress
+### Stress Thresholds by Experience
 
-### This Preserves Agency
+| Experience Level | Breakpoint 1 | Breakpoint 2 | Breakpoint 3 | Breakpoint 4 |
+|------------------|--------------|--------------|--------------|--------------|
+| Raw recruit | 20 | 35 | 50 | 65 |
+| Trained soldier | 40 | 60 | 80 | 100 |
+| Veteran | 70 | 100 | 130 | 160 |
+| Elite operator | Immune | Immune | 150 | 200 |
 
-Players see stress building and can make tactical decisions:
-- Pull back a stressed character before they break
-- Have the squad leader rally the team
-- Use medical intervention
-- Accept the risk and push forward
+*Numbers are illustrative—to be tuned through playtesting.*
+
+### Stress Reduction
+
+- **Rally**: Leader uses action to reduce squad stress
+- **Fall back**: Reaching safety reduces stress over time
+- **Stims**: Chemical suppression (temporary, may have side effects)
+- **Rest**: Extended rest between encounters clears stress
+
+### Agency Preservation
+
+The key is **visibility and choice**:
+- Players see stress building
+- Players can pull back stressed characters before they break
+- Players can have leaders rally the team
+- Players can choose to push through at risk
+- Breaking doesn't happen "suddenly" from a bad roll—it happens when accumulated stress crosses a visible threshold
 
 ---
 
@@ -318,27 +338,274 @@ Every item has weight and volume. Exceeding capacity:
 
 ---
 
+## Core Dice Mechanics
+
+### Design Philosophy
+
+This game is built exclusively for a digital VTT. There is no need to optimize for:
+- Physical dice rolling
+- Mental math
+- Memorizable formulas
+
+Instead, we optimize for:
+- **Gameplay outcomes** (formulas that produce the desired feel)
+- **Granularity** (fine-grained modifiers the VTT calculates automatically)
+- **Transparency through UI** (players see probabilities, not formulas)
+
+### Player Experience
+
+Players don't need to know the exact formulas. The VTT provides:
+- A **character builder** that lets players experiment with builds
+- **Comprehensive stats pages** showing how a character performs in various scenarios
+- **Real-time probability displays** during combat (chance to hit, expected damage, etc.)
+
+This allows us to use whatever mathematical structure produces the best gameplay, regardless of complexity.
+
+---
+
+## Hit Resolution System
+
+### The Body as Contiguous Mass
+
+When a player aims at a body part, they're not targeting an isolated hitbox—they're aiming at a region on a contiguous mass. Near-misses can hit adjacent regions.
+
+**Example:** Aiming for the eyes (small target, hard to hit):
+- Success: Hit the eyes
+- Near miss: Hit the head (still potentially lethal)
+- Poor shot: Hit the torso
+- Complete miss: Hit nothing
+
+**Example:** Aiming center-mass at an exposed torso:
+- Highest probability of hitting *something*
+- But if only stomach-up is exposed (enemy in cover), probabilities shift
+
+### Attack Resolution Inputs
+
+The algorithm considers:
+
+**Attacker factors:**
+- Relevant skill level
+- Weapon accuracy and type
+- Attack type (single shot, burst, aimed shot)
+- Attacker status (wounded, suppressed, moving)
+
+**Target selection:**
+- Specific body region aimed at
+- Size and position of that region
+- Adjacent regions that might be hit on near-miss
+
+**Defender factors:**
+- Body layout (humanoid standard, armored, augmented)
+- Armor and shields on each region
+- Defensive stats (agility, size)
+- Status (in cover, crouched, prone, moving)
+
+**Environmental factors:**
+- Range to target
+- Visibility conditions
+- Cover between attacker and defender
+
+### Resolution Output
+
+The system determines:
+1. **Did anything get hit?** (complete miss vs. some hit)
+2. **What region was hit?** (intended target or adjacent region)
+3. **Was it blocked/mitigated?** (armor, shields, cover)
+4. **What wound results?** (severity, type, effects)
+
+---
+
+## Wound System
+
+### Design Philosophy
+
+Wounds are not just "damage to HP." They are **specific injuries** with **specific effects**—physical, functional, and psychological.
+
+### Wound Categories
+
+#### Bleeding
+Wounds that cause blood loss over time.
+
+| Severity | Effect |
+|----------|--------|
+| Light | Slow bleed; ignorable short-term |
+| Moderate | Steady bleed; needs treatment within minutes |
+| Severe | Rapid bleed; needs immediate treatment or death |
+| Arterial | Critical; seconds to unconsciousness without tourniquet |
+
+**Blood Loss Track:** Characters have a blood meter. Multiple bleeds stack—more wounds = faster drain. Breakpoints impose escalating debuffs (weakness, dizziness, unconsciousness, death).
+
+#### Pain
+All wounds cause pain. Pain imposes penalties mitigated by character toughness.
+
+| Severity | Effect |
+|----------|--------|
+| Minor | Small penalty; tough characters shrug it off |
+| Moderate | Noticeable penalty; affects accuracy, focus |
+| Severe | Major penalty; hard to function |
+| Overwhelming | Incapacitating; only the toughest can act |
+
+#### Physical Impairment
+
+| Wound Type | Effect |
+|------------|--------|
+| Limping | Reduced movement speed |
+| Arm wound | Penalty to actions using that arm |
+| Hand wound | Severe penalty to fine manipulation |
+| Broken bone | Limb unusable until set/healed |
+| Lost limb | Permanent until augmentation |
+| Torso wound | General debuff, internal bleeding risk |
+
+#### Sensory Impairment
+
+| Wound Type | Effect |
+|------------|--------|
+| Blinded (temporary) | Flash, blood in eyes—clears with time |
+| Blinded (permanent) | Eye destruction—requires augmentation |
+| Deafened | Explosion, sonic—communication/awareness penalty |
+| Concussion | Disorientation, nausea, penalty to all actions |
+
+#### Critical/Fatal
+
+| Wound Type | Effect |
+|------------|--------|
+| Headshot | Fatal (unarmored) or severe trauma (armored) |
+| Heart shot | Fatal |
+| Spine hit | Paralysis or death |
+| Massive trauma | Limb destruction, torso breach—often fatal |
+
+### Morale Effects from Wounds
+
+Wounds also damage morale/stress:
+
+| Trigger | Stress Impact |
+|---------|---------------|
+| Taking any wound | Moderate stress |
+| Seeing ally wounded | Light stress |
+| Seeing ally killed | Heavy stress |
+| Taking severe wound | Heavy stress |
+| Near-death experience | Extreme stress |
+
+### Morale Breakpoints
+
+As stress accumulates, behavior becomes restricted:
+
+| Level | Name | Effect |
+|-------|------|--------|
+| 0 | Calm | Full agency |
+| 1 | Shaken | Unwilling to take *risky* maneuvers |
+| 2 | Stressed | Unwilling to advance; will hold position and fire |
+| 3 | Breaking | Will only take defensive actions; may freeze |
+| 4 | Broken | Cowers, flees, or surrenders |
+
+**Mitigation:**
+- Veterans have higher thresholds (or immunity)
+- Rally actions from leaders reduce stress
+- Stims can temporarily suppress effects
+- Reaching safety reduces stress over time
+
+---
+
+## Skill System
+
+### Design Philosophy: Skill Groups with Specializations
+
+Skills should reflect **transferable competence**. A rifleman picking up an SMG shouldn't be helpless—the core skills transfer. But a dedicated SMG specialist has advantages the rifleman lacks.
+
+### Structure
+
+```
+Skill Group (broad competence)
+└── Specialization (advanced techniques)
+```
+
+**Example: Firearms**
+```
+Firearms (base skill)
+├── Rifles (specialization)
+├── Pistols (specialization)
+├── SMGs (specialization)
+├── Shotguns (specialization)
+└── Precision Shooting (specialization)
+```
+
+A character with high **Firearms** can use any firearm competently. But a character with **Firearms + Precision Shooting** can account for bullet drop, wind, breathing rhythm—making long-range shots others can't.
+
+### How It Works
+
+- **Base skill** applies to all related actions
+- **Specialization** adds bonus for specific applications
+- Untrained in specialization = use base skill only
+- Advanced techniques may *require* specialization
+
+**Example:** 
+- Grunt rifleman (Firearms 60, no specializations): Can use sniper rifle at medium range, hits reasonably
+- Sniper (Firearms 60, Precision Shooting 40): At long range, accounts for environmental factors, lands shots the grunt can't
+
+### Skill Groups (Draft)
+
+**Combat**
+- Firearms → Rifles, Pistols, SMGs, Shotguns, Precision Shooting
+- Heavy Weapons → Support Weapons, Launchers, Emplaced Weapons
+- Melee → Blades, Bludgeons, Unarmed, Improvised
+- Throwing → Grenades, Knives, Improvised
+- Tactics → Squad Tactics, Breaching, Ambush, Defense
+
+**Technical**
+- Engineering → Mechanical, Electrical, Structural
+- Software → Programming, Hacking, AI Systems
+- Electronics → Sensors, Communications, ECM/ECCM
+- Demolitions → Breaching, Traps, Bomb Disposal
+- Security → Locks, Alarms, Safes, Countermeasures
+
+**Medical**
+- Medicine → First Aid, Combat Medicine, Surgery
+- Pharmacology → Drugs, Stims, Poisons
+- Cybernetics → Installation, Repair, Diagnostics
+
+**Piloting**
+- Spacecraft → Small Craft, Capital Ships, Docking
+- Atmospheric → Fixed Wing, Rotary, VTOL
+- Ground Vehicles → Wheeled, Tracked, Walkers
+- Drones → Recon, Combat, Utility
+
+**Social**
+- Persuasion → Negotiation, Diplomacy, Seduction
+- Deception → Lying, Disguise, Misdirection
+- Intimidation → Threats, Interrogation, Presence
+- Streetwise → Contacts, Black Market, Criminal Culture
+
+**Survival**
+- Awareness → Observation, Alertness, Search
+- Stealth → Concealment, Silent Movement, Camouflage
+- Navigation → Pathfinding, Tracking, Orienteering
+- Environment → Vacuum, Toxic, Extreme Temp, Zero-G
+
+---
+
 ## Open Questions
 
 1. **Turn Structure**: Initiative + Protective Reactions needs playtesting
-2. **Dice System**: Not yet specified (d20? d100? dice pools?)
-3. **Hit Location**: How detailed? (zones vs. specific body parts)
-4. **Vehicle Combat**: Separate rules needed
-5. **Space Combat**: Ship-scale rules needed
-6. **Progression System**: XP? Milestone? How do stats/skills improve?
-7. **NPC Stat Blocks**: How simplified for GM ease?
+2. **Exact Formulas**: Mathematical structure for hit resolution, wound severity
+3. **Vehicle Combat**: Separate rules needed
+4. **Space Combat**: Ship-scale rules needed
+5. **Progression System**: XP? Milestone? How do stats/skills/specializations improve?
+6. **NPC Stat Blocks**: How simplified for GM ease?
+7. **Wound Interaction**: How do multiple wounds compound?
 
 ---
 
 ## Next Steps
 
-1. Define core dice mechanic (what dice, what target numbers)
-2. Draft hit/wound resolution system
-3. Build skill list and consolidation groups
+1. Draft mathematical formulas for hit resolution
+2. Define complete wound type list with specific effects
+3. Finalize skill groups and specializations
 4. Design sample traits/perks
 5. Create equipment lists with stats
 6. Prototype combat encounter for playtesting
 
 ---
 
-*See also: [[game/design-notes-raw|Raw Design Notes]] for original brainstorming.*
+*See also:*
+- [[game/design-notes-raw|Raw Design Notes (Session 1)]]
+- [[game/design-notes-raw-2|Raw Design Notes (Session 2)]]*
