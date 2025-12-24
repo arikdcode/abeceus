@@ -1,21 +1,31 @@
 ---
-title: Welcome
+title: Abeceus System Wiki
 ---
 
-# Welcome to the Wiki
+# The Abeceus System
 
-This is your Obsidian-compatible wiki. Add your content here using standard Markdown and Obsidian features:
+A unary star system colonized by humans from Earth over a millennium ago. After **The Scream** severed contact with Earth, the colonists built a civilization from scratch across multiple worlds and moons.
 
-- **Wiki Links**: Use `[[Page Name]]` to link between pages
-- **Tags**: Add `#tag-name` anywhere or use frontmatter tags
-- **Folders**: Organize pages into folders as you like
+## Major Powers
 
-## Getting Started
+- **[[locations/atruna/index|Atruna]]** — The original colony world, cultural heart of the system
+- **[[locations/mesulea/index|Mesulea]]** — Gas giant empire, helium-3 hegemon
+- **[[locations/nuilea/index|Nuilea]]** — Rising power, industrial militarism
+- **[[locations/oziri/index|Oziri]]** — Pirate nation-state in an alien megastructure
+- **[[factions/freeholds|The Freeholds]]** — Inner-system third pole
 
-Create new `.md` files in this `wiki/` folder to add pages. The folder structure becomes your wiki's navigation.
+## The Setting
 
-## Example Links
+The Abeceus system is **gritty and realistic**, with believable economics and geopolitics. It's not fully dystopian—stability exists alongside localized brutality and systemic corruption. Logistics, doctrine, and budgets matter.
 
-- [[characters/index|Characters]]
+## Navigation
+
+- [[setting/index|Setting & Canon]]
 - [[locations/index|Locations]]
-- [[timeline/index|Timeline]]
+- [[factions/index|Factions]]
+- [[characters/index|Characters]]
+- [[technology/index|Technology]]
+- [[military/index|Military]]
+- [[projects/index|Projects]]
+- [[species/index|Species]]
+- [[stories/index|Stories]]
