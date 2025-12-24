@@ -30,4 +30,3 @@ A pirate clan operating from [[locations/oziri/index|Oziri]].
 
 - [[locations/oziri/the-hive|The Hive]] district (partial)
 - Hai Jun's Estate in [[locations/oziri/zirta|Zirta]]
-

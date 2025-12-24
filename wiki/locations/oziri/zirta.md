@@ -36,4 +36,3 @@ Docks are structured in a honeycomb pattern:
 | Industrial District | Lower city | Manufacturing |
 | Worker District | Lower city | Working class housing |
 | Slums | Lower city | The bottom of society |
-

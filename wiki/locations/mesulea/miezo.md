@@ -27,4 +27,3 @@ Early settlers sealed off the large limestone cave networks and used them for sh
 ## Minos Crater
 
 On the outward hemisphere lies the massive [[locations/mesulea/minos-crater|Minos Crater]]—a sealed atmospheric basin that is effectively opaque to scanning, rumored to host classified facilities.
-

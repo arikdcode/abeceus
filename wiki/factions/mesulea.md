@@ -35,4 +35,3 @@ See: [[military/mesulea|Mesulean Military]]
 ## Character
 
 Mesulea is not cartoon-evil, but it is willing to do terrible things when it believes survival and dominance require it.
-

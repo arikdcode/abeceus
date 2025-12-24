@@ -50,4 +50,3 @@ Hespen willingness to pay premium prices makes corridor windows economically exp
 - Governments: Strategic shock—new market, benchmark, destabilizer
 - Corporations: Once-in-a-lifetime customer
 - Oziri: Profit engine worth protecting
-

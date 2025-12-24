@@ -43,4 +43,3 @@ The station orbits the storm epicenter, caught in the angular winds of the storm
 ## Rumors
 
 Whispers of anomalous helium signatures, restricted sampling runs below standard safety depths, and quiet programs that treat The Fountain as more than just an industrial resource.
-

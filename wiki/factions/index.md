@@ -25,4 +25,3 @@ Political entities, governments, and organizations in the Abeceus system.
 ## Corporations
 
 - [[factions/corporations/index|Corporation Index]]
-

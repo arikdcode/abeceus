@@ -34,4 +34,3 @@ The event that severed the Abeceus system from Earth. Details TBD.
 - Mesulea as dominant power via helium-3 control
 - Nuilea as rising challenger
 - Discovery of the Oziri Corridor
-

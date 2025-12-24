@@ -15,7 +15,7 @@ The Abeceus system, from the star outward.
 | [[locations/atruna/index|Atruna]] | Planet | Earth-like, original colony |
 | [[locations/mesulea/index|Mesulea]] | Gas Giant | Largest, 113 moons, helium-3 source |
 | [[locations/nuilea/index|Nuilea]] | Gas Giant | Denser, 87 moons, rising power |
-| Ewei | Planet | (undeveloped) |
+| [[locations/ewei|Ewei]] | Planet | (undeveloped) |
 | [[locations/oziri/index|Oziri]] | Planet | Outermost, alien megastructure |
 
 ## Other Features

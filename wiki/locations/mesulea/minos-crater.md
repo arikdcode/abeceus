@@ -47,4 +47,3 @@ Minos is not impossible to enter—just an ordeal:
 - Short-range inertial navigation when sensors fail
 - Low-visibility descent or rim traversal
 - Timed windows when atmospheric activity calms
-

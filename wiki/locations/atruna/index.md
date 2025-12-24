@@ -33,4 +33,3 @@ The modern inhabitants of the wider Abecean system are descended from the origin
 ## Intelligence
 
 See: [[factions/atruna|Atrunean Intelligence Agency (AIA)]]
-

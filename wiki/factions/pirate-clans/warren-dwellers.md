@@ -15,4 +15,3 @@ A faction operating from [[locations/oziri/index|Oziri]].
 | Name | Role |
 |------|------|
 | James Lloyd | Dweller Boss |
-

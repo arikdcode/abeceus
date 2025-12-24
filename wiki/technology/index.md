@@ -21,3 +21,9 @@ The technological foundations of the Abeceus setting.
 | [[technology/mazer-relay-network|Mazer Relay Network]] | Nuilean beamed power |
 | [[technology/cads|CADs]] | Cognition Augmentation Devices |
 
+## Weapons & Equipment
+
+| Topic | Description |
+|-------|-------------|
+| [[technology/hydra-missiles|Hydra Missiles]] | Illegal countermeasure-defeating missiles |
+| [[technology/stealth-tiling|Stealth Tiling]] | Sensor signature reduction |

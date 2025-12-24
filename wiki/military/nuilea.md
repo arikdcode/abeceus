@@ -57,4 +57,3 @@ Nuilean ship design aligns with strategy:
 - Mesulean crews see Nuilean ships as "dangerous junk": too hot, too loud
 
 Both stereotypes are wrong in useful ways.
-

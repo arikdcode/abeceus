@@ -23,9 +23,9 @@ The largest gas giant in the system and seat of the **Mesulean Lunar Empire (MLE
 | Moon | Role |
 |------|------|
 | [[locations/mesulea/miezo|Miezo]] | Capital (2nd largest) |
-| Vierko | Industrial center (3rd largest) |
-| Klato | Financial capital (4th largest) |
-| Sume | Agricultural breadbasket (largest, terraformed atmosphere) |
+| [[locations/mesulea/vierko|Vierko]] | Industrial center (3rd largest) |
+| [[locations/mesulea/klato|Klato]] | Financial capital (4th largest) |
+| [[locations/mesulea/sume|Sume]] | Agricultural breadbasket (largest, terraformed atmosphere) |
 
 ## Helium-3
 
@@ -41,4 +41,3 @@ Mesulea's de facto monopoly on helium-3 gives them major leverage over their riv
 ## Government
 
 See: [[factions/mesulea|Mesulean Lunar Empire]]
-

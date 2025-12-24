@@ -68,4 +68,3 @@ Even limited output can:
 - Shift deterrence doctrine
 - Reduce Mesulea's coercive leverage
 - Create bargaining chips for corridor trade
-

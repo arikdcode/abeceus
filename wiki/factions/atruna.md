@@ -41,4 +41,3 @@ No formal process—operatives can deputize non-operatives. This means AIA opera
 ### Orphaned Networks
 
 Nodes can become disconnected, forming parallel NEXUS networks that occasionally rejoin. These subnetworks can post conflicting work orders, sometimes causing civil wars within the intelligence community.
-

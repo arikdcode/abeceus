@@ -31,4 +31,3 @@ They are positioned to become:
 ## Details TBD
 
 Culture, geography, and internal politics to be defined as the setting develops.
-

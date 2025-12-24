@@ -45,4 +45,3 @@ In hiding, Alexei continued experimenting on his own CAD:
 - Eventually his enhanced cognition allowed him to stabilize his emotional state
 
 *[Note: The Ascendant storyline that follows from this is non-canon]*
-

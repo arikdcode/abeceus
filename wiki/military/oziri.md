@@ -44,4 +44,3 @@ The battle-weary Atrunean populace forced withdrawal. Mesulea's subsequent block
 ## Current Posture
 
 Oziri does not seek to project power. It seeks to make coercion **too expensive to attempt**.
-

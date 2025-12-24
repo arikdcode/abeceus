@@ -67,4 +67,3 @@ Openly cynical and widely resented, but stable.
 | **Nuilea** | Opportunity and humiliation; pursues independence programs |
 | **Freeholds** | Essential as financiers and neutral facilitators |
 | **Belt/Clusters** | Hiring booms, security contracts, shipping surges |
-

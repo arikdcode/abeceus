@@ -34,4 +34,3 @@ A constellation of satellites exists at a defined radius around Mesulea:
 - Lighter, more efficient ships
 - Superior power-to-weight ratios
 - Better operational range and tempo
-

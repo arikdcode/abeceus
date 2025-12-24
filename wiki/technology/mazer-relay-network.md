@@ -56,4 +56,3 @@ The network's true topology is classified because **topology is capability**.
 MRN is Nuilea saying, in infrastructure:
 
 > *"We are building a future where your monopoly does not matter."*
-

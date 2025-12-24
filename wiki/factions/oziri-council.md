@@ -60,4 +60,3 @@ To survive, Oziri must secure food, water, air, medical supplies, replacement pa
 - Internal production
 
 Oziri looks less like a gang hideout and more like a **rough port-state**.
-

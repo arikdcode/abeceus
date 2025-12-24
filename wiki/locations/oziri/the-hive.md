@@ -8,13 +8,16 @@ tags:
 
 # The Hive
 
-A district on Oziri. Details to be expanded from source material.
+A district on [[locations/oziri/index|Oziri]], notable for its mix of industrial and residential areas.
 
 ## Known Areas
 
-- Agriculture Complex
-- Drug Lab
+- [[locations/oziri/agriculture-complex|Agriculture Complex]]
+- [[locations/oziri/drug-lab|Drug Lab]]
 - Habitation District
-  - Thakur's Place
-- Reagent Warehouse
+  - [[locations/oziri/thakurs-place|Thakur's Place]]
+- [[locations/oziri/reagent-warehouse|Reagent Warehouse]]
 
+## Factions
+
+The Hive is contested territory between the [[factions/pirate-clans/spike-reavers|Spike Reavers]] and the [[factions/pirate-clans/warren-dwellers|Warren Dwellers]].

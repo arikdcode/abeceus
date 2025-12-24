@@ -99,4 +99,3 @@ Human scholarship offers three compatible hypotheses:
 - Oziri's shell perfection aligns with redundancy-obsessed civilization
 - Corridor endpoint near Oziri aligns with anchors as required boundary conditions
 - Modern "FTL" (Hesper wormholes) is **compatibility-layer use** of an ancient lattice, not independent mastery
-

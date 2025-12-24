@@ -18,4 +18,3 @@ A space mining corporation focusing on aluminum.
 ## Alucorp Station
 
 Founded Alucorp Station at the barycenter of the densest asteroid group in the Belt. The station grew from a small dock with habitation module into the metropolitan center of the [[locations/clusters/index|Belt Cluster]].
-

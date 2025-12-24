@@ -51,4 +51,3 @@ Nuilea is not a monolithic dystopia:
 - Most citizens live ordinary lives in a stable, functioning state
 - Dark edges exist in compartmented programs and frontier labor regimes
 - Public politics is real: budgets, scandals, veterans, unions, corporate influence
-

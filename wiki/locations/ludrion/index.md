@@ -22,4 +22,3 @@ The innermost planet. Its proximity to Abeceus caused the crust to boil away ove
 Nuilea has begun industrializing Ludrion as part of the [[projects/janus|Janus II Project]]. The planet's position makes it ideal for:
 - Receiving beamed power from a future Dyson Swarm
 - Constructing satellites for proximal Abecean orbit
-

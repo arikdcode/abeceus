@@ -34,4 +34,3 @@ The full scope of Janus II remains classified. It is believed to have objectives
 ## Secrecy
 
 Were Mesulea to learn the full extent of Janus II, they would likely attempt to counter this threat to their hegemony.
-

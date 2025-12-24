@@ -28,12 +28,11 @@ Groups of giant cylindrical habitats with rotationally-induced artificial gravit
 ### Belt Cluster
 The innermost middle cluster. Freedom-loving miners who trade with the middle system. Most cosmopolitan—foreign ships frequently dock here.
 
-**Alucorp Station**: Founded by [[factions/corporations/alucorp|Alucorp]] at the barycenter of the densest asteroid group. Began as a dock with habitation module, grew into the metropolitan center of the Belt Cluster. Hotels, nightlife, corporate offices, consulates.
+**[[locations/clusters/alucorp-station|Alucorp Station]]**: Founded by [[factions/corporations/alucorp|Alucorp]] at the barycenter of the densest asteroid group. Began as a dock with habitation module, grew into the metropolitan center of the Belt Cluster. Hotels, nightlife, corporate offices, consulates.
 
-**Tiān Cylinder**: Constructed by the spacer union *Hànzú Láodòng zhě* ("Workers of the Han"). Chinese cultural heritage with evolved social conventions. Run by three prominent families.
+**[[locations/clusters/tian-cylinder|Tiān Cylinder]]**: Constructed by the spacer union *Hànzú Láodòng zhě* ("Workers of the Han"). Chinese cultural heritage with evolved social conventions. Run by three prominent families.
 
 ### Other Potential Clusters
 - Religious cluster
 - Harmony cluster (obsessed with perfect arrangement)
 - Academy cluster (giant space-based university)
-

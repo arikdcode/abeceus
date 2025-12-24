@@ -20,4 +20,3 @@ Corporations have complex relationships with the pirate factions:
 - Those doing business on Oziri are protected from raiding by the Council
 - Getting immunity status from the Council is politically tricky
 - Different factions have different interests in any given corporation
-
