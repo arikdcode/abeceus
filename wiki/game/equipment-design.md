@@ -55,150 +55,22 @@ Not everything is available everywhere:
 
 ---
 
-## Manufacturer Profiles (Draft)
+## Manufacturers
 
-These are **design sketches**—establishing character and niche, not final stats.
+For detailed profiles of all manufacturers and corporations, see: **[[game/manufacturers|Manufacturers & Corporations]]**
 
-### Hammerstar Industries
+Equipment comes from recognizable sources. Major manufacturers have distinct design languages—visual, auditory, and functional signatures. A few examples:
 
-**Origin:** Nuilea  
-**Niche:** Military-grade kinetic weapons  
-**Character:** Brutal, reliable, industrial
+| Manufacturer | Alignment | Niche | Character |
+|--------------|-----------|-------|-----------|
+| **Hammerstar** | Nuilea | Military kinetics | Brutal, reliable |
+| **Angelico** | Atruna | Energy weapons | Elegant, expensive |
+| **Sabine** | Freeholds | Modular gear | Practical, repairable |
+| **VTC** | Mesulea | Stealth/infiltration | Covert, restricted |
+| **Picard** | Atruna | Cybernetics | Cutting-edge, invasive |
+| **Oziri Clans** | Oziri | Custom work | Bespoke, variable |
 
-Hammerstar builds weapons for wars of attrition. Their designs prioritize stopping power and durability over elegance. A Hammerstar rifle will fire in mud, vacuum, or after being dropped from a transport—and when it hits, targets stay down.
-
-**Signature Traits:**
-- Heavy recoil, heavy damage
-- Overbuilt construction—survives abuse
-- Loud, distinctive report (experienced soldiers recognize it)
-- Limited customization options
-- Affordable for military contracts, expensive for civilians
-
-**Iconic Products:**
-- Battle rifles (standard infantry weapon for Nuilean forces)
-- Anti-materiel rifles
-- Squad support weapons
-- Shipboard point-defense guns
-
----
-
-### Angelico Arms
-
-**Origin:** Atruna  
-**Niche:** Premium energy weapons  
-**Character:** Elegant, precise, expensive
-
-Angelico builds weapons for those who can afford the best. Their energy weapons punch through conventional armor with terrifying efficiency, and their fit-and-finish is unmatched. But they're temperamental, require specialized maintenance, and the power cells are proprietary.
-
-**Signature Traits:**
-- Armor-penetrating beam/pulse weapons
-- Sleek white-and-chrome aesthetic
-- Expensive to buy, expensive to maintain
-- Proprietary ammunition/cells (vendor lock-in)
-- Struggles against energy-dispersing shields
-- Near-silent firing signature
-
-**Iconic Products:**
-- Laser rifles and carbines
-- Plasma sidearms
-- Precision beam weapons for snipers
-- Cutting tools repurposed as weapons
-
----
-
-### Sabine Industries
-
-**Origin:** Freeholds (Belt Cluster)  
-**Niche:** Modular, maintainable equipment  
-**Character:** Practical, adaptable, no-frills
-
-Sabine doesn't make the best anything—they make equipment that works everywhere and can be fixed with whatever's on hand. Modular designs, standardized parts, open-source schematics. Belters and independent operators love them; military procurement officers find them "adequate."
-
-**Signature Traits:**
-- Highly modular (swap barrels, stocks, optics easily)
-- Uses common parts and ammunition
-- Field-repairable by anyone with basic skills
-- Mediocre baseline performance
-- Ugly but functional aesthetic
-- Aftermarket modification community
-
-**Iconic Products:**
-- Configurable carbine platform
-- Multi-tool utility kits
-- Vacuum-rated equipment
-- Repair and salvage gear
-
----
-
-### Void Technology Corporation (VTC)
-
-**Origin:** Mesulea  
-**Niche:** Stealth and infiltration  
-**Character:** Covert, sophisticated, morally ambiguous
-
-VTC makes equipment for people who aren't supposed to be there. Their stealth systems, suppressed weapons, and electronic warfare tools are found in the hands of spies, assassins, and special operations units across the system. They don't advertise, and their customer list is classified.
-
-**Signature Traits:**
-- Integrated stealth features
-- Suppressed/silent operation
-- Compact, concealable designs
-- Expensive, restricted availability
-- Often illegal to possess
-- Minimal external branding
-
-**Iconic Products:**
-- Suppressed pistols and SMGs
-- Thermal masking suits
-- Electronic intrusion tools
-- Micro-drones for surveillance
-
----
-
-### Picard Enterprises
-
-**Origin:** Atruna  
-**Niche:** Augmentation and cybernetics  
-**Character:** Cutting-edge, transhumanist, unsettling
-
-Picard pushes the boundaries of human enhancement. Their cybernetics are more capable than anyone else's—and more invasive. Military augmentation, neural interfaces, combat prosthetics. Users report exceptional performance and occasional existential dread.
-
-**Signature Traits:**
-- Best-in-class cybernetic performance
-- Requires neural integration (invasive installation)
-- Proprietary maintenance and updates
-- Expensive long-term commitment
-- Some products are legally restricted
-- Users are sometimes... different afterward
-
-**Iconic Products:**
-- Combat augmentation packages
-- Neural targeting systems
-- Prosthetic limbs (military-grade)
-- Sensory enhancement implants
-
----
-
-### Oziri Clan Workshops
-
-**Origin:** Oziri (various clans)  
-**Niche:** Custom strike craft and personal weapons  
-**Character:** Bespoke, variable quality, distinctive
-
-Not a corporation but a category—the pirate clans of Oziri produce their own equipment, often hand-crafted or modified from salvage. Quality varies wildly between clans and individual smiths. But the best Oziri work rivals anything in the system, and carries the maker's personal signature.
-
-**Signature Traits:**
-- Hand-crafted, often unique pieces
-- Quality ranges from garbage to masterwork
-- Reputation of the maker matters enormously
-- Often incorporates trophies or decorative elements
-- No standardization—parts aren't interchangeable
-- Carries social meaning within clan culture
-
-**Iconic Products:**
-- Custom sidearms (status symbols)
-- Modified strike craft
-- Boarding weapons (axes, breaching tools)
-- Improvised explosives
+The full manufacturers document covers 40+ corporations across defense, aerospace, electronics, medical, industrial, and consumer sectors.
 
 ---
 
@@ -496,4 +368,3 @@ Different operations require different equipment:
 ---
 
 *See also: [[game/game-design-document|Game Design Document]] for core mechanics.*
-
