@@ -11,6 +11,12 @@ tags:
 
 A massive crater on [[locations/mesulea/miezo|Miezo]] (Mesulea's capital moon), famous for being **operationally unreadable** at distance.
 
+## Concept Art
+
+| Orbital View | Black-Site Entrance (Annex 4) |
+|--------------|-----------------------------|
+| ![Minos Crater from Orbit](assets/locations/mesulea/minos-crater-orbit-v3.png) | ![Minos Crater Black-Site Entrance](assets/locations/mesulea/minos-crater-entrance.png) |
+
 ## Why Observation Fails
 
 - **Atmospheric isolation**: Rim traps a dense, stratified gas layer

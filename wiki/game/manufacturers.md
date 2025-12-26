@@ -1359,4 +1359,3 @@ Fast freight and courier services for time-sensitive cargo. When something absol
 ---
 
 *See also: [[game/equipment-design|Equipment Design]] for equipment categories and philosophy.*
-

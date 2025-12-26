@@ -59,6 +59,22 @@ tags:
 
 You can open the `wiki/` folder directly in Obsidian as a vault for a nice editing experience. Your edits will hot-reload in the browser.
 
+## Image Generation
+
+The wiki includes a script to generate concept art using OpenAI's DALL-E 3.
+
+### Setup
+The project uses a virtual environment and a `.env` file for the API key.
+1. The virtual environment is located at `venv/`.
+2. The API key is stored in `.env` (ignored by git).
+
+To use the script manually:
+```bash
+./venv/bin/python3 scripts/generate_image.py "A futuristic city" "wiki/assets/city.png"
+```
+
+---
+
 ## Requirements
 
 - Docker & Docker Compose
