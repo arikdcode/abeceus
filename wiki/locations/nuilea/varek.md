@@ -29,6 +29,19 @@ Early colonization priorities were simple: **survival**. Varek offered:
 
 Other moons had better mineral deposits, but minerals don't matter if you starve. Varek kept the first settlers alive, and that head start made it the natural capital.
 
+## Orbital Infrastructure
+
+Varek has a **large orbital dock complex**—the second-largest in the Nuilean system after [[locations/nuilea/korvus|Korvus]]. While Korvus handles bulk industrial cargo, Varek's facilities are optimized for:
+
+- **Passenger traffic**: Civilian transport, government shuttles, diplomatic arrivals
+- **High-value cargo**: Pharmaceuticals, precision instruments, sensitive materials
+- **Military logistics**: Fleet support, personnel rotation, classified shipments
+- **Interplanetary commerce**: Trade delegations, corporate shipping, imports from Atruna and beyond
+
+The orbital docks are also home to several **corporate headquarters** and **trade offices** that prefer to operate in orbit rather than on the surface.
+
+---
+
 ## Modern Character
 
 Varek today is the administrative, cultural, and service center of Nuilea—but it's not purely a capital of bureaucrats. It's a complete society with its own economic base.

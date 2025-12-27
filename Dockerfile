@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y git && \
 # The wiki content will be mounted at /quartz/content
 VOLUME /quartz/content
 
-EXPOSE 8080
+EXPOSE 5050
 
 # Default to dev server with hot-reload
-CMD ["npx", "quartz", "build", "--serve", "--port", "8080"]
+CMD ["npx", "quartz", "build", "--serve", "--port", "5050"]

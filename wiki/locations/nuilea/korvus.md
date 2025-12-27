@@ -37,6 +37,16 @@ The decision to build tritium infrastructure on Korvus rather than Varek was par
 
 ## Modern Operations
 
+### Orbital Infrastructure
+
+Korvus has the **largest orbital dock complex in the Nuilean system**—necessary to handle the sheer volume of raw materials coming in and finished goods going out.
+
+- **Import Capacity**: Raw ore from [[locations/nuilea/tervok|Tervok]], [[locations/nuilea/ledov|Ledov]], and [[locations/ludrion/index|Ludrion]]; components from across the system
+- **Export Capacity**: Finished ships, weapons systems, munitions, chemicals, modules
+- **Scale**: Dwarfs [[locations/nuilea/varek|Varek's]] orbital facilities; designed for bulk freighters and industrial logistics rather than passenger traffic
+
+The orbital docks operate around the clock. Freighters queue for loading and unloading berths. Tugs shuttle containers between ships and surface elevators. The traffic never stops.
+
 ### The Orbital Yards
 
 Massive drydock complexes in orbit where Nuilea's warships are assembled. This is where "dirty fusion" vessels are born—the tritium-reactor workhorses that form the backbone of Nuilean naval power.

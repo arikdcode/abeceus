@@ -36,6 +36,22 @@ Nuilean strategy is not about outbuilding Mesulea symmetrically. It's about **br
 
 ---
 
+## Orbital Infrastructure
+
+Every inhabited moon in the Nuilean system has some form of orbital facility—the scale varies with the settlement's size and function.
+
+| Moon | Orbital Facility | Purpose |
+|------|------------------|---------|
+| [[locations/nuilea/korvus\|Korvus]] | **Massive** dock complex | Bulk industrial imports/exports, freighter traffic |
+| [[locations/nuilea/varek\|Varek]] | **Large** dock complex | Passenger traffic, high-value cargo, military logistics |
+| [[locations/nuilea/ledov\|Ledov]] | Medium facility | Ice hauler operations, water distribution |
+| [[locations/nuilea/tervok\|Tervok]] | Medium facility | Ore export, refinery support |
+| [[locations/nuilea/vostok\|Vostok]] | Military station | Fleet staging, customs inspection, MRN node |
+
+Smaller settlements across the 87 moons have proportionally smaller facilities—ranging from full stations to simple docking platforms.
+
+---
+
 ## The Two Pillars
 
 The Nuilean system is built around **two major moons** that together house the vast majority of the population and economic activity.

@@ -2,7 +2,7 @@ services:
   wiki:
     build: .
     ports:
-      - "8080:8080"
+      - "5050:5050"
     volumes:
       - ./wiki:/quartz/content
       - ./quartz.config.ts:/quartz/quartz.config.ts
