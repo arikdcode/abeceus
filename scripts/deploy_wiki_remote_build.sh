@@ -46,42 +46,25 @@ ssh $EC2_HOST << 'ENDSSH'
 cd ~/scifi-wiki
 # Remove old public directory
 rm -rf public
-# Temporarily change port to avoid conflict with nginx (5050)
-sed -i 's/5050:5050/5051:5050/' docker-compose.yml
-# Pull latest images and build
-docker compose up --build -d
-echo "Waiting for Quartz build to complete..."
-# Wait for the build to finish
-for i in {1..60}; do
-    sleep 2
-    # Check if container is still running and if public directory exists inside it
-    if docker compose ps | grep -q "Up"; then
-        # Check if the build has completed by looking for the success message in logs
-        if docker compose logs 2>&1 | grep -q "Started a Quartz server"; then
-            echo "✓ Build completed successfully"
-            break
-        fi
-    else
-        echo "ERROR: Container exited unexpectedly"
-        docker compose logs --tail=50
-        exit 1
-    fi
-    if [ $i -eq 60 ]; then
-        echo "ERROR: Build timed out after 120 seconds"
-        docker compose logs --tail=50
-        exit 1
-    fi
-done
-# Copy the built files from the container to the host
-echo "Copying built files from container..."
-docker compose cp wiki:/quartz/public ./public
-# Stop the container
-docker compose down
-# Restore original docker-compose.yml
-sed -i 's/5051:5050/5050:5050/' docker-compose.yml
+# Run the build (runs once and exits, no port needed)
+docker compose -f docker-compose.build.yml up --build
+# Copy files from the stopped container
+CONTAINER_ID=$(docker compose -f docker-compose.build.yml ps -aq | head -1)
+if [ -z "$CONTAINER_ID" ]; then
+    echo "ERROR: Could not find build container"
+    exit 1
+fi
+docker cp ${CONTAINER_ID}:/quartz/public ./public
+# Clean up
+docker compose -f docker-compose.build.yml down
 # Fix permissions
 chmod -R 755 public
-echo "✓ Files copied successfully"
+# Verify build
+if [ ! -d "public" ] || [ ! "$(ls -A public)" ]; then
+    echo "ERROR: Build failed, no files in public/ directory"
+    exit 1
+fi
+echo "✓ Build completed successfully"
 ENDSSH
 
 # Step 4: Create nginx configuration

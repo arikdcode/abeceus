@@ -1,0 +1,12 @@
+services:
+  wiki-build:
+    build: .
+    volumes:
+      - ./wiki:/quartz/content
+      - ./quartz.config.ts:/quartz/quartz.config.ts
+      - ./quartz.layout.ts:/quartz/quartz.layout.ts
+    # Just build - output stays in container
+    command: ["npx", "quartz", "build"]
+    environment:
+      - NODE_ENV=production
+
