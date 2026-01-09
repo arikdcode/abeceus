@@ -42,7 +42,7 @@ See: [[organizations/aia|Atrunean Intelligence Agency (AIA)]]
 
 ### [[atruna/azure-reach|Azure Reach Resort]]
 
-Once the premier diplomatic resort in the system, now a permanent military quarantine zone following a catastrophic bioweapon incident in 12 ABY. 
+Once the premier diplomatic resort in the system, now a permanent military quarantine zone following a catastrophic bioweapon incident in 12 ABY.
 
 **Official Story:** An Oziri terrorist attack killed all 5,800 people inside. There were no survivors. The site remains sealed due to environmental contamination.
 

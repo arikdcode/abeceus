@@ -11,6 +11,9 @@ tags:
 
 A once-luxurious coastal resort on Atruna's western continent, now a sealed quarantine zone and a grim reminder of the dangers of intelligence operations on neutral ground.
 
+![Azure Reach Resort - before the incident](/assets/locations/atruna/azure-reach-resort.png)
+*Azure Reach in its glory days: cliffside villas, pristine beaches, crystal waters. What lurks in the shadows would change everything.*
+
 ## Overview
 
 Azure Reach was built 140 years ago on a pristine stretch of Atrunean coastline, featuring white sand beaches, turquoise waters, and dramatic cliff-side villas. For over a century, it served as the premier meeting place for diplomats, executives, and elites from across the system. The resort's neutral location and reputation for discretion made it ideal for backdoor negotiations and informal summits.
