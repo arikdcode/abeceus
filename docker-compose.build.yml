@@ -9,4 +9,3 @@ services:
     command: ["npx", "quartz", "build"]
     environment:
       - NODE_ENV=production
-

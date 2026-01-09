@@ -37,3 +37,9 @@ See: [[polities/atruna|Atruna (Polity)]]
 ## Intelligence
 
 See: [[organizations/aia|Atrunean Intelligence Agency (AIA)]]
+
+## Notable Locations
+
+### [[atruna/azure-reach|Azure Reach Resort]]
+
+Once the premier diplomatic resort in the system, now a permanent quarantine zone following a devastating bioweapon incident in 12 ABY. The tragedy killed over 3,200 people and fundamentally altered intelligence operations across the system. The abandoned resort remains a grim monument to the dangers of covert operations on neutral ground.

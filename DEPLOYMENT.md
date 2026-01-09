@@ -186,3 +186,4 @@ If you have questions or issues, review the nginx logs and check that:
 1. The security group rule is in place
 2. The nginx config is linked and nginx was reloaded
 3. The `public/` directory has files in it
+

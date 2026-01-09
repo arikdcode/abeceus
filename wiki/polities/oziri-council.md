@@ -116,3 +116,31 @@ Outside windows, Oziri reverts to its normal pattern:
 - Opportunistic raiding (carefully bounded)
 - Factional feuds contained to non-critical zones
 - Commerce as the constant glue holding it together
+
+## Reputation and International Relations
+
+### The Azure Reach Shadow
+
+The [[timeline/azure-reach-incident|Azure Reach Incident]] (12 ABY) remains the most significant stain on Oziri's international reputation. The bioweapon outbreak at [[atruna/azure-reach|Azure Reach Resort]] killed over 3,200 people, and forensic analysis suggested the pathogen originated from Oziri research programs.
+
+**Oziri's Official Position:**
+- Complete denial of involvement
+- Claims evidence was planted to frame them
+- Suggests the weapon could have originated from Mesulean or Nuilean black programs
+- Points to their cooperation with the investigation as proof of innocence
+
+**International Perception:**
+- Most powers believe Oziri was involved, even if accidentally
+- The incident validated existing fears about Oziri bioweapon programs
+- Led to increased economic sanctions and travel restrictions
+- Damaged relationships with neutral trading partners
+- Made corporate immunity negotiations more difficult
+
+**Impact on Oziri:**
+- Prompted internal Council debates about covert weapons programs
+- Some factions pushed to abandon bioweapon research entirely
+- Others saw it as proof that better operational security was needed
+- Led to purges of intelligence operatives suspected of compromising the operation
+- Increased Oziri's reliance on the Freeholds as trading intermediaries
+
+The incident crystallized the system's view of Oziri as inherently dangerous and untrustworthy, regardless of the truth of their involvement. This perception continues to shape diplomatic and economic relations decades later.

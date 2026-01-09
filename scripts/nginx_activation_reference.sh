@@ -31,3 +31,4 @@ echo "7. From your local machine, test:"
 echo "   curl -I http://54.202.116.205:5050"
 echo ""
 echo "================================================"
+
