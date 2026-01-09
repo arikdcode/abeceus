@@ -42,4 +42,10 @@ See: [[organizations/aia|Atrunean Intelligence Agency (AIA)]]
 
 ### [[atruna/azure-reach|Azure Reach Resort]]
 
-Once the premier diplomatic resort in the system, now a permanent quarantine zone following a devastating bioweapon incident in 12 ABY. The tragedy killed over 3,200 people and fundamentally altered intelligence operations across the system. The abandoned resort remains a grim monument to the dangers of covert operations on neutral ground.
+Once the premier diplomatic resort in the system, now a permanent military quarantine zone following a catastrophic bioweapon incident in 12 ABY. 
+
+**Official Story:** An Oziri terrorist attack killed over 4,100 people. The site remains sealed due to environmental contamination.
+
+**The Truth:** A rogue AIA cell developed an incomplete mind-control pathogen that was released by a fanatical operative after the program was shut down. Everyone inside was infected. The infected are still alive after 140+ years, sustained by secret government supply drops while being studied. The Atrunean government fabricated evidence to blame Oziri and has killed numerous people to maintain the cover-up.
+
+The site represents Atruna's darkest secret - a crime against thousands of foreign nationals on neutral ground, hidden by an elaborate conspiracy that has become the foundation of a lie the entire system believes.

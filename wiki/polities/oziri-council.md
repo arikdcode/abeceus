@@ -119,28 +119,60 @@ Outside windows, Oziri reverts to its normal pattern:
 
 ## Reputation and International Relations
 
-### The Azure Reach Shadow
+### The Azure Reach Frame Job
 
-The [[timeline/azure-reach-incident|Azure Reach Incident]] (12 ABY) remains the most significant stain on Oziri's international reputation. The bioweapon outbreak at [[atruna/azure-reach|Azure Reach Resort]] killed over 3,200 people, and forensic analysis suggested the pathogen originated from Oziri research programs.
+The [[timeline/azure-reach-incident|Azure Reach Incident]] (12 ABY) remains the most devastating blow to Oziri's reputation - made worse by the fact that **they were completely innocent**.
 
-**Oziri's Official Position:**
-- Complete denial of involvement
-- Claims evidence was planted to frame them
-- Suggests the weapon could have originated from Mesulean or Nuilean black programs
-- Points to their cooperation with the investigation as proof of innocence
+The bioweapon outbreak at [[atruna/azure-reach|Azure Reach Resort]] infected over 4,100 people and resulted in a permanent quarantine. The Atrunean government's investigation concluded the pathogen originated from Oziri bioweapon research.
+
+**The Truth:**
+The pathogen was Atrunean, developed by a rogue AIA cell in an unauthorized mind-control program. When the operation failed catastrophically, the Atrunean government fabricated evidence and framed Oziri to hide their own guilt.
+
+**Oziri's Position (Actually Correct):**
+- Complete denial of involvement - they had no such bioweapon program
+- Claims evidence was planted to frame them - it was
+- Points out Oziri lacked the scientific sophistication for such a weapon at that time - true
+- Suggests the weapon could have originated from another power's black program - it did (Atruna's)
+- Maintains the investigation was a sham designed to reach a predetermined conclusion - correct
 
 **International Perception:**
-- Most powers believe Oziri was involved, even if accidentally
-- The incident validated existing fears about Oziri bioweapon programs
+Despite Oziri being innocent, the framing was successful:
+- Most powers believe Oziri was involved, at minimum through negligence
+- The incident "validated" existing prejudices about Oziri
 - Led to increased economic sanctions and travel restrictions
 - Damaged relationships with neutral trading partners
-- Made corporate immunity negotiations more difficult
+- Made corporate immunity negotiations significantly more difficult
+- Positioned Oziri as the system's pariah and convenient scapegoat
 
 **Impact on Oziri:**
-- Prompted internal Council debates about covert weapons programs
-- Some factions pushed to abandon bioweapon research entirely
-- Others saw it as proof that better operational security was needed
-- Led to purges of intelligence operatives suspected of compromising the operation
+- Prompted internal Council debates about whether to develop bioweapons defensively
+- Some factions pushed to actually create bioweapon programs in response
+- Others argued focusing on proving their innocence was more important
+- Led to expanded intelligence operations seeking proof of the frame job
 - Increased Oziri's reliance on the Freeholds as trading intermediaries
+- Deepened Oziri paranoia about conspiracy and persecution - which proved justified
 
-The incident crystallized the system's view of Oziri as inherently dangerous and untrustworthy, regardless of the truth of their involvement. This perception continues to shape diplomatic and economic relations decades later.
+### The Investigation That Never Was
+
+Oziri has conducted its own investigations over 140 years:
+- Multiple intelligence operatives lost attempting to infiltrate Azure Reach
+- Evidence gathered suggesting the infected are still alive inside
+- Reports of ongoing Atrunean supply drops to the "abandoned" zone
+- Forensic analysis showing the pathogen markers are inconsistent with Oziri capabilities at that time
+- Witness testimony from individuals who later died in "accidents"
+
+Despite accumulating evidence of Atrunean guilt, Oziri has never been able to prove it conclusively. The few times they've come close, witnesses died or evidence disappeared.
+
+### The Bitter Reality
+
+The Azure Reach Incident crystallized the system's view of Oziri as inherently dangerous and untrustworthy - based entirely on a lie. This perception continues to shape diplomatic and economic relations decades later.
+
+**The Irony:**
+- Oziri is punished for a bioweapon program they never had
+- Atruna maintains its neutral ground status through the very deception that destroyed Oziri's reputation
+- Other powers privately suspect the truth but find Oziri's guilt politically convenient
+- Oziri's insistence on their innocence is dismissed as "what they would say anyway"
+
+Some Council factions argue that since they're being punished for bioweapons anyway, they might as well actually develop them. Others maintain that doing so would make the false narrative true and vindicate the frame job.
+
+The incident remains a source of bitter resentment and drives much of Oziri's antagonistic relationship with the rest of the system.

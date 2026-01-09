@@ -27,108 +27,265 @@ At its peak, Azure Reach hosted 2,000 guests and employed a staff of 800. The co
 
 ### The Outbreak (12 ABY)
 
-On Founding Day 12 ABY, during the height of the summer diplomatic season, an unknown pathogen was released within the resort's main conference center. Within 6 hours, the first cases presented with severe hemorrhagic fever. Within 24 hours, the entire resort was in crisis.
+On Founding Day 12 ABY, during the height of the summer diplomatic season, a pathogen was released throughout the resort's environmental systems. Within 6 hours, the first cases presented with severe symptoms. Within 24 hours, the entire resort was in crisis.
 
 Initial symptoms:
 - High fever and flu-like presentation
 - Rapid progression to hemorrhagic symptoms
-- Neurological complications (paranoia, aggression, seizures)
-- 78% mortality rate among symptomatic cases
+- Severe neurological complications (paranoia, extreme aggression, loss of inhibition)
+- Personality fragmentation and psychotic episodes
 - Highly contagious via airborne and fluid transmission
 
-The Atrunean government, with support from Mesulean and Nuilean medical teams, enacted an immediate quarantine. Military units sealed all access routes. No one was permitted to leave the quarantine zone.
+The Atrunean government enacted an immediate quarantine. Military units sealed all access routes. No one was permitted to leave the quarantine zone.
 
-### The Response
+### The Official Story
 
-The quarantine lasted 94 days. Of the approximately 5,800 people within the zone (guests, staff, and townspeople):
-- 4,100 contracted the pathogen
-- 3,200 died
-- 1,700 survived (700 never contracted the disease, 1,000 recovered)
-- Unknown number died from other causes (resource shortages, violence, suicide)
+According to the Atrunean government's official report:
+- The pathogen was a weaponized agent developed by Oziri terrorists
+- An Oziri operative infiltrated the resort and released it during the diplomatic season
+- The attack was designed to destabilize neutral ground and sow chaos
+- Of the approximately 5,800 people within the zone, all contracted the pathogen
+- Only 1,700 survived the initial outbreak (evacuated after 94 days)
+- 4,100+ died during the quarantine period
+- The survivors underwent 6 months of medical observation before being cleared
 
-The survivors were relocated to a secure medical facility where they underwent 6 months of observation. All were eventually cleared and released, though many never fully recovered psychologically.
+Oziri vehemently denied all involvement. International investigators found the evidence "suggestive but not conclusive." The case remains officially unsolved.
 
-### The Investigation
+### The Truth
 
-The investigation revealed:
-- The pathogen was a weaponized hemorrhagic fever agent
-- It had been modified for increased transmissibility
-- Genetic markers suggested Oziri bioweapon research, but evidence was circumstantial
-- The release was likely accidental, from a compromised intelligence operative
-- Multiple intelligence services had operations running at the resort during the incident
+The official story is a lie. The pathogen was Atrunean.
 
-Oziri denied all involvement. The investigation was inconclusive, but the incident severely damaged Oziri's reputation and led to increased international pressure on their covert programs.
+**Project SUBVERSION** was an unauthorized black ops program run by a rogue cell within the [[organizations/aia|Atrunean Intelligence Agency]]. The goal: develop a pathogen that would make infected individuals receptive to subliminal commands and suggestion while appearing neurologically normal.
 
-### Theories and Rumors
+The plan was elegant in its horror:
+- Foreign leaders and diplomats would stay at Azure Reach
+- Environmental systems would expose them to the pathogen
+- They would return home, unknowingly compromised
+- Atrunean intelligence could then manipulate them through carefully crafted stimuli
+- Atruna's declining power could be arrested through covert control of other governments
 
-Various theories circulate about the true nature of the incident:
-- **Intelligence Gone Wrong**: A Nuilean or Mesulean operative was attempting to recover or destroy Oziri bioweapon samples when containment failed
-- **Deliberate Attack**: One power deliberately released the weapon to target specific diplomatic figures, but the pathogen proved far more virulent than expected
-- **Oziri Test**: The release was intentional, testing the weapon under real conditions while maintaining plausible deniability
-- **The Survivor**: Some claim one of the cleared survivors is actually still a carrier, a biological time bomb walking free in the system
+When Emperor Tashen IV discovered the program, he ordered it terminated immediately. But the intelligence cell had already gone too far to stop.
+
+**The Final Act:**
+
+Senior Intelligence Officer Valen Morrec, a zealous nationalist, believed the program was Atruna's only hope against being eclipsed by Mesulea and Nuilea. When the shutdown order came, he made a choice.
+
+The scientific team refused to release an unfinished pathogen - it had severe, uncontrolled side effects. Morrec executed four scientists and fled with viable samples. He infiltrated Azure Reach's environmental systems and released the pathogen into the resort.
+
+The virus spread to everyone in the facility. But it didn't create compliant puppets. The infected descended into violent psychosis while retaining basic cognitive function - they could find food, operate equipment, and organize into crude hierarchies. But they killed any uninfected person on sight with savage brutality.
+
+Morrec died in the initial chaos, murdered by infected staff he had created. The program's research was destroyed by surviving scientists before their own infection took hold.
+
+### The Cover-Up
+
+The Atrunean government faced an impossible situation:
+- A diplomatic catastrophe on neutral ground
+- Thousands of foreign nationals dead or infected
+- Evidence of an illegal bioweapon program
+- Potential collapse of Atruna's neutral status
+
+The decision was made at the highest levels: **blame Oziri**.
+
+- Evidence was fabricated pointing to Oziri bioweapon research
+- The story of a terrorist infiltration was constructed
+- International investigators were given access to curated intelligence
+- The few Atrunean officials who knew the truth were sworn to secrecy or eliminated
+- Records of Project SUBVERSION were destroyed
+
+But the cover-up required an additional, darker decision.
+
+### The Living Quarantine
+
+The infected did not die. The pathogen stabilized after the initial outbreak, leaving approximately 4,100 people alive but irrevocably insane. They remain at Azure Reach to this day.
+
+**What the Government Discovered:**
+- The infected are sustained by the pathogen itself - their aging has slowed dramatically
+- They form crude social structures, operating the resort to meet basic needs
+- They show coordinated hunting behavior against intruders
+- They exhibit signs of collective behavior that suggests residual connection to the pathogen's original mind-control mechanisms
+- Some infected show varying degrees of lucidity - moments where their original personality surfaces before being subsumed again
+
+**Current Operations:**
+
+The Atrunean military maintains the quarantine under the pretense of environmental contamination. In reality:
+- Automated systems airdrop food and medical supplies monthly
+- Remote sensors monitor the infected population
+- Specialized research teams conduct long-term study via drones and sensors
+- The government is searching for a cure, or a way to complete the original programming
+- The Emperor himself does not know the full scope - only a handful of senior AIA officers remain aware
+
+**Casualties and Truth:**
+
+The "1,700 survivors" never existed. Everyone in the zone was infected. The survivor story was fabricated to explain away the diplomatic personnel who vanished. Their families were told they died in the outbreak. Some were paid off. Others had unfortunate accidents when they asked too many questions.
+
+**The Death Toll:**
+- Security forces who initially entered the quarantine: 140 killed
+- Journalists who got too close to the truth: 6 confirmed, more suspected
+- Atrunean officials who opposed the cover-up: unknown number
+- AIA scientists who tried to reveal the truth: 3 confirmed dead
+- Civilians who breached the perimeter: dozens over the years
+
+### Suspicions and Investigations
+
+Despite the official story, many suspect the truth is darker:
+
+**Oziri's Position:**
+- They maintain complete innocence and lack any bioweapon program of this sophistication
+- They point out the evidence appeared too conveniently
+- Some Oziri factions conduct their own investigations, but Atrunean intelligence actively sabotages them
+
+**Mesulea and Nuilea:**
+- Both powers have intelligence suggesting Atrunean involvement
+- Neither has conclusive proof, and both benefit from keeping Oziri as the system's pariah
+- Some intelligence officers suspect the infected are still alive but have no evidence
+- Unofficial doctrine treats the official story as "useful fiction"
+
+**The Freeholds:**
+- Several independent investigations have gotten uncomfortably close to the truth
+- Two journalists were killed in "accidents" after publishing preliminary findings
+- The Freeholds generally believe Atruna is hiding something but lack resources to prove it
+
+**Conspiracy Theories:**
+- The infected are still alive (TRUE, but dismissed as paranoid fantasy)
+- The pathogen was meant as a mind-control weapon (TRUE, but considered absurd)
+- The Atrunean government is studying the infected (TRUE, but "impossible to maintain such secrecy")
+- Some infected have escaped and are living in normal society (FALSE, but popular in horror media)
 
 ## Current Status
 
 ### The Quarantine Zone
 
-Azure Reach remains under permanent quarantine. The Atrunean military maintains a perimeter, though it is lightly staffed - mostly automated sensor grids and periodic patrols. The official position is that the pathogen may remain viable in the environment, though most scientists believe this is unlikely after 140 years.
+Azure Reach remains under permanent military quarantine. The Atrunean government maintains an extensive perimeter:
+- Multiple rings of automated defense systems
+- Regular aerial patrols via drone
+- Advanced sensor networks monitoring all activity
+- Heavy military presence at checkpoints
+- Shoot-on-sight authorization for perimeter breaches
 
-The site has become frozen in time:
-- Hotels and villas remain as they were, now heavily weathered
-- Personal effects of guests and staff still in rooms
-- Restaurants with table settings laid out
-- The harbor full of abandoned yachts, slowly rotting
-- Overgrown gardens and pools full of stagnant water
-- Documents and equipment left behind in the chaos
+The official position is that environmental contamination makes the site too dangerous to enter. The real reason: the infected are still inside, alive and active.
+
+### Inside the Zone
+
+The infected population has been surviving for over 140 years. Drone surveillance and remote sensors reveal a disturbing picture:
+
+**Population:** Approximately 3,800 infected remain alive (down from 4,100 initial). The pathogen appears to slow aging dramatically - most infected show physical appearance consistent with only 20-30 years of aging despite over a century passing.
+
+**Behavior Patterns:**
+- The infected maintain the resort in a crude fashion, operating generators, securing food storage
+- They form hierarchical groups, with "alpha" individuals controlling territories
+- They communicate through a mix of distorted speech and animalistic vocalizations
+- They display coordinated hunting behavior when intruders are detected
+- Moments of disturbing lucidity have been documented - infected completing complex tasks or speaking coherently before relapsing
+
+**How They Survive:**
+- Monthly airdrops of food, water, and medical supplies (disguised as environmental monitoring equipment)
+- The resort's industrial food storage and aquaculture systems are still partially operational
+- Some infected display knowledge of equipment maintenance
+- Greenhouse facilities in the villa compounds produce limited fresh food
+- The pathogen itself appears to reduce metabolic needs
+
+**The Resort:**
+- Main buildings show signs of ongoing habitation - fires, crude repairs, makeshift barriers
+- Some areas are heavily damaged from violence and decay
+- Others are eerily maintained, as if staff still operated them
+- The harbor's yachts have been repurposed as shelters and watchtowers
+- Clearwater Valley town is mostly ruins, with infected using it as a secondary territory
 
 ### Access Restrictions
 
-Entry to the zone is officially prohibited. In practice:
-- Military checkpoints at all road and coastline approaches
-- No-fly zone enforced by automated defense systems
-- Perimeter intrusion results in immediate interception
-- Penalties for trespass are severe (5-20 years imprisonment)
+Entry to the zone is absolutely prohibited:
+- Multiple military checkpoints on all approaches
+- Naval patrols along the coastline
+- No-fly zone enforced by automated defense systems and fighter patrols
+- Attempted entry is met with immediate lethal force
+- Officially: 20+ years imprisonment for trespass
+- Actually: Intruders who reach the perimeter are typically disappeared
 
-### Unofficial Activity
+### The Reports
 
-Despite the restrictions, there are reports of:
-- **Scavengers** entering to retrieve valuables left behind
-- **Researchers** (both official and corporate) seeking samples
-- **Dark tourists** visiting the site as a morbid attraction
-- **Intelligence services** using it as a meeting point precisely because it's off-limits
-- **Cults** treating the site as somehow cursed or blessed
+Despite heavy suppression, reports leak out:
+- **Lights moving in the buildings** at night (REAL - the infected are active)
+- **Coordinated movements** of figures visible from offshore (REAL - hunting parties)
+- **Sounds** of distorted voices and screams (REAL - the infected communicate)
+- **Disappearances** of boats that stray too close (REAL - infected have killed maritime intruders)
+- **Government supply drops** happening regularly (REAL - but officially denied)
 
-Some claim to have seen lights in the buildings at night, or heard sounds from within the zone. These are generally dismissed as sensor glitches or trespassers.
+The Atrunean government aggressively suppresses these reports:
+- Witnesses are discredited, threatened, or paid off
+- Media outlets are pressured not to publish stories
+- Independent investigators face legal harassment
+- Some witnesses have simply vanished
+
+### Breaches and Casualties
+
+Over 140 years, there have been numerous breaches:
+
+**Scavengers:** Dozens have tried to loot the resort. Few return. Those who do report "things that used to be people" hunting them through the buildings. Most are dismissed as traumatized or lying.
+
+**Intelligence Operations:** Mesulean and Nuilean intelligence have attempted infiltration to gather evidence. At least 8 confirmed operatives have been lost inside the zone. Their bodies were later recovered showing signs of extreme violence.
+
+**Researchers:** Several scientific expeditions attempted to enter, seeking pathogen samples. None succeeded. Two teams were entirely lost.
+
+**Dark Tourists:** The resort has morbid appeal. Over the years, at least 30 civilians have attempted to enter. Body counts vary. Some are intercepted by military. Others make it inside and are never seen again.
+
+**The Breach of 67 ABY:** A group of Freehold journalists managed to evade the perimeter and entered with recording equipment. They transmitted footage for approximately 40 minutes before going silent. The footage showed:
+- Infected individuals moving through the resort
+- Evidence of ongoing habitation
+- A coordinated assault by infected on the journalists' position
+- Final transmission: screaming and pleas for help
+
+The Atrunean government seized all copies of the transmission and arrested anyone who possessed it. The journalists were officially declared "missing, presumed dead in accident." Three family members who demanded answers died in "unrelated incidents" over the following year.
 
 ## Cultural Impact
 
 ### The Azure Reach Accords
 
 In the aftermath of the incident, all major powers signed the Azure Reach Accords, establishing:
-- Restrictions on bioweapon research and stockpiling
+- Restrictions on bioweapon research and stockpiling (widely ignored)
 - Intelligence oversight mechanisms (largely toothless)
 - Protocols for outbreak response on neutral territory
 - Compensation framework for civilian casualties in covert operations
 
-The Accords are widely seen as a symbolic gesture that did little to constrain actual intelligence operations.
+The Accords are cynically viewed as theater. Every major power knows the Atrunean explanation is suspect, but the Accords allow them to pretend otherwise while pursuing their own covert programs.
 
 ### In Popular Culture
 
-Azure Reach has become a cultural touchstone:
-- Symbol of the dangers of unchecked intelligence operations
-- Horror stories and conspiracy theories
-- Several films and documentaries
-- "Going to Azure Reach" as slang for a situation spiraling out of control
-- Memorial services held annually by survivors and families
+Azure Reach has become a dark legend:
+- Symbol of intelligence operations spiraling catastrophically out of control
+- Subject of countless horror stories, conspiracy theories, and urban legends
+- "Going to Azure Reach" as slang for a doomed situation
+- Horror films depicting the infected as mindless monsters (closer to truth than people realize)
+- Conspiracy media claiming the infected are still alive (dismissed as paranoid fantasy, despite being true)
+- Annual memorial services for families of victims (who don't know their loved ones still technically "live")
+
+**Common Cultural Tropes:**
+- "The things at Azure Reach" - referring to the infected as something no longer human
+- Nightmare imagery of luxury resorts as death traps
+- Stories of lone survivors escaping the quarantine zone (entirely fictional, as no one escapes)
+- Romance tragedies of lovers separated by the outbreak
 
 ### Political Legacy
 
-The incident fundamentally altered the political landscape:
-- Strengthened distrust of Oziri across the system
-- Led to Atruna demanding greater oversight of intelligence activities on its soil
-- Prompted Mesulea and Nuilea to expand their own biodefense programs
-- Made neutral-ground diplomacy more difficult, as no location felt truly safe
-- Contributed to the militarization of the Freeholds, who saw it as proof that the great powers could not be trusted
+The incident permanently altered system politics:
+
+**For Atruna:**
+- Reinforced image as neutral ground defender, despite being the actual perpetrator
+- Strengthened Atrunean intelligence services, who leveraged the crisis to expand power
+- Created a permanent secret that could destroy Atruna's diplomatic standing if revealed
+- Led to doctrine of "plausible elimination" for those who get too close to the truth
+
+**For Oziri:**
+- Devastating blow to reputation, despite complete innocence
+- Provided justification for increased economic sanctions
+- Made Oziri the system's convenient scapegoat
+- Strengthened Oziri's paranoia about frame jobs and conspiracies (which proved justified)
+
+**System-Wide:**
+- All powers expanded biodefense and bioweapon programs
+- Neutral-ground diplomacy became more difficult
+- Intelligence services became more careful about domestic operations
+- Created precedent for blaming Oziri when operations go wrong
+- Contributed to Freehold militarization and distrust of great powers
 
 ## Geography
 
@@ -161,11 +318,42 @@ Erected just outside the quarantine perimeter, the obelisk lists the names of al
 
 ## Adventure Hooks
 
-- **Retrieval Mission**: PCs hired to infiltrate the zone and recover specific documents/data from the conference complex
-- **Medical Mystery**: New outbreak elsewhere shows similar pathogen markers; samples from Azure Reach needed for vaccine development
-- **Dark Tourism**: PCs escort or track a group attempting to visit the site illegally
-- **The Survivor**: A cleared survivor from the incident begins showing symptoms; PCs must determine if this is a new outbreak or something else
-- **Intelligence Operation**: One power believes another is using the zone as a covert research facility
-- **Scavenger Rights**: Competing groups of scavengers, PCs must navigate the dangers both environmental and human
-- **The Truth**: Investigation into what really happened, with evidence suggesting the official story is incomplete
+### Infiltration Missions
 
+**"The Vault Retrieval"**: PCs are hired (by foreign intelligence or private interests) to infiltrate Azure Reach and recover specific documents from the underground conference complex. The data could prove Atrunean involvement or reveal other state secrets. They must evade military patrols, breach the perimeter, navigate a decaying resort full of infected, and extract before they're killed by either threat.
+
+**"The Sample"**: A corporation or foreign power needs pathogen samples for vaccine research (or weaponization). The PCs must infiltrate, locate infected individuals or viable samples, secure them, and escape. Complications: the infected hunt in packs, the military is watching, and extraction becomes a nightmare.
+
+**"Recovery and Retrieval"**: A high-ranking official's family member was at Azure Reach when it happened. They want definitive proof of death or, terrifyingly, confirmation if they're still alive inside. The PCs must locate a specific infected individual among thousands and bring back evidence. Moral question: do they reveal that their target is still "alive" but irreversibly insane?
+
+### Investigation & Conspiracy
+
+**"The Journalist's Legacy"**: The PCs acquire fragments of the seized footage from the 67 ABY breach. They must investigate what happened, determine the truth, and decide whether to expose it. Atrunean intelligence is actively hunting anyone with copies. The conspiracy goes deeper than they know.
+
+**"The Whistleblower"**: An aging AIA scientist who worked on the original cover-up contacts the PCs. They're dying and want the truth revealed. They'll provide evidence and access codes, but Atrunean intelligence will stop at nothing to silence them and anyone they've contacted.
+
+**"The Pattern"**: A foreign intelligence service has noticed patterns in Atrunean supply shipments. They hire the PCs to investigate, leading to the discovery that supplies are being sent into the "abandoned" quarantine zone. Following this thread reveals the infected are still alive and being maintained.
+
+### Survival Horror
+
+**"Breach"**: The PCs are at Azure Reach on a legitimate mission (perhaps unaware of the true danger) when something goes catastrophically wrong. They find themselves inside the perimeter with infected hunting them. They must survive, escape, and deal with the knowledge that what they saw contradicts everything they were told.
+
+**"Containment Failure"**: Intelligence suggests infected may have breached the perimeter. The PCs must track down and eliminate escaped infected before they spread the pathogen - or before the Atrunean government eliminates everyone who knows about the breach, including the PCs.
+
+**"Dark Tourism Gone Wrong"**: The PCs are hired to extract a group of wealthy thrill-seekers who broke into Azure Reach and are now trapped. Rescue mission becomes survival horror as they discover the infected are far more dangerous and organized than anyone outside the government knows.
+
+### Military & Government
+
+**"Black Site Inspection"**: The PCs are Atrunean military or intelligence, assigned to routine perimeter patrol or supply drop. They're not supposed to know the truth, but circumstances force them to enter the zone or witness something that can't be explained by the official story. Now they must decide: maintain the cover-up or risk everything for truth?
+
+**"Termination Protocol"**: Atrunean intelligence learns that Mesulean or Nuilean operatives are planning a major infiltration to gather proof. The PCs are sent to intercept and eliminate them - but discover the infiltrators have legitimate evidence of Atrunean guilt. Do they complete the mission or help expose their own government?
+
+**"The Cure"**: Atrunean intelligence has made a breakthrough - a potential cure or a way to complete the original programming. The PCs are part of a team sent to test it on infected subjects. They must capture specific infected, administer the treatment, and observe results. Things go wrong when they realize some infected remember who they were and what was done to them.
+
+### Moral Complexity
+
+**"Mercy or Murder?"**: The PCs discover that a loved one (family member, old friend, former colleague) was at Azure Reach and is still alive inside, infected. Do they attempt a rescue knowing there's no cure? Do they try to end their suffering? Do they leave them to their fate?
+
+**"The Ethics of Study"**: The PCs learn the truth about the ongoing research and supply drops. The infected are essentially prisoners in an open-air laboratory, kept alive for study. Some in the government want to terminate them all to hide the evidence. The PCs must decide whether the research justifies the horror, or if the infected should be euthanized.
+
+**"Witness Elimination"**: The PCs are approached by someone who has proof of the conspiracy - or they themselves are the witnesses. Now Atrunean intelligence is hunting them. They must stay alive long enough to expose the truth, escape to safety, or negotiate some kind of deal. But the government has killed for this secret before and will again.
