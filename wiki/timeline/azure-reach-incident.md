@@ -89,6 +89,18 @@ The infected did not die. The pathogen stabilized, leaving approximately 4,100 p
 
 The military quarantine's real purpose: contain the infected while they're studied for the pathogen's **anti-aging properties**.
 
+### Valen Morrec Lives
+
+The AIA's official report claims Morrec died in the outbreak. **He didn't.**
+
+Morrec retained far more cognitive function than other infected. His military and intelligence training made him terrifyingly effective even in his twisted state. Over decades, he rose to dominate the infected population, coordinating their movements with tactical precision.
+
+The AIA eventually discovered he was alive and, after failed attempts to eliminate him, negotiated a dark bargain: Morrec helps them study the infected in exchange for supplies and equipment.
+
+What the AIA doesn't know: Morrec has been planning his escape for decades. He's excavated a tunnel nearly to the perimeter. He's made contact with Oziri pirates. He's prepared evidence that could expose everything.
+
+Within 18 months, Valen Morrec will attempt to escape, reach an Oziri extraction ship, and release proof of the entire conspiracy. If he succeeds, the system will burn.
+
 ### The Immortality Conspiracy
 
 The mind-control program failed. But the pathogen's unintended side effect - dramatically slowed aging - is potentially the most valuable discovery in human history.
@@ -163,6 +175,7 @@ As of current date:
 - **The Political Question**: Would exposing the truth serve justice or cause system-wide chaos?
 - **The Practical Question**: What happens if the infected breach containment?
 - **The Conspiracy Question**: How many people have been killed to maintain this lie?
+- **The Morrec Question**: Can anyone stop him before he escapes? Should they?
 
 ## Related
 

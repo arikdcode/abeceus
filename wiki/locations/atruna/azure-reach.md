@@ -79,7 +79,7 @@ The scientific team refused to release an unfinished pathogen - it had severe, u
 
 The virus spread to everyone in the facility. But it didn't create compliant puppets. The infected descended into violent psychosis while retaining basic cognitive function - they could find food, operate equipment, and organize into crude hierarchies. But they killed any uninfected person on sight with savage brutality.
 
-Morrec died in the initial chaos, murdered by infected staff he had created. The program's research was destroyed by surviving scientists before their own infection took hold.
+Morrec himself was infected. The official AIA report states he died in the initial chaos. **This is a lie.**
 
 ### The Cover-Up
 
@@ -110,6 +110,99 @@ The infected did not die. The pathogen stabilized after the initial outbreak, le
 - They show coordinated hunting behavior against intruders
 - They exhibit signs of collective behavior that suggests residual connection to the pathogen's original mind-control mechanisms
 - Some infected show varying degrees of lucidity - moments where their original personality surfaces before being subsumed again
+
+### Valen Morrec Lives
+
+The AIA's official internal report claims Valen Morrec died in the initial outbreak chaos. This is false. Morrec survived his own infection - and unlike most infected, he retained far more of his cognitive function.
+
+**The Infected King:**
+
+Morrec's background as a senior intelligence officer and military veteran gave him skills that translated terrifyingly well to his new existence. While most infected operate on instinct and fragmented memory, Morrec retained his tactical brilliance, his ability to plan, and his capacity for manipulation.
+
+Over the decades, he rose to dominance among the infected:
+- He coordinates hunting parties with military precision
+- He organizes the infected into functional units
+- He maintains the resort's critical infrastructure
+- He has established a crude hierarchy with himself at the apex
+- Other infected defer to him through a mix of fear and the pathogen's residual collective programming
+
+Morrec is not sane. The pathogen has twisted his mind, amplifying his paranoia, his nationalism, and his capacity for violence. But he is **functional** in a way no other infected has achieved. He can hold conversations. He can plan. He can remember.
+
+**The AIA's Dark Bargain:**
+
+Approximately 40 years after the outbreak, the AIA discovered Morrec was still alive and lucid. After several disastrous attempts to eliminate him, they made a pragmatic decision: negotiate.
+
+The current arrangement:
+- Morrec helps the AIA study the infected population
+- He provides tissue samples from deceased infected
+- He reports on the pathogen's long-term effects on his own cognition
+- He maintains enough order among the infected to prevent mass escape attempts
+- In exchange, the AIA provides him with specific supplies, equipment, and information
+
+The relationship is deeply uncomfortable. Morrec is a mass murderer and a monster. But he's also the only window into understanding the infected from the inside. The AIA officers who maintain contact with him describe the experience as "negotiating with a rabid wolf that somehow learned to speak."
+
+**Morrec's Psychology:**
+
+Morrec genuinely believed he was saving Atruna when he released the pathogen. In his twisted mind, he was a patriot making the ultimate sacrifice. When the AIA covered up the incident and blamed Oziri, he expected to be remembered as a hero once the truth eventually emerged.
+
+Instead, he was erased. Left to rot with his victims. Forgotten by the nation he destroyed himself for.
+
+140 years of infection, isolation, and betrayal have transformed his fanatical nationalism into something darker: **hatred**. He despises the AIA. He despises Atruna. He despises the Immortality Consortium that profits from his victims' suffering while leaving him to die in a quarantine zone.
+
+He wants revenge. And he's been planning it for decades.
+
+### Operation EXODUS
+
+The AIA doesn't know it, but Morrec has been playing them for years.
+
+**The Tunnel:**
+
+Using infected labor coordinated over decades, Morrec has been excavating a tunnel from the resort's underground conference complex ("The Vault") toward the perimeter. The work is painstakingly slow - the infected can only dig during periods of lucidity, and progress is measured in meters per year.
+
+The tunnel is now approximately 200 meters from breaching the quarantine perimeter. At current pace, it will be complete within 18 months.
+
+**The Operational Plan:**
+
+Morrec's military training hasn't faded. He's developed a sophisticated extraction plan:
+
+1. **Breach**: Tunnel emerges 3km from the perimeter, in a blind spot between sensor arrays
+2. **Diversion**: Infected create multiple disturbances at the perimeter to draw military response
+3. **Insertion**: Morrec and a small team of the most functional infected move through the tunnel
+4. **Target**: The spec-ops spaceport 12km from the quarantine zone - lightly defended, used for covert supply runs
+5. **Seizure**: Ambush and eliminate spaceport personnel, seize a shuttle
+6. **Extraction**: Rendezvous with allied vessel in low Atruna orbit
+
+**The Oziri Connection:**
+
+Morrec's masterstroke: he's made contact with Oziri pirates.
+
+Using equipment obtained through his "cooperation" with the AIA, Morrec managed to send encrypted transmissions beyond the quarantine zone. He reached out to Oziri intelligence with an offer they couldn't refuse:
+
+*Help me escape, and I'll give you everything. Documentation proving the pathogen was Atrunean. Evidence of the cover-up. Names of AIA officers involved. Proof that Oziri was framed.*
+
+For Oziri, this is the opportunity of a century. Definitive evidence that could destroy Atruna's credibility and potentially collapse the entire diplomatic order of the system.
+
+An Oziri pirate vessel, operating under false transponder codes, now maintains periodic orbit around Atruna. They're waiting for Morrec's signal.
+
+**What Morrec Wants:**
+
+Morrec's goals have evolved beyond simple revenge:
+- **Expose the truth**: Burn Atruna's reputation to the ground
+- **Destroy the Consortium**: Release evidence of the immortality research to the public
+- **Freedom**: Live what remains of his twisted life outside the quarantine
+- **Legacy**: Be remembered as the man who brought down the system's greatest lie
+
+He doesn't care about the chaos this will cause. He doesn't care about the infected he'll leave behind. He doesn't care about the geopolitical consequences.
+
+He just wants them all to suffer like he has.
+
+**The Ticking Clock:**
+
+The AIA has no idea how close Morrec is to executing his plan. They believe their arrangement with him is stable. They don't know about the tunnel. They don't know about the Oziri contact.
+
+Within 18 months, Valen Morrec will either escape and burn the system down - or something will stop him.
+
+This is perhaps the most dangerous secret in Azure Reach: not just what happened 140 years ago, but what's about to happen next.
 
 **The Real Prize: Immortality**
 
@@ -404,3 +497,19 @@ The bitter irony: most of the names on the obelisk belong to people who are stil
 **"Breakthrough"**: The Consortium's research has achieved a breakthrough - they've isolated the anti-aging mechanism and are ready to test a refined version. The PCs are hired (or stumble into) either protecting the test subjects, sabotaging the test, or stealing the formula. The implications are staggering: if it works, immortality becomes real - but only for those who can afford it.
 
 **"The Insider"**: A disillusioned member of the Consortium contacts the PCs. They've grown disgusted by what they've been part of and want to expose everything. But the Consortium has members in every major power, and the insider doesn't know who to trust. The PCs must protect them long enough to release the truth - while being hunted by assassins from every faction.
+
+### The Morrec Situation
+
+**"First Contact"**: The PCs are AIA operatives assigned to the Azure Reach liaison team - the handful of people who maintain contact with Valen Morrec. Their job is to negotiate, gather intelligence, and keep the arrangement stable. But something feels wrong. Morrec is too cooperative. Too helpful. What is he planning?
+
+**"The Tunnel"**: Intelligence suggests unusual seismic activity beneath the quarantine zone. The PCs are sent to investigate - and discover evidence of excavation. Someone is digging out. The race begins to find and collapse the tunnel before Morrec completes his escape route.
+
+**"Intercept"**: Oziri pirate communications have been decoded. A vessel is planning a covert rendezvous in Atruna orbit. The PCs must intercept, board, and discover what cargo - or passenger - they're expecting to pick up. What they learn changes everything.
+
+**"Operation EXODUS"**: The tunnel is complete. Morrec is moving. The PCs are the rapid response team scrambling to stop a breakout that could destabilize the entire system. They must fight through infected, reach the spaceport before Morrec, and prevent the shuttle from launching. Failure means the truth comes out - catastrophically.
+
+**"The Other Side"**: The PCs are Oziri operatives. Their mission: extract Valen Morrec from quarantine and bring him - and his evidence - back to Oziri space. They're helping a monster escape, but the evidence he carries could finally clear Oziri's name after 140 years of false blame. Is justice worth unleashing Morrec on the system?
+
+**"Morrec's Gambit"**: Morrec has escaped. He's released partial evidence to the press, causing chaos. Now he's offering to sell the rest - the complete documentation of the Immortality Consortium - to the highest bidder. Every faction wants him: dead, captured, or allied. The PCs are caught in a system-wide manhunt for the most dangerous man alive.
+
+**"The Interview"**: A journalist or researcher has arranged, through extraordinary means, to interview Valen Morrec inside the quarantine zone. The PCs are hired as security. But Morrec has his own agenda for this meeting - and the PCs may be pawns in a game they don't understand.
