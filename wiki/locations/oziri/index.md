@@ -34,6 +34,14 @@ The carbon weave's flexibility coupled with the tensile and shear strengths of t
 
 The shell was constructed by the **[[species/vey|Vey]]**—a long-vanished alien civilization. Other than the phenomenal displays of civil engineering and material sciences, no other sign of the shell makers' technology has been found. No sign of what caused them to abandon Oziri has been found either.
 
+### The Anchor
+
+Deep beneath the shell lies the true heart of Oziri: the **[[technology/vey-anchor|Vey Anchor]]** - a contained primordial singularity that serves as both eternal power source and the geometric foundation that allows the [[projects/oziri-corridor|Oziri Corridor]] to stabilize nearby.
+
+The Vey modified the micro black hole in ways human physics considers impossible, creating a "regulated naked singularity" whose exposed spacetime effects form a socket for the ancient transit lattice. This is why Oziri cannot be ignored - it is a nexus, the only point in Abecean space where interstellar wormholes can connect.
+
+Human expeditions into the deeper layers have met with limited success. The few who descended too far toward the core returned changed - or didn't return at all. The pirates rule Oziri's upper tunnels, but something else governs the depths.
+
 ## Background
 
 Aside from the remarkable megafortress hidden beneath the surface, Oziri is lacking in many critical resources required for a self-sufficient industrial base. This lack of useful materials coupled with its remoteness made it an unattractive target for early government colonization projects.

@@ -16,9 +16,11 @@ This single constraint reshapes the entire system's geopolitics.
 
 ## Why Near Oziri?
 
-Abeceans don't fully understand why, but the corridor endpoint requires local stability conditions that exist only in Oziri's vicinity. This is consistent with:
-- Hespen transit tapping into an older alien lattice
-- Oziri containing a stabilizing "anchor" structure (built by the [[species/vey|Vey]])
+The corridor endpoint requires specific spacetime geometry that exists only in Oziri's vicinity. This is not coincidence - it is architecture.
+
+Deep within Oziri lies the **[[technology/vey-anchor|Vey Anchor]]**: a contained primordial singularity modified by the [[species/vey|Vey]] into a "regulated naked singularity." The exposed spacetime effects create precise boundary conditions that the ancient transit lattice recognizes as a valid endpoint.
+
+In simple terms: Oziri is a station on a rail network the Vey built millions of years ago. The Hespers who use the corridor are traveling on infrastructure they didn't create. The corridor *must* connect near Oziri because that's where the socket is.
 
 **Consequence**: Oziri gets first contact by default.
 

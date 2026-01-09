@@ -84,6 +84,14 @@ The planetary shell does three things:
 2. **Containment and hygiene** — Filters biological, radiological, and informational hazards
 3. **Hardening** — Survives extreme assault to prevent node failure
 
+### The Anchor Core
+
+At the heart of Oziri lies the **[[technology/vey-anchor|Vey Anchor]]** - a primordial micro black hole modified into a "regulated naked singularity." The Vey suppressed the event horizon in controlled regions, allowing the singularity's spacetime-warping effects to leak into normal space in precise geometric patterns.
+
+This exposed geometry creates the boundary conditions required for the transit lattice to connect - a socket into which wormhole endpoints can lock. The anchor also serves as Oziri's eternal power source, harvesting energy through Hawking radiation, the Penrose process, and gravitational gradient conversion.
+
+The anchor has functioned autonomously for millions of years and will likely continue for millions more. Humans can detect it, theorize about it, but not comprehend or control it.
+
 ## Why They're Gone (Ambiguous)
 
 Human scholarship offers three compatible hypotheses:
