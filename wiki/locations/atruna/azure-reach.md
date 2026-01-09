@@ -16,7 +16,7 @@ A once-luxurious coastal resort on Atruna's western continent, now a sealed quar
 
 ## Overview
 
-Azure Reach was built 140 years ago on a pristine stretch of Atrunean coastline, featuring white sand beaches, turquoise waters, and dramatic cliff-side villas. For over a century, it served as the premier meeting place for diplomats, executives, and elites from across the system. The resort's neutral location and reputation for discretion made it ideal for backdoor negotiations and informal summits.
+Azure Reach was built over a century ago on a pristine stretch of Atrunean coastline, featuring white sand beaches, turquoise waters, and dramatic cliff-side villas. For decades, it served as the premier meeting place for diplomats, executives, and elites from across the system. The resort's neutral location and reputation for discretion made it ideal for backdoor negotiations and informal summits.
 
 At its peak, Azure Reach hosted 2,000 guests and employed a staff of 800. The complex included:
 - 12 luxury hotels and villa compounds
@@ -97,6 +97,40 @@ The decision was made at the highest levels: **blame Oziri**.
 - The few Atrunean officials who knew the truth were sworn to secrecy or eliminated
 - Records of Project SUBVERSION were destroyed
 
+**The Death of Emperor Tashen IV:**
+
+Emperor Tashen IV, who had originally shut down Project SUBVERSION, died under suspicious circumstances within a year of the Azure Reach incident. The official cause was a sudden illness. 
+
+The truth: Tashen IV had moral qualms about the cover-up that were proving inconvenient. He threatened to reveal the truth rather than let an innocent faction be blamed for such a catastrophe. His death was almost certainly not natural.
+
+His son, the current Emperor, proved far more malleable. He was brought into the conspiracy, accepted the necessity of the cover-up, and later became a willing participant in the Immortality Consortium. The current Emperor knows everything - and has blood on his hands.
+
+### The Road to War
+
+The Azure Reach cover-up didn't just hide a crime - it lit the fuse that would explode into the [[setting/oziri-conflict|Oziri Conflict]].
+
+**The Tipping Point:**
+
+Pirate raids from Oziri had been escalating for years, creating tension between the inner powers and the pirate haven. But the Azure Reach incident provided something more powerful than economic grievance: **moral outrage**.
+
+The fabricated evidence portrayed Oziri as not just raiders, but as terrorists willing to deploy bioweapons against civilians on neutral ground. The "5,800 dead" became a rallying cry. Public opinion shifted from "Oziri is a nuisance" to "Oziri must be destroyed."
+
+For the Atrunean government, this was convenient beyond measure. The cover-up required a villain, and making Oziri that villain served multiple purposes:
+- It explained the massacre without implicating Atruna
+- It channeled public grief into support for military action
+- It gave Atruna and Mesulea the political cover they needed for invasion
+
+**Consequences:**
+
+The joint Mesulean-Atrunean invasion of Oziri that followed was the most devastating war in Abecean history:
+- Tens of thousands dead on both sides
+- Atruna depleted and weakened, losing its position as dominant power
+- Mesulea bloodied and humiliated by the failed campaign
+- Oziri transformed from pirate haven to de facto sovereign state
+- The power vacuum enabled [[locations/nuilea|Nuilea]] to rise as a major power
+
+Valen Morrec didn't just infect a resort. His actions triggered a chain of events that reshaped the entire political order of the Abeceus system.
+
 But the cover-up required an additional, darker decision.
 
 ### The Living Quarantine
@@ -105,7 +139,7 @@ The infected did not die. The pathogen stabilized after the initial outbreak, le
 
 **What the Government Discovered:**
 - The infected are sustained by the pathogen itself - **their aging has slowed dramatically**
-- After 140+ years, most infected appear to have aged only 20-30 years physically
+- After over seven decades, most infected appear to have aged only 15-20 years physically
 - They form crude social structures, operating the resort to meet basic needs
 - They show coordinated hunting behavior against intruders
 - They exhibit signs of collective behavior that suggests residual connection to the pathogen's original mind-control mechanisms
@@ -147,7 +181,7 @@ Morrec genuinely believed he was saving Atruna when he released the pathogen. In
 
 Instead, he was erased. Left to rot with his victims. Forgotten by the nation he destroyed himself for.
 
-140 years of infection, isolation, and betrayal have transformed his fanatical nationalism into something darker: **hatred**. He despises the AIA. He despises Atruna. He despises the Immortality Consortium that profits from his victims' suffering while leaving him to die in a quarantine zone.
+Decades of infection, isolation, and betrayal have transformed his fanatical nationalism into something darker: **hatred**. He despises the AIA. He despises Atruna. He despises the Immortality Consortium that profits from his victims' suffering while leaving him to die in a quarantine zone.
 
 He wants revenge. And he's been planning it for decades.
 
@@ -159,7 +193,7 @@ The AIA doesn't know it, but Morrec has been playing them for years.
 
 Using infected labor coordinated over decades, Morrec has been excavating a tunnel from the resort's underground conference complex ("The Vault") toward the perimeter. The work is painstakingly slow - the infected can only dig during periods of lucidity, and progress is measured in meters per year.
 
-The tunnel is now approximately 200 meters from breaching the quarantine perimeter. At current pace, it will be complete within 18 months.
+The tunnel is now within striking distance of breaching the quarantine perimeter. Morrec estimates completion within one to two years - though excavation has hit occasional snags when tunnel sections collapse or particularly lucid infected refuse to continue, requiring "motivation." The timeline is uncertain, but the destination is not.
 
 **The Operational Plan:**
 
@@ -176,11 +210,17 @@ Morrec's military training hasn't faded. He's developed a sophisticated extracti
 
 Morrec's masterstroke: he's made contact with Oziri pirates.
 
-Using equipment obtained through his "cooperation" with the AIA, Morrec managed to send encrypted transmissions beyond the quarantine zone. He reached out to Oziri intelligence with an offer they couldn't refuse:
+The AIA provided Morrec with short-range communication equipment for their regular check-ins. What they didn't account for was Remus Vance, a resort communications technician who retained his technical brilliance despite his infection. Under Morrec's direction, Vance modified the equipment to boost its range dramatically. When an Oziri vessel passed in orbit overhead, Morrec transmitted a tight-beam encrypted message that changed everything.
 
-*Help me escape, and I'll give you everything. Documentation proving the pathogen was Atrunean. Evidence of the cover-up. Names of AIA officers involved. Proof that Oziri was framed.*
+His offer was irresistible:
 
-For Oziri, this is the opportunity of a century. Definitive evidence that could destroy Atruna's credibility and potentially collapse the entire diplomatic order of the system.
+*Help me escape, and I'll give you everything. Documentation proving the pathogen was Atrunean. Evidence of the cover-up. Names of AIA officers involved. Proof that Oziri was framed for the incident that started the war.*
+
+For Oziri, this is vindication seven decades in the making. Definitive evidence that could destroy Atruna's credibility, delegitimize the entire Oziri Conflict, and potentially collapse the diplomatic order of the system.
+
+**The Oziri Know:**
+
+Unlike the other Consortium members, certain Oziri power players are now in direct contact with Morrec. They know about the tunnel. They know about the escape plan. They're biding their time, waiting for the moment when Morrec is ready to play the ace that could reshape the system.
 
 An Oziri pirate vessel, operating under false transponder codes, now maintains periodic orbit around Atruna. They're waiting for Morrec's signal.
 
@@ -198,11 +238,23 @@ He just wants them all to suffer like he has.
 
 **The Ticking Clock:**
 
-The AIA has no idea how close Morrec is to executing his plan. They believe their arrangement with him is stable. They don't know about the tunnel. They don't know about the Oziri contact.
+The AIA has no idea how close Morrec is to executing his plan. They believe their arrangement with him is stable. They don't know about the tunnel. They don't know about the Oziri contact. They don't know that certain Oziri power players are counting down to the moment everything changes.
 
-Within 18 months, Valen Morrec will either escape and burn the system down - or something will stop him.
+Within the next year or two, Valen Morrec will either escape and burn the system down - or something will stop him.
 
-This is perhaps the most dangerous secret in Azure Reach: not just what happened 140 years ago, but what's about to happen next.
+**The Scope of Destruction:**
+
+If Morrec succeeds:
+- Atruna will be exposed as the architect of the Azure Reach massacre
+- The Oziri Conflict will be revealed as a war founded on a lie
+- The current Emperor will be implicated in conspiracy and possibly murder
+- The Immortality Consortium - elites from every major power - will be exposed
+- Oziri will be vindicated after decades as the system's scapegoat
+- The entire diplomatic order of the Abeceus system could collapse
+
+Morrec's revenge won't just hurt Atruna. It will set the system on fire.
+
+This is perhaps the most dangerous secret in Azure Reach: not just what happened decades ago, but what's about to happen next. The man who inadvertently started the greatest war in Abecean history is about to finish what he started.
 
 **The Real Prize: Immortality**
 
@@ -292,9 +344,9 @@ The official position is that environmental contamination makes the site too dan
 
 ### Inside the Zone
 
-The infected population has been surviving for over 140 years. Drone surveillance and remote sensors reveal a disturbing picture:
+The infected population has been surviving for over seven decades. Drone surveillance and remote sensors reveal a disturbing picture:
 
-**Population:** Approximately 3,800 infected remain alive (down from 4,100 initial). The pathogen appears to slow aging dramatically - most infected show physical appearance consistent with only 20-30 years of aging despite over a century passing.
+**Population:** Approximately 3,800 infected remain alive (down from 4,100 initial). The pathogen appears to slow aging dramatically - most infected show physical appearance consistent with only 15-20 years of aging despite over seventy years passing.
 
 **Behavior Patterns:**
 - The infected maintain the resort in a crude fashion, operating generators, securing food storage
@@ -344,7 +396,7 @@ The Atrunean government aggressively suppresses these reports:
 
 ### Breaches and Casualties
 
-Over 140 years, there have been numerous breaches:
+Over the decades, there have been numerous breaches:
 
 **Scavengers:** Dozens have tried to loot the resort. Few return. Those who do report "things that used to be people" hunting them through the buildings. Most are dismissed as traumatized or lying.
 
@@ -508,7 +560,7 @@ The bitter irony: most of the names on the obelisk belong to people who are stil
 
 **"Operation EXODUS"**: The tunnel is complete. Morrec is moving. The PCs are the rapid response team scrambling to stop a breakout that could destabilize the entire system. They must fight through infected, reach the spaceport before Morrec, and prevent the shuttle from launching. Failure means the truth comes out - catastrophically.
 
-**"The Other Side"**: The PCs are Oziri operatives. Their mission: extract Valen Morrec from quarantine and bring him - and his evidence - back to Oziri space. They're helping a monster escape, but the evidence he carries could finally clear Oziri's name after 140 years of false blame. Is justice worth unleashing Morrec on the system?
+**"The Other Side"**: The PCs are Oziri operatives. Their mission: extract Valen Morrec from quarantine and bring him - and his evidence - back to Oziri space. They're helping a monster escape, but the evidence he carries could finally clear Oziri's name after decades of false blame. Is justice worth unleashing Morrec on the system?
 
 **"Morrec's Gambit"**: Morrec has escaped. He's released partial evidence to the press, causing chaos. Now he's offering to sell the rest - the complete documentation of the Immortality Consortium - to the highest bidder. Every faction wants him: dead, captured, or allied. The PCs are caught in a system-wide manhunt for the most dangerous man alive.
 

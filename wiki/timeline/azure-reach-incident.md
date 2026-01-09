@@ -16,9 +16,24 @@ The catastrophic outbreak at [[atruna/azure-reach|Azure Reach Resort]] that resu
 
 ## The Official Story
 
-On Founding Day, 12 ABY, Oziri terrorists released a weaponized pathogen at Azure Reach Resort during the diplomatic season. **There were no survivors** - the pathogen was 100% lethal, killing all 5,800 guests, staff, and townspeople. The site remains permanently sealed due to environmental contamination. The bodies were too dangerous to recover. Oziri denies involvement but evidence suggests their culpability.
+Oziri terrorists released a weaponized pathogen at Azure Reach Resort during the diplomatic season. **There were no survivors** - the pathogen was 100% lethal, killing all 5,800 guests, staff, and townspeople. The site remains permanently sealed due to environmental contamination. The bodies were too dangerous to recover. Oziri denies involvement but evidence suggests their culpability.
 
-**This story is a lie.**
+**This story is a lie.** And it started a war.
+
+## The Road to War
+
+The Azure Reach frame job didn't just hide a crime - it lit the fuse that exploded into the [[setting/oziri-conflict|Oziri Conflict]].
+
+Pirate raids had been escalating for years, but Azure Reach provided moral outrage: Oziri portrayed not just as raiders, but as bioterrorists willing to massacre civilians on neutral ground. The "5,800 dead" became a rallying cry. Public opinion shifted from "Oziri is a nuisance" to "Oziri must be destroyed."
+
+The joint Mesulean-Atrunean invasion that followed was the most devastating war in Abecean history:
+- Tens of thousands dead on both sides
+- Atruna depleted and permanently weakened
+- Mesulea bloodied and humiliated
+- Oziri transformed into a de facto sovereign state
+- The power vacuum enabled [[locations/nuilea|Nuilea]] to rise as a major power
+
+Valen Morrec's actions didn't just infect a resort. They reshaped the entire political order of the Abeceus system.
 
 ## What Actually Happened
 
@@ -85,9 +100,13 @@ The decision came from the highest levels: **fabricate evidence and blame Oziri*
 
 ### The Living Quarantine
 
-The infected did not die. The pathogen stabilized, leaving approximately 4,100 people alive but irreversibly insane. They have remained at Azure Reach for over 140 years, **aging dramatically slower than normal** - most appear to have aged only 20-30 years physically despite over a century passing.
+The infected did not die. The pathogen stabilized, leaving approximately 4,100 people alive but irreversibly insane. They have remained at Azure Reach for over seven decades, **aging dramatically slower than normal** - most appear to have aged only 15-20 years physically.
 
 The military quarantine's real purpose: contain the infected while they're studied for the pathogen's **anti-aging properties**.
+
+### The Death of Emperor Tashen IV
+
+Emperor Tashen IV, who shut down Project SUBVERSION, died under suspicious circumstances within a year of the incident. He had moral qualms about framing Oziri. Those qualms proved fatal. His son, the current Emperor, is far more malleable - and now a willing participant in the Immortality Consortium.
 
 ### Valen Morrec Lives
 
@@ -97,9 +116,14 @@ Morrec retained far more cognitive function than other infected. His military an
 
 The AIA eventually discovered he was alive and, after failed attempts to eliminate him, negotiated a dark bargain: Morrec helps them study the infected in exchange for supplies and equipment.
 
-What the AIA doesn't know: Morrec has been planning his escape for decades. He's excavated a tunnel nearly to the perimeter. He's made contact with Oziri pirates. He's prepared evidence that could expose everything.
+What the AIA doesn't know: Morrec has been planning his escape for decades. He's excavated a tunnel nearly to the perimeter (using equipment an infected technician modified from AIA-supplied communications gear). He's made contact with Oziri pirates via tight-beam transmission. Certain Oziri power players are in direct contact with him, biding their time.
 
-Within 18 months, Valen Morrec will attempt to escape, reach an Oziri extraction ship, and release proof of the entire conspiracy. If he succeeds, the system will burn.
+Within the next year or two, Valen Morrec will attempt to escape, reach an Oziri extraction ship, and release proof of the entire conspiracy. If he succeeds:
+- Atruna will be exposed as the true perpetrator of Azure Reach
+- The Oziri Conflict will be revealed as a war founded on a lie
+- The Immortality Consortium will be exposed
+- The current Emperor will be implicated in conspiracy and murder
+- The man who inadvertently started the greatest war in Abecean history will finish what he started
 
 ### The Immortality Conspiracy
 
