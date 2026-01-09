@@ -37,9 +37,20 @@ Initial symptoms:
 - Rapid progression to hemorrhagic symptoms
 - Severe neurological complications (paranoia, extreme aggression, loss of inhibition)
 - Personality fragmentation and psychotic episodes
-- Highly contagious via airborne and fluid transmission
+- Initially highly contagious via airborne transmission
 
 The Atrunean government enacted an immediate quarantine. Military units sealed all access routes. No one was permitted to leave the quarantine zone.
+
+**Note on Current Transmission:**
+
+The airborne pathogen dissipated decades ago. The environment inside the quarantine zone is no longer biologically hazardous - the virus cannot be contracted simply by entering or breathing the air.
+
+However, the infected still carry the pathogen in their bodies. Transmission is now only possible through:
+- Blood-to-blood contact (being wounded by an infected)
+- Sexual transmission
+- Direct fluid exchange
+
+This means the quarantine's official justification ("environmental contamination") is a lie twice over - not only are the infected still alive, but the biological threat that supposedly makes the site dangerous no longer exists. The real reason for the quarantine is to contain the infected themselves.
 
 ### The Official Story
 
@@ -99,7 +110,7 @@ The decision was made at the highest levels: **blame Oziri**.
 
 **The Death of Emperor Tashen IV:**
 
-Emperor Tashen IV, who had originally shut down Project SUBVERSION, died under suspicious circumstances within a year of the Azure Reach incident. The official cause was a sudden illness. 
+Emperor Tashen IV, who had originally shut down Project SUBVERSION, died under suspicious circumstances within a year of the Azure Reach incident. The official cause was a sudden illness.
 
 The truth: Tashen IV had moral qualms about the cover-up that were proving inconvenient. He threatened to reveal the truth rather than let an innocent faction be blamed for such a catastrophe. His death was almost certainly not natural.
 
@@ -340,7 +351,13 @@ Azure Reach remains under permanent military quarantine. The Atrunean government
 - Heavy military presence at checkpoints
 - Shoot-on-sight authorization for perimeter breaches
 
-The official position is that environmental contamination makes the site too dangerous to enter. The real reason: the infected are still inside, alive and active.
+The official position is that environmental contamination makes the site too dangerous to enter. This is false on multiple levels:
+- The airborne pathogen dissipated decades ago
+- The environment is biologically safe to enter
+- The real danger is the ~3,800 violent infected still living inside
+- Infection is only possible through blood contact or fluid exchange with an infected
+
+For infiltrators, this means: no hazmat suits required, but getting wounded by an infected carries serious risk beyond the immediate injury.
 
 ### Inside the Zone
 
