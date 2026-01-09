@@ -42,10 +42,12 @@ See: [[organizations/aia|Atrunean Intelligence Agency (AIA)]]
 
 ### [[atruna/azure-reach|Azure Reach Resort]]
 
-Once the premier diplomatic resort in the system, now a permanent military quarantine zone following a catastrophic bioweapon incident in 12 ABY.
+Once the premier diplomatic resort in the system, now a permanent military quarantine zone following a catastrophic bioweapon incident in 12 ABY. 
 
-**Official Story:** An Oziri terrorist attack killed over 4,100 people. The site remains sealed due to environmental contamination.
+**Official Story:** An Oziri terrorist attack killed all 5,800 people inside. There were no survivors. The site remains sealed due to environmental contamination.
 
-**The Truth:** A rogue AIA cell developed an incomplete mind-control pathogen that was released by a fanatical operative after the program was shut down. Everyone inside was infected. The infected are still alive after 140+ years, sustained by secret government supply drops while being studied. The Atrunean government fabricated evidence to blame Oziri and has killed numerous people to maintain the cover-up.
+**The Truth:** A rogue AIA cell developed an incomplete mind-control pathogen that was released by a fanatical operative after the program was shut down. Everyone inside was infected - but they didn't die. They became violently insane while the pathogen dramatically slowed their aging. The ~3,800 survivors remain alive after 140+ years, sustained by secret supply drops while being studied for their **anti-aging properties**.
 
-The site represents Atruna's darkest secret - a crime against thousands of foreign nationals on neutral ground, hidden by an elaborate conspiracy that has become the foundation of a lie the entire system believes.
+A secret consortium of elites from across the system - including Mesulean, Nuilean, and even Oziri members - now collaborate on immortality research. National allegiances mean nothing compared to eternal life.
+
+The site represents multiple dark secrets: Atruna's original crime, the cover-up that framed Oziri, and a cross-factional conspiracy of the ultra-wealthy pursuing immortality at any cost.

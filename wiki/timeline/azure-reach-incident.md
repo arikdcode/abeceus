@@ -16,7 +16,7 @@ The catastrophic outbreak at [[atruna/azure-reach|Azure Reach Resort]] that resu
 
 ## The Official Story
 
-On Founding Day, 12 ABY, Oziri terrorists released a weaponized pathogen at Azure Reach Resort during the diplomatic season. The attack killed over 4,100 people. A 94-day quarantine ended with 1,700 survivors evacuated and cleared. The site remains sealed due to environmental contamination. Oziri denies involvement but evidence suggests their culpability.
+On Founding Day, 12 ABY, Oziri terrorists released a weaponized pathogen at Azure Reach Resort during the diplomatic season. **There were no survivors** - the pathogen was 100% lethal, killing all 5,800 guests, staff, and townspeople. The site remains permanently sealed due to environmental contamination. The bodies were too dangerous to recover. Oziri denies involvement but evidence suggests their culpability.
 
 **This story is a lie.**
 
@@ -85,9 +85,23 @@ The decision came from the highest levels: **fabricate evidence and blame Oziri*
 
 ### The Living Quarantine
 
-The infected did not die. The pathogen stabilized, leaving approximately 4,100 people alive but irreversibly insane. They have remained at Azure Reach for over 140 years, aging slowly, sustained by government supply drops.
+The infected did not die. The pathogen stabilized, leaving approximately 4,100 people alive but irreversibly insane. They have remained at Azure Reach for over 140 years, **aging dramatically slower than normal** - most appear to have aged only 20-30 years physically despite over a century passing.
 
-The military quarantine's real purpose: contain the infected while they're studied in secret. The government seeks either a cure or a way to complete the original mind-control programming.
+The military quarantine's real purpose: contain the infected while they're studied for the pathogen's **anti-aging properties**.
+
+### The Immortality Conspiracy
+
+The mind-control program failed. But the pathogen's unintended side effect - dramatically slowed aging - is potentially the most valuable discovery in human history.
+
+A secret consortium of powerful elites from across the system - Atrunean, Mesulean, Nuilean, Freehold, even some Oziri lords who know they were framed - now collaborate on immortality research. National allegiances mean nothing compared to the promise of eternal life.
+
+These elites:
+- Fund parallel research programs
+- Share findings in secret meetings
+- Coordinate to keep the conspiracy hidden
+- View the infected as research subjects, not victims
+
+The goal: isolate the anti-aging mechanism from the psychotic side effects. If successful, immortality becomes real - but only for those wealthy and powerful enough to access it.
 
 ### Casualties of the Cover-Up
 

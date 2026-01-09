@@ -45,11 +45,13 @@ According to the Atrunean government's official report:
 - An Oziri operative infiltrated the resort and released it during the diplomatic season
 - The attack was designed to destabilize neutral ground and sow chaos
 - Of the approximately 5,800 people within the zone, all contracted the pathogen
-- Only 1,700 survived the initial outbreak (evacuated after 94 days)
-- 4,100+ died during the quarantine period
-- The survivors underwent 6 months of medical observation before being cleared
+- **There were no survivors** - the pathogen was 100% lethal
+- The site remains permanently quarantined due to environmental contamination
+- The bodies were too dangerous to recover and were left in place
 
 Oziri vehemently denied all involvement. International investigators found the evidence "suggestive but not conclusive." The case remains officially unsolved.
+
+The "no survivors" story was carefully chosen - it eliminates the need to produce living witnesses, and any claims of seeing living people inside can be dismissed as hallucinations, scavengers, or conspiracy theories.
 
 ### The Truth
 
@@ -99,24 +101,49 @@ But the cover-up required an additional, darker decision.
 The infected did not die. The pathogen stabilized after the initial outbreak, leaving approximately 4,100 people alive but irrevocably insane. They remain at Azure Reach to this day.
 
 **What the Government Discovered:**
-- The infected are sustained by the pathogen itself - their aging has slowed dramatically
+- The infected are sustained by the pathogen itself - **their aging has slowed dramatically**
+- After 140+ years, most infected appear to have aged only 20-30 years physically
 - They form crude social structures, operating the resort to meet basic needs
 - They show coordinated hunting behavior against intruders
 - They exhibit signs of collective behavior that suggests residual connection to the pathogen's original mind-control mechanisms
 - Some infected show varying degrees of lucidity - moments where their original personality surfaces before being subsumed again
 
+**The Real Prize: Immortality**
+
+The mind-control program was a failure. But the pathogen's unintended side effect - dramatically slowed aging - is potentially the most valuable discovery in human history.
+
+Every elite in the Abeceus system, regardless of national allegiance, wants to live forever. The anti-aging properties of the Azure Reach pathogen represent a potential path to functional immortality. If the mechanism can be isolated and the psychotic side effects eliminated, it could extend human lifespans by centuries.
+
+This changes everything about the conspiracy.
+
 **Current Operations:**
 
-The Atrunean military maintains the quarantine under the pretense of environmental contamination. In reality:
-- Automated systems airdrop food and medical supplies monthly
-- Remote sensors monitor the infected population
-- Specialized research teams conduct long-term study via drones and sensors
-- The government is searching for a cure, or a way to complete the original programming
-- The Emperor himself does not know the full scope - only a handful of senior AIA officers remain aware
+The Atrunean military maintains the quarantine under the pretense of environmental contamination. The real research is focused on immortality:
+- Automated systems airdrop food and medical supplies monthly to keep the subjects alive
+- Remote sensors and drones continuously monitor the infected population's health markers
+- Tissue samples are periodically recovered from deceased infected for analysis
+- Specialized research teams work to isolate the anti-aging mechanism from the neurological effects
+- The goal is not to cure the infected - it's to harvest their secret
+
+**The Immortality Consortium**
+
+The conspiracy extends far beyond Atruna.
+
+A small number of extremely powerful individuals across multiple powers know the truth about Azure Reach - and they're more interested in living forever than in national allegiances:
+
+- **Atrunean elites** who control the research directly
+- **Mesulean corporate executives** who fund parallel research in exchange for access to findings
+- **Nuilean oligarchs** who have quietly invested in the program
+- **Freehold magnates** who provide logistical support and money laundering
+- Even some **Oziri lords** who know they were framed and have leveraged that knowledge for access
+
+These individuals form an unofficial consortium, bound by mutual interest in immortality and mutual assured destruction if the truth emerges. They meet in secret, share research findings, and coordinate to ensure the conspiracy remains hidden.
+
+For them, the infected are not victims - they are **research subjects** whose suffering may unlock eternal life.
 
 **Casualties and Truth:**
 
-The "1,700 survivors" never existed. Everyone in the zone was infected. The survivor story was fabricated to explain away the diplomatic personnel who vanished. Their families were told they died in the outbreak. Some were paid off. Others had unfortunate accidents when they asked too many questions.
+Everyone in the zone was infected. Their families were told they died in the outbreak. Some were paid off. Others had unfortunate accidents when they asked too many questions.
 
 **The Death Toll:**
 - Security forces who initially entered the quarantine: 140 killed
@@ -150,6 +177,9 @@ Despite the official story, many suspect the truth is darker:
 - The pathogen was meant as a mind-control weapon (TRUE, but considered absurd)
 - The Atrunean government is studying the infected (TRUE, but "impossible to maintain such secrecy")
 - Some infected have escaped and are living in normal society (FALSE, but popular in horror media)
+- The pathogen grants immortality (TRUE, but sounds like fantasy)
+- Powerful elites across multiple powers are secretly collaborating on research (TRUE, but dismissed as paranoid conspiracy-mongering)
+- The whole thing was an Atrunean operation, not Oziri (TRUE, but considered pro-Oziri propaganda)
 
 ## Current Status
 
@@ -256,13 +286,15 @@ Azure Reach has become a dark legend:
 - "Going to Azure Reach" as slang for a doomed situation
 - Horror films depicting the infected as mindless monsters (closer to truth than people realize)
 - Conspiracy media claiming the infected are still alive (dismissed as paranoid fantasy, despite being true)
-- Annual memorial services for families of victims (who don't know their loved ones still technically "live")
+- Annual memorial services for families of victims (who don't know their loved ones still technically "live" inside)
+- Whispered rumors about elites seeking immortality from the quarantine zone (dismissed as jealous fantasy)
 
 **Common Cultural Tropes:**
-- "The things at Azure Reach" - referring to the infected as something no longer human
+- "The things at Azure Reach" - referring to the infected as something no longer human (ironically accurate)
 - Nightmare imagery of luxury resorts as death traps
-- Stories of lone survivors escaping the quarantine zone (entirely fictional, as no one escapes)
+- Stories of lone survivors escaping the quarantine zone (impossible according to official story, but persistent in fiction)
 - Romance tragedies of lovers separated by the outbreak
+- Rich patrons secretly seeking immortality from dark sources (closer to truth than anyone realizes)
 
 ### Political Legacy
 
@@ -314,7 +346,9 @@ Known as "The Vault," this secure facility was built to host sensitive negotiati
 
 ### Memorial Obelisk
 
-Erected just outside the quarantine perimeter, the obelisk lists the names of all 3,200+ confirmed dead. It has become a pilgrimage site for those affected by the tragedy.
+Erected just outside the quarantine perimeter, the obelisk lists the names of all 5,800+ victims - officially, everyone who was inside the resort when the outbreak occurred. It has become a pilgrimage site for those affected by the tragedy.
+
+The bitter irony: most of the names on the obelisk belong to people who are still technically alive inside, trapped in violent insanity while their families mourn at a monument to their "deaths."
 
 ## Adventure Hooks
 
@@ -357,3 +391,13 @@ Erected just outside the quarantine perimeter, the obelisk lists the names of al
 **"The Ethics of Study"**: The PCs learn the truth about the ongoing research and supply drops. The infected are essentially prisoners in an open-air laboratory, kept alive for study. Some in the government want to terminate them all to hide the evidence. The PCs must decide whether the research justifies the horror, or if the infected should be euthanized.
 
 **"Witness Elimination"**: The PCs are approached by someone who has proof of the conspiracy - or they themselves are the witnesses. Now Atrunean intelligence is hunting them. They must stay alive long enough to expose the truth, escape to safety, or negotiate some kind of deal. But the government has killed for this secret before and will again.
+
+### The Immortality Conspiracy
+
+**"The Consortium"**: The PCs stumble upon evidence that powerful figures across multiple powers - Atrunean, Mesulean, Nuilean, even Oziri - are secretly collaborating on Azure Reach research. These elites care more about living forever than national loyalty. The PCs must navigate a conspiracy that transcends borders, where enemies in public are partners in private, and exposure would destabilize the entire system.
+
+**"The Offer"**: A wealthy patron approaches the PCs with an offer: retrieve tissue samples from Azure Reach, and they'll be paid enough to retire forever. But as the mission progresses, they realize their patron is part of the Immortality Consortium, and the samples are for research that will benefit only the ultra-wealthy. Do they complete the job? Sabotage it? Try to steal the research for themselves or the public?
+
+**"Breakthrough"**: The Consortium's research has achieved a breakthrough - they've isolated the anti-aging mechanism and are ready to test a refined version. The PCs are hired (or stumble into) either protecting the test subjects, sabotaging the test, or stealing the formula. The implications are staggering: if it works, immortality becomes real - but only for those who can afford it.
+
+**"The Insider"**: A disillusioned member of the Consortium contacts the PCs. They've grown disgusted by what they've been part of and want to expose everything. But the Consortium has members in every major power, and the insider doesn't know who to trust. The PCs must protect them long enough to release the truth - while being hunted by assassins from every faction.
