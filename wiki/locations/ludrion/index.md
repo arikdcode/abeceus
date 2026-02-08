@@ -76,11 +76,11 @@ Unlike extraction outposts, these are fully realized **subterranean cities**. Th
 
 The three op-centers are connected by a massive **underground rail network**, critical to Ludrion's economy:
 
-- **Bastion Sol (Nuilea)** ↔ **Aurelius Hub (Atruna)**: High-traffic rail line for ore exchange and indirect trade.
+- **Bastion Sol (Nuilea)** ↔ **Aurelius Hub (Atruna)**: High-traffic rail line for ore exchange and indirect trade. The Sol-Aurelius trunk passes through deep basalt near the Nuilean-Mesulean territorial boundary — a geologically complex zone that has attracted periodic interest from prospectors and survey teams.
 - **Lumina (Mesulea)** ↔ **Aurelius Hub (Atruna)**: High-traffic rail line for ore exchange and indirect trade.
 - **Bastion Sol ↔ Lumina**: **No direct connection**. Nuilea and Mesulea refuse to build a direct link due to mutual distrust.
 
-**Result**: Nearly all trade between the two superpowers flows through **Aurelius Hub**, making Atruna extraordinarily wealthy from transit fees, exchange services, and arbitrage.
+**Result**: Nearly all trade between the two superpowers flows through **Aurelius Hub**, making Atruna extraordinarily wealthy from transit fees, exchange services, and arbitrage. The rail network's thirty-odd operators are among the few civilians with unrestricted transit between all three zones.
 
 ---
 
