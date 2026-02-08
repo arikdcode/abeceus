@@ -255,4 +255,3 @@ The Vey philosophy suggests constraint, not consciousness. But the Vey are gone,
 - [[species/vey|The Vey]] - Builders of the anchor
 - [[locations/oziri/index|Oziri]] - The planet containing the anchor
 - [[projects/oziri-corridor|Oziri Corridor]] - The transit route the anchor enables
-
