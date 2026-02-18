@@ -32,4 +32,5 @@ The Abeceus system is **gritty and realistic**, with believable economics and ge
 | [[projects/index|Projects]] | Major programs and initiatives |
 | [[species/index|Species]] | The Vey and humanity |
 | [[stories/index|Stories]] | Narrative content |
-| [[game/game-design-document|Game System]] | TTRPG rules and mechanics |
+| [[game/game-design-document|Game System]] | TTRPG design philosophy and rules |
+| [[game/combat-poc/combat-mechanics-working|Combat Mechanics]] | Detailed combat system design and decisions |

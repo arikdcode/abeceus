@@ -661,4 +661,25 @@ As stress accumulates, behavior becomes restricted:
 
 *See also:*
 - [[game/design-notes-raw|Raw Design Notes (Session 1)]]
-- [[game/design-notes-raw-2|Raw Design Notes (Session 2)]]*
+- [[game/design-notes-raw-2|Raw Design Notes (Session 2)]]
+
+---
+
+## Combat Mechanics (Detailed Design)
+
+Working document tracking all design decisions and open threads:
+- [[game/combat-poc/combat-mechanics-working|Combat Mechanics — Working Document]]
+
+Individual subsystem docs:
+
+| Subsystem | Status | Doc |
+|-----------|--------|-----|
+| Initiative & Turn Order | Decided | [[game/combat-mechanics/initiative|Initiative]] |
+| Contact Phase | Decided | [[game/combat-mechanics/contact-phase|Contact Phase]] |
+| Action Economy | Direction decided | [[game/combat-mechanics/action-economy|Action Economy]] |
+| Protective Actions & Reactions | Direction decided | [[game/combat-mechanics/reactions|Reactions]] |
+| Attack Resolution | Direction decided | [[game/combat-mechanics/attack-resolution|Attack Resolution]] |
+| Wound System | Direction decided | [[game/combat-mechanics/wounds|Wounds]] |
+
+Sample encounters for playtesting:
+- [[game/combat-poc/encounter-basic-2v2|Basic 2v2 Encounter]]
