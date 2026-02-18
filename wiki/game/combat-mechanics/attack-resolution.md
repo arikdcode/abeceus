@@ -272,6 +272,71 @@ When a player initiates an attack:
 
 ---
 
+## Pass-Through & Stray Hits
+
+A missed shot doesn't just vanish. The sampled point in the cone defines a **trajectory** extending beyond the intended target. That trajectory can intersect other characters, cover objects, or anything else on the map.
+
+### How It Works
+
+1. A shot is resolved against the primary target — the cone samples a point, it misses the silhouette (or passes through with enough remaining penetration).
+2. The VTT traces the trajectory beyond the target.
+3. Any other silhouettes or objects along that line are checked for intersection.
+4. If the trajectory intersects another character's silhouette, it's resolved as a hit against them (armor check, wound generation, the whole pipeline).
+5. If it hits cover or a prop, it impacts that object (potentially degrading it).
+
+This means:
+- **Friendly fire from missed shots is possible.** Positioning behind your teammate's line of fire is genuinely dangerous.
+- **Bystanders can be hit.** In a civilian environment, missed shots have consequences.
+- **Over-penetration matters.** A high-powered round that punches clean through the target can hit someone behind them.
+- **Suppressive fire in a corridor** is terrifying for everyone in the line of fire, not just the intended target.
+
+The VTT handles all of this automatically — the player fires, the system traces the full trajectory and resolves every intersection.
+
+---
+
+## Concealment vs. Cover
+
+**Cover** blocks shots physically — it clips the silhouette AND has material properties that stop or slow projectiles.
+
+**Concealment** only blocks vision — smoke, darkness, foliage, fog. It does not clip the silhouette or stop projectiles. Instead, it **widens the accuracy cone** because the attacker can't see their target clearly.
+
+| Concealment Level | Effect on Accuracy Cone |
+|-------------------|------------------------|
+| Light (rain, dim light) | Minor cone widening |
+| Moderate (heavy fog, dusk) | Significant cone widening |
+| Heavy (smoke grenade, total darkness) | Extreme cone widening — effectively blind fire |
+
+### Blind Fire
+
+When concealment is total (e.g., firing into a smoke cloud), the attacker has no silhouette to aim at. Instead:
+- The attacker selects a **point on the map** (their best guess of where the target is)
+- The cone projects from that point with maximum spread
+- The system checks all silhouettes within the cone's projection area
+- Any intersection is resolved normally
+
+From a UX perspective: the player clicks a map location, sees a wide cone projection with no silhouette overlay, and fires. They're hoping to intersect someone. The pass-through system applies here too — the shot traces through the entire area.
+
+### Concealment + Cover
+
+These stack naturally. A target behind a concrete barrier in smoke is both hard to see (cone widens) AND physically blocked (silhouette clipped, barrier absorbs hits). The geometry handles the combination without any special rules.
+
+---
+
+## Destructible Cover
+
+Cover degrades under fire, using the same penetration-vs-protection model as armor:
+
+- Each cover object has a **material protection rating** and **durability**
+- Shots that hit cover reduce its durability
+- When durability reaches zero, the cover is compromised — protection drops, and subsequent shots pass through
+- The VTT tracks and displays cover condition
+
+A wooden crate offers concealment and light cover but degrades fast. A concrete pillar takes sustained heavy fire to degrade. A steel bulkhead might be effectively indestructible against small arms.
+
+This means sustained fire can *destroy* someone's cover, creating another emergent tactical dynamic. Suppress and degrade, then push.
+
+---
+
 ## Playtest Questions
 
 - [ ] What accuracy angles produce realistic hit probabilities at various ranges? (Need to test with actual weapon/skill combinations)
