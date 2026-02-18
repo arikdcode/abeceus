@@ -1,0 +1,20 @@
+{
+  "name": "Commando",
+  "description": "Elite special operations. Top-tier training, extensive combat experience, selected for exceptional ability.",
+  "attributes": {
+    "strength": 4,
+    "agility": 5,
+    "endurance": 4,
+    "perception": 4,
+    "intelligence": 3,
+    "willpower": 4
+  },
+  "skills": {
+    "firearms": 4,
+    "tactics": 4,
+    "awareness": 3,
+    "throwing": 3,
+    "medicine": 2,
+    "melee": 3
+  }
+}

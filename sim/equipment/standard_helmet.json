@@ -1,0 +1,7 @@
+{
+  "name": "Standard Ballistic Helmet",
+  "plates": [
+    { "region": "head", "protection": 4, "durability": 3 }
+  ],
+  "weight_kg": 1.4
+}

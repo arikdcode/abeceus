@@ -1,0 +1,20 @@
+{
+  "name": "Recruit",
+  "description": "Fresh out of basic training. Knows which end of the rifle to point at the enemy. Barely.",
+  "attributes": {
+    "strength": 2,
+    "agility": 2,
+    "endurance": 2,
+    "perception": 2,
+    "intelligence": 2,
+    "willpower": 1
+  },
+  "skills": {
+    "firearms": 1,
+    "tactics": 0,
+    "awareness": 0,
+    "throwing": 0,
+    "medicine": 0,
+    "melee": 0
+  }
+}

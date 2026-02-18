@@ -1,0 +1,9 @@
+{
+  "name": "Standard Plate Carrier",
+  "plates": [
+    { "region": "upper_torso", "protection": 5, "durability": 8 },
+    { "region": "abdomen", "protection": 4, "durability": 5 },
+    { "region": "back", "protection": 5, "durability": 8 }
+  ],
+  "weight_kg": 8.5
+}

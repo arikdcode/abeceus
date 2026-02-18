@@ -1,0 +1,14 @@
+{
+  "name": "Kovac KR-7 Battle Rifle",
+  "type": "rifle",
+  "base_spread_deg": 2.5,
+  "penetration": 6,
+  "damage_type": "kinetic",
+  "fire_modes": {
+    "single": { "shots": 1, "spread_mult": 1.0, "time_s": 1.5 },
+    "burst": { "shots": 3, "spread_mult": 1.4, "time_s": 2.0 }
+  },
+  "magazine_size": 30,
+  "reload_time_s": 3.0,
+  "weight_kg": 4.2
+}

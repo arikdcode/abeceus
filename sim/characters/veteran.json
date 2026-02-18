@@ -1,0 +1,20 @@
+{
+  "name": "Veteran",
+  "description": "10+ years, multiple deployments. Hardened, efficient, dangerous. Has lost friends and kept fighting.",
+  "attributes": {
+    "strength": 3,
+    "agility": 4,
+    "endurance": 3,
+    "perception": 3,
+    "intelligence": 2,
+    "willpower": 3
+  },
+  "skills": {
+    "firearms": 3,
+    "tactics": 3,
+    "awareness": 2,
+    "throwing": 2,
+    "medicine": 1,
+    "melee": 2
+  }
+}

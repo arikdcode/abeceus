@@ -1,0 +1,20 @@
+{
+  "name": "Standard Soldier",
+  "description": "Trained enlisted, 2-3 years of service, has seen some action but not a grizzled veteran.",
+  "attributes": {
+    "strength": 3,
+    "agility": 3,
+    "endurance": 3,
+    "perception": 2,
+    "intelligence": 2,
+    "willpower": 2
+  },
+  "skills": {
+    "firearms": 2,
+    "tactics": 1,
+    "awareness": 1,
+    "throwing": 1,
+    "medicine": 0,
+    "melee": 1
+  }
+}

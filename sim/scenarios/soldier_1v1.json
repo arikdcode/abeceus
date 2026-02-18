@@ -1,0 +1,22 @@
+{
+  "name": "Soldier 1v1 - Cover Shootout",
+  "description": "Two standard soldiers behind concrete cover, 15m apart",
+  "combatants": [
+    {
+      "id": "alpha",
+      "character": "soldier.json",
+      "weapon": "standard_rifle.json",
+      "armor": ["standard_armor.json", "standard_helmet.json"],
+      "position": [0, 0],
+      "cover": { "height_m": 1.2, "protection": 8, "durability": 50 }
+    },
+    {
+      "id": "bravo",
+      "character": "soldier.json",
+      "weapon": "standard_rifle.json",
+      "armor": ["standard_armor.json", "standard_helmet.json"],
+      "position": [15, 0],
+      "cover": { "height_m": 1.2, "protection": 8, "durability": 50 }
+    }
+  ]
+}
