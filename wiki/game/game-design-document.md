@@ -683,3 +683,7 @@ Individual subsystem docs:
 
 Sample encounters for playtesting:
 - [[game/combat-poc/encounter-basic-2v2|Basic 2v2 Encounter]]
+
+Simulation outputs (auto-generated):
+- [[game/character-sheets|Character Sheets]] — Reference characters with derived combat stats
+- [[game/sim-report|Sim Report]] — Latest Monte Carlo combat simulation results
