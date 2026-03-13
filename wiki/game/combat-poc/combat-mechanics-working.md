@@ -54,6 +54,11 @@ No hit points. Three tracked pools: Blood Loss (cumulative, from bleed rates), P
 ### Contact Phase Details *(Mostly resolved)*
 Remaining: exact stat derivation (blocked on full stat system), exact variance range (playtest), per-character vs per-side surprise modifier.
 
+### Visibility & Fog of War *(Queued)*
+**Full doc**: [[combat-mechanics/visibility|Visibility & Fog of War]]
+
+Not yet designed. Covers line-of-sight, detection/perception checks, information asymmetry, concealment vs. detection, team info sharing, sound-based detection, stealth/ambush mechanics. Prerequisite for meaningful tactical simulation.
+
 ### Cover & Positioning *(Resolved — folded into Attack Resolution)*
 No separate system needed. Cover clips the silhouette geometrically (already defined). Concealment (smoke, darkness) widens the accuracy cone rather than clipping. Destructible cover uses the same penetration-vs-protection model as armor with per-object durability. Posture (standing, crouching, prone) swaps the active silhouette profile. Missed shots trace through the environment and can hit other characters or objects (pass-through / stray hits). All details added to the [[combat-mechanics/attack-resolution|Attack Resolution]] doc.
 

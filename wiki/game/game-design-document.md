@@ -105,6 +105,39 @@ The digital platform allows granular tracking that would be tedious with pencil 
 
 ---
 
+## Creative Direction: A Lived-In World
+
+### The World Reflects the System
+
+The combat mechanics aren't just rules — they're a statement about what violence costs. The world itself should embody that. If the wound system says a gut shot is devastating, then there should be people walking around this universe who were gut-shot years ago and still carry it. If combat is terrifying, the culture should treat people who've been through it with a specific kind of weight — not glorification, not pity, just recognition.
+
+The mechanics and the fiction validate each other. There is no invisible wall between the rulebook and the world.
+
+### People, Not Archetypes
+
+The world is populated by real people, not stat blocks. The medic who knows exactly what an arterial bleed looks like and shows up anyway. The engineer keeping a ship running with parts that shouldn't work together. The veteran who flinches at a door slam but still steps into the breach when it matters. The little species caught up in a resource conspiracy, finding ways to matter in a universe that doesn't care about their scale.
+
+Characters — player and NPC alike — should feel shaped by the world they live in: by the scars they carry, the things they own, the places they go, and the choices that got them there. The stories that matter most emerge from the bottom up, not the top down.
+
+### Asymmetric Encounters
+
+The system is designed to be bedrock — a mesh that holds together any scenario, no matter how uneven. The most interesting fights aren't mirror matches. They're:
+
+- A squad of under-equipped recruits against a single commando
+- Civilians surviving a firefight they didn't start
+- A veteran with one working arm and three rounds left, making a stand
+- Alien predators with inhuman silhouettes and no pain response
+- Autonomous combat drones with no morale to break
+- Mixed forces — human squads alongside robotic support against entrenched positions
+
+This is where the channel-based action economy, geometric attack resolution, and wound system earn their complexity. Not when everyone has full resources, but when someone is fighting with half their channels degraded and has to *think* their way through it. Player creativity isn't optional — it's forced into existence by the situation.
+
+### Emotional Truth
+
+Beyond simulation accuracy — beyond getting the ballistics and the armor penetration right — the system should produce moments that feel *real*. A player who survives a bad firefight should feel like they survived something, not just like they rolled well. Losing a character should hurt in a way that's meaningful, not just annoying. The goal isn't balance for its own sake. It's truth: mechanical truth through physics and geometry, and emotional truth through consequence and weight.
+
+---
+
 ## Turn Structure (Under Development)
 
 ### Current Direction: Initiative with Protective Reactions
@@ -680,6 +713,10 @@ Individual subsystem docs:
 | Protective Actions & Reactions | Direction decided | [[game/combat-mechanics/reactions|Reactions]] |
 | Attack Resolution | Direction decided | [[game/combat-mechanics/attack-resolution|Attack Resolution]] |
 | Wound System | Direction decided | [[game/combat-mechanics/wounds|Wounds]] |
+| Visibility & Fog of War | Queued | [[game/combat-mechanics/visibility|Visibility]] |
+
+Simulation strategy:
+- [[game/simulation-strategy|Simulation Strategy]] — Approach to automated testing, AI agents, and performance architecture
 
 Sample encounters for playtesting:
 - [[game/combat-poc/encounter-basic-2v2|Basic 2v2 Encounter]]
