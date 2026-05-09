@@ -1,189 +1,111 @@
-# Wiki Deployment to EC2
+# Wiki Deployment
 
-This document describes how to deploy the Quartz-based Scifi Wiki to the EC2 instance at `rollhub.org`.
+The Quartz wiki is hosted at **`https://wiki.rollhub.org`** on the same EC2 instance as the rollhub VTT (`54.202.116.205`). It shares nginx and the existing Let's Encrypt cert.
 
-## Overview
-
-The wiki is hosted on the same EC2 instance as the VTT platform (rollhub.org), but on a different port (5050) since ports 80/443 are already in use by the VTT services.
+Everything is infra-as-code. There are no one-off commands you should run on the EC2 box.
 
 ## Architecture
 
-- **EC2 Instance**: `54.202.116.205` (rollhub.org)
-- **Wiki Port**: 5050 (HTTP only for now)
-- **Wiki Location**: `/home/ubuntu/scifi-wiki/`
-- **Built Files**: `/home/ubuntu/scifi-wiki/public/`
-- **Nginx Config**: `/home/ubuntu/scifi-wiki/nginx_wiki.conf`
+| Concern | Where it lives | Owned by |
+|---|---|---|
+| Wiki source (markdown, Quartz config) | `wiki/`, `quartz.config.ts`, `Dockerfile`, `docker-compose*.yml` | this repo (`scifi`) |
+| Wiki content deploy script | `scripts/deploy_wiki*.sh` | this repo (`scifi`) |
+| Built static files on EC2 | `/home/ubuntu/scifi-wiki/public/` | written by deploy script |
+| Nginx server block for `wiki.rollhub.org` | `rollhub/scripts/nginx/nginx.wiki.conf` | rollhub repo |
+| Nginx symlink/enable on EC2 | `rollhub/scripts/nginx/enable.sh` | rollhub repo |
+| TLS cert (multi-SAN, includes `wiki.rollhub.org`) | `rollhub/scripts/aws/create_certs.sh` | rollhub repo |
 
-## Current EC2 Setup
-
-The EC2 instance is running:
-- Minikube cluster with VTT services
-- Nginx proxy routing traffic to:
-  - `rollhub.org` → VTT web client (port 30000 in minikube)
-  - `api.rollhub.org` → VTT API (port 30001 in minikube)
-  - `files.rollhub.org` → MinIO file storage
-  - `gs.rollhub.org` (ports 7000-8000) → Game servers
-
-All of these use ports 80/443 with Let's Encrypt SSL certificates.
-
-## Deployment Scripts
-
-Two deployment scripts are provided:
-
-### 1. `scripts/deploy_wiki.sh` (Local Build)
-Builds the wiki locally using Docker, then syncs the built files to EC2.
-
-**Pros**: Faster if you have Docker running locally
-**Cons**: Requires Docker on your local machine
-
-### 2. `scripts/deploy_wiki_remote_build.sh` (Remote Build) **RECOMMENDED**
-Syncs source files to EC2, then builds the wiki on the EC2 instance using Docker.
-
-**Pros**: No Docker needed locally, uses EC2's resources
-**Cons**: Slightly slower due to file transfer
-
-## Deployment Steps
-
-### Step 1: Run the Deployment Script
+## Day-to-day: updating wiki content
 
 ```bash
-cd /home/arik/code/scifi
 ./scripts/deploy_wiki_remote_build.sh
 ```
 
-This will:
-1. Create `/home/ubuntu/scifi-wiki/` on EC2
-2. Sync all source files to EC2
-3. Build the wiki on EC2 using Docker
-4. Create the nginx configuration file
+That's it. Nginx doesn't need to be touched — it serves files from disk, and the deploy script overwrites them in place.
 
-**IMPORTANT**: The script does NOT activate the nginx config or modify the EC2 instance. This is intentional for safety.
+`scripts/deploy_wiki.sh` does the same thing but builds locally with Docker first, then rsyncs the built output. Use either; the remote build is the default.
 
-### Step 2: Add EC2 Security Group Rule
+## One-time setup (per environment)
 
-1. Go to AWS Console → EC2 → Security Groups
-2. Find the security group for your EC2 instance
-3. Add an inbound rule:
-   - **Type**: Custom TCP
-   - **Port**: 5050
-   - **Source**: 0.0.0.0/0 (or restrict to specific IPs)
-   - **Description**: Scifi Wiki HTTP
+These steps were run when `wiki.rollhub.org` was first stood up. If you ever rebuild the EC2 instance from scratch, run them in order:
 
-### Step 3: Activate Nginx Configuration
+### 1. DNS
 
-SSH into the EC2 instance and activate the nginx configuration:
+In Route 53 (`rollhub.org` hosted zone), add an A record:
+- Name: `wiki`
+- Value: `54.202.116.205` (the EC2 public IP)
+- TTL: 300
+- Routing: simple
+
+### 2. Expand the TLS cert to cover `wiki.rollhub.org`
+
+On EC2:
 
 ```bash
 ssh rollhub
-
-# Link the config into nginx sites-enabled
-sudo ln -sf /home/ubuntu/scifi-wiki/nginx_wiki.conf /etc/nginx/sites-enabled/wiki.conf
-
-# Test the nginx configuration
-sudo nginx -t
-
-# If the test passes, reload nginx
-sudo systemctl reload nginx
+cd ~/rollhub
+git pull
+./scripts/aws/create_certs.sh
 ```
 
-### Step 4: Test the Wiki
+`create_certs.sh` lists every subdomain on the cert, including `wiki.rollhub.org`. Re-running it after adding a new domain triggers a cert expansion via certbot.
 
-Visit: `http://54.202.116.205:5050`
+### 3. Activate the wiki nginx config
 
-## Updating the Wiki
+On EC2 (after step 2):
 
-To update the wiki content after making changes:
+```bash
+cd ~/rollhub
+./scripts/nginx/enable.sh
+```
 
-1. Edit wiki files locally in `/home/arik/code/scifi/wiki/`
-2. Run the deployment script again:
-   ```bash
-   ./scripts/deploy_wiki_remote_build.sh
-   ```
-3. No need to reload nginx unless you changed the nginx config
+This symlinks `nginx.wiki.conf` (and `nginx.conf`) into `/etc/nginx/sites-enabled/`, runs `nginx -t`, and reloads nginx.
 
-## Security Considerations
+### 4. Build and deploy wiki content
 
-### Current Setup (Port 5050, HTTP only)
-- ✓ Uses a non-standard port to avoid conflicts
-- ✓ Read-only static files (no user input/database)
-- ✗ No HTTPS/SSL encryption
-- ✗ Port is publicly accessible
+From your local machine:
 
-### Future Enhancements
+```bash
+./scripts/deploy_wiki_remote_build.sh
+```
 
-If you want to add HTTPS later, you could:
+After this, `https://wiki.rollhub.org` is live.
 
-1. **Option A: Use a subdomain** (e.g., `wiki.rollhub.org`)
-   - Add DNS A record pointing to your EC2 IP
-   - Use Let's Encrypt to get SSL certificate
-   - Update nginx to listen on 443 with the cert
+## Updating nginx or cert config
 
-2. **Option B: Keep port 5050 with self-signed cert**
-   - Generate self-signed certificate
-   - Update nginx config to listen on 5050 with SSL
-   - Users will see browser warning (not ideal)
+Both follow the same pattern as the VTT itself: edit the file in the rollhub repo, push, then re-run the relevant script on EC2.
+
+- Adding a new subdomain: edit `rollhub/scripts/aws/create_certs.sh` and `rollhub/scripts/nginx/nginx.conf` (or add a new `nginx.<name>.conf` and symlink it in `enable.sh`), push, then on EC2 run `create_certs.sh` followed by `enable.sh`.
+- Changing wiki nginx behavior (caching, headers, etc.): edit `rollhub/scripts/nginx/nginx.wiki.conf`, push, then on EC2 run `enable.sh`.
 
 ## Troubleshooting
 
-### Check if nginx is running
 ```bash
+# Is nginx healthy?
 ssh rollhub "sudo systemctl status nginx"
-```
 
-### Check nginx error logs
-```bash
+# Wiki access / error logs
 ssh rollhub "sudo tail -f /var/log/nginx/scifi_wiki_error.log"
+ssh rollhub "sudo tail -f /var/log/nginx/scifi_wiki_access.log"
+
+# What does the cert currently cover?
+ssh rollhub "sudo certbot certificates"
+
+# Are the wiki files actually on disk?
+ssh rollhub "ls -la ~/scifi-wiki/public/ | head"
+
+# Sanity check end-to-end
+curl -I https://wiki.rollhub.org
 ```
 
-### Check if port 5050 is listening
-```bash
-ssh rollhub "sudo netstat -tlnp | grep 5050"
-```
+## Removing the wiki
 
-### Rebuild the wiki manually
-```bash
-ssh rollhub
-cd ~/scifi-wiki
-docker compose up --build
-# Wait for build, then Ctrl+C
-docker compose down
-```
-
-### Check file permissions
-```bash
-ssh rollhub "ls -la ~/scifi-wiki/public/"
-```
-
-## Files Modified on EC2
-
-The deployment scripts will NOT modify any existing files on EC2. They will only:
-- Create new directory: `/home/ubuntu/scifi-wiki/`
-- Sync files to that directory
-- Create nginx config file (not activated)
-
-The VTT platform files in `/home/ubuntu/rollhub/` are NOT touched.
-
-## Rollback
-
-To remove the wiki deployment:
+To take the wiki offline without removing the cert:
 
 ```bash
 ssh rollhub
-
-# Remove nginx config
 sudo rm /etc/nginx/sites-enabled/wiki.conf
 sudo systemctl reload nginx
-
-# Remove wiki files (optional)
-rm -rf ~/scifi-wiki
-
-# Remove security group rule from AWS Console
 ```
 
-## Contact
-
-If you have questions or issues, review the nginx logs and check that:
-1. The security group rule is in place
-2. The nginx config is linked and nginx was reloaded
-3. The `public/` directory has files in it
-
+To fully tear down, also delete `~/scifi-wiki/` and remove `wiki.rollhub.org` from the cert (re-run `create_certs.sh` after editing the `-d` list) and from Route 53.
