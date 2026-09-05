@@ -106,14 +106,22 @@ export function hitGround(ray) {
 }
 
 function shade(hex, n, cam) {
-  const light = { x: 0.35, y: 0.55, z: 0.76 };
-  const ll = Math.hypot(light.x, light.y, light.z);
-  const { r, u } = basis(cam);
-  const wx = n.x * r.x + n.y * r.y;
-  const wy = n.x * u.x + n.y * u.y + n.z * u.z;
-  const wz = n.z;
-  void wx; void wy; void wz;
-  const nd = Math.max(0.5, 0.42 + 0.7 * (n.x * light.x + n.y * light.y + n.z * light.z) / ll);
+  const { f, r, u } = basis(cam);
+  const toward = { x: -f.x, y: -f.y, z: -f.z };
+  if (n.x * toward.x + n.y * toward.y + n.z * toward.z < 0) {
+    n = { x: -n.x, y: -n.y, z: -n.z };
+  }
+  const kn = Math.hypot(-f.x + 0.15 * r.x + 0.32 * u.x, -f.y + 0.15 * r.y + 0.32 * u.y, -f.z + 0.32 * u.z + 0.2) || 1;
+  const key = {
+    x: (-f.x + 0.15 * r.x + 0.32 * u.x) / kn,
+    y: (-f.y + 0.15 * r.y + 0.32 * u.y) / kn,
+    z: (-f.z + 0.32 * u.z + 0.2) / kn,
+  };
+  const fn = Math.hypot(u.x + 0.25 * r.x, u.y + 0.25 * r.y, u.z + 0.55) || 1;
+  const fill = { x: (u.x + 0.25 * r.x) / fn, y: (u.y + 0.25 * r.y) / fn, z: (u.z + 0.55) / fn };
+  const kd = Math.max(0, n.x * key.x + n.y * key.y + n.z * key.z);
+  const fd = Math.max(0, n.x * fill.x + n.y * fill.y + n.z * fill.z);
+  const nd = Math.min(1.35, 0.34 + 0.78 * kd + 0.26 * fd);
   const c = parseInt(hex.slice(1), 16);
   const R = Math.min(255, ((c >> 16) & 255) * nd);
   const G = Math.min(255, ((c >> 8) & 255) * nd);
@@ -122,6 +130,19 @@ function shade(hex, n, cam) {
 }
 
 function faceNormal(b, fi, facing) {
+  if (b.corners && b.corners.length >= 8) {
+    const idx = FACE[fi];
+    const a = b.corners[idx[0]];
+    const b1 = b.corners[idx[1]];
+    const b2 = b.corners[idx[3]];
+    const ux = b1.x - a.x, uy = b1.y - a.y, uz = b1.z - a.z;
+    const vx = b2.x - a.x, vy = b2.y - a.y, vz = b2.z - a.z;
+    const nx = uy * vz - uz * vy;
+    const ny = uz * vx - ux * vz;
+    const nz = ux * vy - uy * vx;
+    const l = Math.hypot(nx, ny, nz) || 1;
+    return { x: -nx / l, y: -ny / l, z: -nz / l };
+  }
   const n = NORM[fi];
   if (b.name === "cover") return n;
   const c = Math.cos(facing || 0);
@@ -190,7 +211,8 @@ export function drawScene3(ctx, cam, w, h, parts) {
       const idx = FACE[fi];
       const poly = idx.map((i) => pts[i]);
       if (poly.some((p) => !p)) continue;
-      const depth = (poly[0].z + poly[1].z + poly[2].z + poly[3].z) / 4;
+      const depth = (poly[0].z + poly[1].z + poly[2].z + poly[3].z) / 4
+        + (part.name?.endsWith("_eye") ? -0.08 : part.name === "face" ? -0.02 : 0);
       faces.push({ poly, depth, color: part.color, n: faceNormal(part, fi, part.facing), cam, ghost: !!part.ghost });
     }
   }
@@ -203,7 +225,7 @@ export function drawScene3(ctx, cam, w, h, parts) {
     if (f.ghost) ctx.globalAlpha = 0.5;
     ctx.fillStyle = shade(f.color, f.n, cam);
     ctx.fill();
-    ctx.strokeStyle = f.ghost ? "rgba(215,177,90,0.9)" : "rgba(12,16,20,0.28)";
+    ctx.strokeStyle = f.ghost ? "rgba(215,177,90,0.9)" : "rgba(40, 32, 24, 0.42)";
     ctx.lineWidth = f.ghost ? 1.4 : 1;
     ctx.stroke();
     ctx.globalAlpha = 1;
@@ -282,7 +304,7 @@ export function orbitCam(cam, dYaw, dPitch) {
 }
 
 export function zoomCam(cam, factor) {
-  cam.dist = Math.min(60, Math.max(8, cam.dist * factor));
+  cam.dist = Math.min(60, Math.max(3.2, cam.dist * factor));
 }
 
 export { eyeOf };

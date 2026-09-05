@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>body preview</title>
+  <style>
+    html, body { margin: 0; background: #efe6d6; color: #2a2420; font: 14px/1.4 sans-serif; }
+    canvas { display: block; width: 100%; height: 100vh; }
+    #bar {
+      position: fixed; top: 12px; left: 12px; z-index: 2;
+      background: rgba(255, 250, 242, 0.94); border: 1px solid #c4b8a4;
+      padding: 8px 12px; border-radius: 6px;
+    }
+    #bar label, #bar button { cursor: pointer; user-select: none; margin-right: 10px; }
+    #bar button { font: inherit; }
+  </style>
+</head>
+<body>
+  <div id="bar">
+    <label><input type="checkbox" id="armor" checked /> armor plates</label>
+    <button type="button" id="dump">download mosaic</button>
+  </div>
+  <canvas id="c"></canvas>
+  <script type="module">
+    import { unitHitboxes, partFamily, clipReport, formatClipReport } from "./engine/body.js";
+    import { Posture } from "./engine/model.js";
+    import { CoverMode } from "./engine/cover.js";
+    import { drawScene3, drawPolyline3, makeCam3 } from "./view3d.js";
+
+    const ALL_ARMOR = [
+      { id: "front_plate" }, { id: "back_plate" }, { id: "l_side_plate" },
+      { id: "r_side_plate" }, { id: "abdomen_plate" }, { id: "l_shoulder_pad" },
+      { id: "r_shoulder_pad" },
+    ];
+    const BG = "#efe6d6";
+
+    function partHex(name) {
+      if (name.startsWith("gun")) {
+        if (name.includes("mag")) return "#1c1e22";
+        if (name.includes("stock") || name.includes("grip")) return "#4a3d30";
+        if (name.includes("handguard") || name.includes("receiver")) return "#2e343c";
+        if (name.includes("sight")) return "#5a616a";
+        return "#4a545e";
+      }
+      if (name.endsWith("_eye")) return "#0a1016";
+      const fam = partFamily(name);
+      if (fam === "armor") return "#8a96a4";
+      const [r, g, b] = [142, 176, 210];
+      const k = fam === "head" ? 0.62 : fam === "legs" ? 0.52 : fam === "hands" ? 0.72 : fam === "arms" ? 0.78
+        : name === "abdomen" || name === "pelvis" ? 0.86 : 1;
+      const h = (n) => Math.max(0, Math.min(255, Math.round(n * k))).toString(16).padStart(2, "0");
+      return `#${h(r)}${h(g)}${h(b)}`;
+    }
+
+    const poses = [
+      { key: "stand", posture: Posture.Standing, cover: null },
+      { key: "crouch", posture: Posture.Crouching, cover: null },
+      { key: "post", posture: Posture.Crouching, cover: { mode: CoverMode.Post, lip: 1.15 } },
+      { key: "hide", posture: Posture.Crouching, cover: { mode: CoverMode.Hide, lip: 1.15 } },
+      { key: "prone", posture: Posture.Prone, cover: null },
+    ];
+    const views = [
+      { key: "front", facing: -Math.PI / 2 },
+      { key: "3/4", facing: -Math.PI / 4 },
+      { key: "side", facing: 0 },
+      { key: "back", facing: Math.PI / 2 },
+    ];
+
+    function figure(pose, view, armor) {
+      return {
+        pos: { x: 0, y: 0 },
+        facing: view.facing,
+        posture: pose.posture,
+        cover_use: pose.cover,
+        armor,
+      };
+    }
+
+    function bounds(boxes) {
+      let x0 = Infinity, y0 = Infinity, z0 = Infinity, x1 = -Infinity, y1 = -Infinity, z1 = -Infinity;
+      for (const b of boxes) {
+        for (const p of b.corners) {
+          x0 = Math.min(x0, p.x); y0 = Math.min(y0, p.y); z0 = Math.min(z0, p.z);
+          x1 = Math.max(x1, p.x); y1 = Math.max(y1, p.y); z1 = Math.max(z1, p.z);
+        }
+      }
+      return { x0, y0, z0, x1, y1, z1 };
+    }
+
+    function frameCam(boxes) {
+      const b = bounds(boxes);
+      const cam = makeCam3();
+      cam.target = {
+        x: (b.x0 + b.x1) * 0.5,
+        y: (b.y0 + b.y1) * 0.5,
+        z: (b.z0 + b.z1) * 0.5,
+      };
+      const span = Math.max(b.x1 - b.x0, b.y1 - b.y0, b.z1 - b.z0, 0.9);
+      cam.yaw = -Math.PI / 2;
+      cam.pitch = 0.18;
+      cam.dist = Math.max(2.6, span * 2.05);
+      return cam;
+    }
+
+    function groundPad() {
+      const s = 1.25;
+      return [
+        { x: -s, y: -s, z: 0.01 }, { x: s, y: -s, z: 0.01 },
+        { x: s, y: s, z: 0.01 }, { x: -s, y: s, z: 0.01 }, { x: -s, y: -s, z: 0.01 },
+      ];
+    }
+
+    function paintCell(w, h, pose, view, armor) {
+      const off = document.createElement("canvas");
+      off.width = w;
+      off.height = h;
+      const ctx = off.getContext("2d");
+      ctx.fillStyle = BG;
+      ctx.fillRect(0, 0, w, h);
+      const u = figure(pose, view, armor);
+      const boxes = unitHitboxes(u).map((b) => ({ ...b, color: partHex(b.name), facing: u.facing }));
+      const cam = frameCam(boxes);
+      drawPolyline3(ctx, cam, w, h, groundPad(), "rgba(80, 70, 55, 0.28)");
+      drawScene3(ctx, cam, w, h, boxes);
+      ctx.fillStyle = "#5a3f20";
+      ctx.font = `${Math.max(13, Math.round(h * 0.045))}px sans-serif`;
+      ctx.textAlign = "center";
+      ctx.fillText(`${pose.key} · ${view.key}`, w / 2, h - 10);
+      return off;
+    }
+
+    function render() {
+      const armor = document.getElementById("armor").checked ? ALL_ARMOR : [];
+      const canvas = document.getElementById("c");
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(window.innerWidth * dpr);
+      canvas.height = Math.floor(window.innerHeight * dpr);
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = BG;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const cols = views.length;
+      const rows = poses.length;
+      const cellW = Math.floor(canvas.width / cols);
+      const cellH = Math.floor(canvas.height / rows);
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const snippet = paintCell(cellW, cellH, poses[r], views[c], armor);
+          ctx.drawImage(snippet, c * cellW, r * cellH);
+        }
+      }
+      window.__mosaicReady = true;
+      for (const pose of poses) {
+        const boxes = unitHitboxes(figure(pose, views[0], armor));
+        console.log(formatClipReport(pose.key, clipReport(boxes)));
+      }
+    }
+
+    document.getElementById("armor").onchange = render;
+    document.getElementById("dump").onclick = () => {
+      const a = document.createElement("a");
+      a.href = document.getElementById("c").toDataURL("image/png");
+      a.download = "body-preview-mosaic.png";
+      a.click();
+    };
+    render();
+    window.addEventListener("resize", render);
+  </script>
+</body>
+</html>
