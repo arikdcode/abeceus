@@ -1,0 +1,16 @@
+{
+  "name": "open 1v1",
+  "seed": 7,
+  "map": {
+    "min": [0, 0],
+    "max": [16, 12],
+    "grid": 1.0,
+    "surprise0": 1.0,
+    "surprise1": 1.0,
+    "cover": []
+  },
+  "units": [
+    {"name": "Alpha-1", "team": 0, "pos": [4.0, 6.0], "facing": 0.0, "initiative": 3, "firearms": 4, "awareness": 3, "endurance": 3, "experience": 0.5},
+    {"name": "Bravo-1", "team": 1, "pos": [12.0, 6.0], "facing": 3.14, "initiative": 3, "firearms": 4, "awareness": 3, "endurance": 3, "experience": 0.5}
+  ]
+}

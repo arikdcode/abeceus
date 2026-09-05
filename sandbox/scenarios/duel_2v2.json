@@ -1,0 +1,22 @@
+{
+  "name": "2v2 courtyard",
+  "seed": 1,
+  "map": {
+    "min": [0, 0],
+    "max": [20, 16],
+    "grid": 1.0,
+    "surprise0": 1.0,
+    "surprise1": 0.75,
+    "cover": [
+      {"min": [7.5, 3.0], "max": [9.5, 6.5], "height": 1.15, "protection": 16, "durability": 10},
+      {"min": [11.0, 9.5], "max": [13.2, 12.8], "height": 1.2, "protection": 16, "durability": 10},
+      {"min": [4.0, 11.0], "max": [6.0, 13.0], "height": 0.9, "protection": 10, "durability": 6}
+    ]
+  },
+  "units": [
+    {"name": "Alpha-1", "team": 0, "pos": [3.0, 5.5], "facing": 0.0, "initiative": 4, "firearms": 4, "awareness": 4, "endurance": 3, "experience": 0.7},
+    {"name": "Alpha-2", "team": 0, "pos": [3.2, 10.5], "facing": 0.15, "initiative": 3, "firearms": 3, "awareness": 3, "endurance": 3, "experience": 0.3},
+    {"name": "Bravo-1", "team": 1, "pos": [17.0, 6.0], "facing": 3.14, "initiative": 4, "firearms": 3, "awareness": 3, "endurance": 3, "experience": 0.55},
+    {"name": "Bravo-2", "team": 1, "pos": [16.5, 11.2], "facing": 3.0, "initiative": 2, "firearms": 2, "awareness": 2, "endurance": 3, "experience": 0.2}
+  ]
+}
