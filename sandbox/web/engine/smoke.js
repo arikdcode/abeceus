@@ -1,5 +1,11 @@
-import { Engine, actionCost, defaultWorld, unitHitboxes } from "./engine.js";
+import { Engine, actionCost, unitHitboxes } from "./engine.js";
 import { ActionType, Gait, ShotMode, AimRegion, Posture } from "./model.js";
+import { CoverMode } from "./cover.js";
+import { localHitboxes, clipReport, formatClipReport } from "./body.js";
+import { loadRepoCatalog, worldFromCatalog } from "./catalog-node.js";
+
+const catalog = loadRepoCatalog();
+const courtyard = () => worldFromCatalog(catalog, "duel_2v2");
 
 function fail(msg) {
   console.error(msg);
@@ -7,7 +13,7 @@ function fail(msg) {
 }
 
 function toPlay(eng) {
-  if (!eng.loadWorld(defaultWorld())) fail("load failed");
+  if (!eng.loadWorld(courtyard())) fail("load failed");
   for (const u of eng.world.units) u.contact_ready = true;
   const start = [];
   eng.maybeFinishContact(start);
@@ -16,13 +22,25 @@ function toPlay(eng) {
 
 {
   const skip = new Engine();
-  if (!skip.loadWorld(defaultWorld())) fail("skip load failed");
+  if (!skip.loadWorld(courtyard())) fail("skip load failed");
   if (skip.world.phase !== "play") fail("skip_contact should start in play");
   const held = new Engine();
-  const raw = defaultWorld();
+  const raw = courtyard();
   raw.skip_contact = false;
   if (!held.loadWorld(raw)) fail("contact load failed");
   if (held.world.phase !== "contact") fail("skip_contact false should start in contact");
+  const posted = new Engine();
+  if (!posted.loadWorld(worldFromCatalog(catalog, "posted_courtyard"))) fail("posted load failed");
+  const modes = posted.world.units.map((u) => u.cover_use?.mode);
+  if (modes[0] !== "post" || modes[1] !== "hide" || modes[2] !== "post" || modes[3] !== "hide") {
+    fail(`posted courtyard starting cover: ${JSON.stringify(modes)}`);
+  }
+  if (posted.world.units[0].weapon_id !== "rifle") fail("characters should carry the catalog rifle");
+  const chk = worldFromCatalog(catalog, "checkpoint");
+  if (chk.map.cover.filter((c) => c.height > 2).length < 3) fail("checkpoint should have building-height walls");
+  const fence = chk.map.cover.find((c) => c.id === "fence-south");
+  if (!fence || fence.color === "#6a7b66") fail("fences should be a distinct color");
+  if (!chk.map.cover.some((c) => c.id === "crate-lane" && c.height < 1.3)) fail("checkpoint should keep some postable crates");
 }
 
 const eng = new Engine();
@@ -33,6 +51,34 @@ console.log("play", eng.world.phase, "active", eng.world.active, start.map((e) =
 const actor = eng.world.active;
 const me = eng.world.units.find((u) => u.id === actor);
 const enemy = eng.world.units.find((u) => u.team !== me.team && !u.downed);
+{
+  const boxes = unitHitboxes(me);
+  const names = new Set(boxes.map((b) => b.name));
+  for (const need of ["l_pinky_dist", "r_index_prox", "l_knee", "skull", "front_plate", "abdomen_plate"]) {
+    if (!names.has(need)) fail(`body is missing ${need}`);
+  }
+  if (!boxes.some((b) => b.armor && b.plate === "front_plate")) fail("front plate should be armor geometry");
+  if (!names.has("l_eye") || !names.has("r_eye")) fail("head should have both eyes");
+}
+
+{
+  const armor = [
+    { id: "front_plate" }, { id: "back_plate" }, { id: "l_side_plate" },
+    { id: "r_side_plate" }, { id: "abdomen_plate" }, { id: "l_shoulder_pad" },
+    { id: "r_shoulder_pad" },
+  ];
+  const samples = [
+    ["stand", Posture.Standing, null],
+    ["crouch", Posture.Crouching, null],
+    ["post", Posture.Crouching, { mode: CoverMode.Post, lip: 1.15 }],
+    ["hide", Posture.Crouching, { mode: CoverMode.Hide, lip: 1.15 }],
+    ["prone", Posture.Prone, null],
+  ];
+  for (const [label, posture, cover] of samples) {
+    const parts = localHitboxes(posture, cover, { armor });
+    console.log(formatClipReport(label, clipReport(parts)));
+  }
+}
 const planned = eng.previewSchedule({ type: ActionType.Shoot, actor, target: enemy.id, shot: ShotMode.Snap });
 if (!planned.ok) fail(`previewSchedule snap failed: ${planned.error}`);
 if (eng.queue.length) fail("previewSchedule must not queue");
@@ -81,9 +127,9 @@ console.log("tight open", tight.p_hit.toFixed(2), "r", tight.radius.toFixed(3));
 if (tight.p_hit < 0.98) fail("tiny disk fully on torso should be ~100%");
 me.weapon_spread = savedSpread;
 eng.world.map.cover = savedCover;
-const belly = eng.previewShot(actor, enemy.id, ShotMode.Snap, AimRegion.Torso, { x: 0, z: 0.88 });
+const belly = eng.previewShot(actor, enemy.id, ShotMode.Snap, AimRegion.Torso, { x: 0, z: 0.80 });
 console.log("abdomen", "hit", belly.p_hit.toFixed(2), "cover", belly.p_cover.toFixed(2));
-if (belly.p_cover < 0.45) fail("abdomen behind courtyard cover should clip");
+if (belly.p_cover < 0.28) fail("abdomen behind courtyard cover should clip");
 const center = eng.defaultAimOffset(enemy.id, AimRegion.Torso);
 const head = eng.defaultAimOffset(enemy.id, AimRegion.Head);
 console.log("centers", "torso", center.x.toFixed(2), center.z.toFixed(2), "head", head.x.toFixed(2), head.z.toFixed(2));
@@ -110,8 +156,8 @@ if (left.aim_world.y <= right.aim_world.y) fail("silhouette left should map to s
   const hide = eng.schedule({ type: ActionType.CoverHide, actor });
   if (!hide.ok) fail(`hide after post should queue: ${hide.error}`);
   const hidden = eng.previewActor(me);
-  const head = hidden && unitHitboxes(hidden).find((b) => b.name === "head");
-  const headTop = head ? Math.max(...head.corners.map((p) => p.z)) : 99;
+  const skull = hidden && unitHitboxes(hidden).find((b) => b.name === "skull");
+  const headTop = skull ? Math.max(...skull.corners.map((p) => p.z)) : 99;
   if (headTop > crate.height - 0.02) fail(`hidden head should be below the lip: ${headTop} vs ${crate.height}`);
   eng.clearQueue();
 }

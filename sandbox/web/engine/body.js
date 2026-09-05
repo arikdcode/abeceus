@@ -86,6 +86,17 @@ function bone(name, a, b, rad, extra = {}) {
   return part(name, rad, rad, half, mid3(a, b), orientZ(d.x, d.y, d.z), extra);
 }
 
+function flatFoot(name, heel, toe) {
+  const dx = toe.x - heel.x;
+  const dy = toe.y - heel.y;
+  const halfLen = Math.max(0.05, Math.hypot(dx, dy) * 0.5);
+  return part(name, 0.038, halfLen, 0.022, {
+    x: (heel.x + toe.x) * 0.5,
+    y: (heel.y + toe.y) * 0.5,
+    z: 0.028,
+  }, { rx: 0, ry: 0, rz: Math.atan2(-dx, dy) });
+}
+
 function ball(name, p, rad, extra = {}) {
   return part(name, rad, rad, rad * 0.88, p, {}, extra);
 }
@@ -137,8 +148,13 @@ function addHand(out, prefix, wrist, forward, extra = {}) {
 function assemble(j) {
   const p = [];
   const look = j.look || { x: 0, y: 1, z: 0 };
-  p.push(bone("l_foot", j.l_heel, j.l_toe, 0.036));
-  p.push(bone("r_foot", j.r_heel, j.r_toe, 0.036));
+  if (j.proneFeet) {
+    p.push(bone("l_foot", j.l_heel, j.l_toe, 0.036));
+    p.push(bone("r_foot", j.r_heel, j.r_toe, 0.036));
+  } else {
+    p.push(flatFoot("l_foot", j.l_heel, j.l_toe));
+    p.push(flatFoot("r_foot", j.r_heel, j.r_toe));
+  }
   p.push(ball("l_ankle", j.l_ankle, 0.034));
   p.push(ball("r_ankle", j.r_ankle, 0.034));
   p.push(bone("l_shin", j.l_knee, j.l_ankle, 0.044));
@@ -242,6 +258,10 @@ function rifleJoints(base, stock, muzzle, opt = {}) {
   };
 }
 
+function aimLook() {
+  return { x: 0.28, y: 1, z: -0.08 };
+}
+
 function standJoints() {
   const hips = {
     l_heel: { x: -0.13, y: 0.18, z: 0.03 },
@@ -258,34 +278,34 @@ function standJoints() {
     abdomen: { x: 0.00, y: 0.02, z: 1.14 },
     chest: { x: 0.01, y: 0.05, z: 1.36 },
     neck: { x: 0.03, y: 0.08, z: 1.54 },
-    skull: { x: 0.04, y: 0.12, z: 1.66 },
+    skull: { x: 0.01, y: 0.12, z: 1.66 },
     l_shoulder: { x: -0.20, y: 0.06, z: 1.45 },
     r_shoulder: { x: 0.20, y: 0.04, z: 1.44 },
   };
-  return rifleJoints(hips, { x: 0.16, y: 0.10, z: 1.42 }, { x: 0.10, y: 0.86, z: 1.40 });
+  return { ...rifleJoints(hips, { x: 0.13, y: 0.12, z: 1.47 }, { x: 0.09, y: 0.88, z: 1.45 }), look: aimLook() };
 }
 
 function crouchJoints() {
   const hips = {
     l_heel: { x: -0.16, y: 0.16, z: 0.03 },
-    l_toe: { x: -0.17, y: 0.38, z: 0.025 },
+    l_toe: { x: -0.17, y: 0.40, z: 0.025 },
     l_ankle: { x: -0.16, y: 0.20, z: 0.09 },
-    l_knee: { x: -0.14, y: 0.26, z: 0.46 },
-    l_hip: { x: -0.12, y: 0.00, z: 0.70 },
-    r_heel: { x: 0.16, y: -0.14, z: 0.03 },
-    r_toe: { x: 0.17, y: 0.08, z: 0.025 },
-    r_ankle: { x: 0.16, y: -0.08, z: 0.09 },
-    r_knee: { x: 0.13, y: -0.02, z: 0.45 },
-    r_hip: { x: 0.12, y: -0.10, z: 0.70 },
-    pelvis: { x: 0.00, y: -0.05, z: 0.72 },
-    abdomen: { x: 0.00, y: 0.04, z: 0.90 },
-    chest: { x: 0.01, y: 0.10, z: 1.10 },
-    neck: { x: 0.03, y: 0.14, z: 1.26 },
-    skull: { x: 0.04, y: 0.18, z: 1.38 },
-    l_shoulder: { x: -0.20, y: 0.12, z: 1.18 },
-    r_shoulder: { x: 0.20, y: 0.10, z: 1.17 },
+    l_knee: { x: -0.14, y: 0.34, z: 0.40 },
+    l_hip: { x: -0.12, y: -0.08, z: 0.58 },
+    r_heel: { x: 0.16, y: -0.16, z: 0.03 },
+    r_toe: { x: 0.17, y: 0.06, z: 0.025 },
+    r_ankle: { x: 0.16, y: -0.10, z: 0.09 },
+    r_knee: { x: 0.13, y: 0.00, z: 0.39 },
+    r_hip: { x: 0.12, y: -0.14, z: 0.58 },
+    pelvis: { x: 0.00, y: -0.12, z: 0.59 },
+    abdomen: { x: 0.00, y: -0.02, z: 0.78 },
+    chest: { x: 0.01, y: 0.06, z: 1.00 },
+    neck: { x: 0.03, y: 0.10, z: 1.16 },
+    skull: { x: 0.01, y: 0.14, z: 1.28 },
+    l_shoulder: { x: -0.20, y: 0.08, z: 1.08 },
+    r_shoulder: { x: 0.20, y: 0.06, z: 1.07 },
   };
-  return rifleJoints(hips, { x: 0.16, y: 0.16, z: 1.15 }, { x: 0.10, y: 0.90, z: 1.13 });
+  return { ...rifleJoints(hips, { x: 0.13, y: 0.14, z: 1.13 }, { x: 0.09, y: 0.88, z: 1.12 }), look: aimLook() };
 }
 
 function postJoints(aimZ) {
@@ -304,75 +324,78 @@ function postJoints(aimZ) {
     abdomen: { x: 0.00, y: 0.06, z: 0.98 },
     chest: { x: 0.01, y: 0.12, z: aimZ - 0.16 },
     neck: { x: 0.03, y: 0.16, z: aimZ - 0.01 },
-    skull: { x: 0.04, y: 0.20, z: aimZ + 0.11 },
+    skull: { x: 0.01, y: 0.20, z: aimZ + 0.11 },
     l_shoulder: { x: -0.20, y: 0.14, z: aimZ - 0.08 },
     r_shoulder: { x: 0.20, y: 0.12, z: aimZ - 0.09 },
   };
-  return rifleJoints(hips, { x: 0.16, y: 0.18, z: aimZ - 0.02 }, { x: 0.10, y: 0.92, z: aimZ });
+  return { ...rifleJoints(hips, { x: 0.16, y: 0.18, z: aimZ - 0.02 }, { x: 0.11, y: 0.92, z: aimZ }), look: aimLook() };
 }
 
 function hideJoints(lip) {
-  const lShoulder = { x: -0.17, y: 0.18, z: 0.58 };
-  const rShoulder = { x: 0.17, y: 0.14, z: 0.56 };
-  const stock = { x: 0.13, y: 0.34, z: 0.36 };
-  const muzzle = { x: 0.09, y: 0.70, z: Math.min(lip - 0.58, 0.40) };
+  const lShoulder = { x: -0.18, y: 0.08, z: 0.76 };
+  const rShoulder = { x: 0.18, y: 0.04, z: 0.75 };
+  const stock = { x: 0.14, y: 0.20, z: 0.64 };
+  const muzzle = { x: 0.56, y: 0.30, z: 0.60 };
   return {
-    l_heel: { x: -0.16, y: 0.20, z: 0.03 },
-    l_toe: { x: -0.17, y: 0.42, z: 0.025 },
-    l_ankle: { x: -0.16, y: 0.24, z: 0.09 },
-    l_knee: { x: -0.15, y: 0.48, z: 0.26 },
-    l_hip: { x: -0.12, y: -0.22, z: 0.42 },
-    r_heel: { x: 0.16, y: -0.30, z: 0.03 },
-    r_toe: { x: 0.17, y: -0.08, z: 0.025 },
-    r_ankle: { x: 0.16, y: -0.24, z: 0.09 },
-    r_knee: { x: 0.14, y: 0.04, z: 0.18 },
-    r_hip: { x: 0.12, y: -0.28, z: 0.41 },
-    pelvis: { x: 0.00, y: -0.26, z: 0.42 },
-    abdomen: { x: 0.00, y: -0.08, z: 0.50 },
-    chest: { x: 0.01, y: 0.14, z: 0.56 },
-    neck: { x: 0.02, y: 0.26, z: 0.68 },
-    skull: { x: 0.03, y: 0.36, z: Math.min(lip - 0.32, 0.76) },
+    l_heel: { x: -0.16, y: 0.18, z: 0.03 },
+    l_toe: { x: -0.17, y: 0.40, z: 0.025 },
+    l_ankle: { x: -0.16, y: 0.22, z: 0.09 },
+    l_knee: { x: -0.14, y: 0.34, z: 0.38 },
+    l_hip: { x: -0.12, y: -0.10, z: 0.52 },
+    r_heel: { x: 0.16, y: -0.20, z: 0.03 },
+    r_toe: { x: 0.17, y: 0.02, z: 0.025 },
+    r_ankle: { x: 0.16, y: -0.14, z: 0.09 },
+    r_knee: { x: 0.13, y: -0.04, z: 0.32 },
+    r_hip: { x: 0.12, y: -0.16, z: 0.51 },
+    pelvis: { x: 0.00, y: -0.14, z: 0.52 },
+    abdomen: { x: 0.00, y: -0.04, z: 0.62 },
+    chest: { x: 0.01, y: 0.08, z: 0.72 },
+    neck: { x: 0.02, y: 0.14, z: 0.84 },
+    skull: { x: 0.02, y: 0.18, z: Math.min(lip - 0.22, 0.94) },
     l_shoulder: lShoulder,
     r_shoulder: rShoulder,
     ...rifleJoints({ l_shoulder: lShoulder, r_shoulder: rShoulder }, stock, muzzle, {
-      rHint: { x: 0.04, y: 0.10, z: -0.02 },
-      lHint: { x: -0.03, y: 0.12, z: -0.02 },
+      rAlong: 0.18,
+      lAlong: 0.40,
     }),
-    look: { x: 0.10, y: 0.72, z: -0.62 },
+    r_elbow: { x: 0.26, y: 0.06, z: 0.50 },
+    l_elbow: { x: 0.06, y: 0.22, z: 0.56 },
+    look: { x: 0.04, y: 1, z: -0.22 },
   };
 }
 
 function proneJoints() {
   const lShoulder = { x: -0.18, y: 0.38, z: 0.16 };
   const rShoulder = { x: 0.18, y: 0.38, z: 0.16 };
-  const stock = { x: 0.20, y: 0.64, z: 0.15 };
-  const muzzle = { x: 0.18, y: 1.38, z: 0.16 };
+  const stock = { x: 0.16, y: 0.42, z: 0.14 };
+  const muzzle = { x: 0.12, y: 1.16, z: 0.15 };
   return {
-    l_heel: { x: -0.14, y: -0.92, z: 0.05 },
-    l_toe: { x: -0.14, y: -0.70, z: 0.04 },
-    l_ankle: { x: -0.14, y: -0.86, z: 0.07 },
+    l_heel: { x: -0.18, y: -0.88, z: 0.04 },
+    l_toe: { x: -0.28, y: -1.06, z: 0.03 },
+    l_ankle: { x: -0.18, y: -0.92, z: 0.07 },
     l_knee: { x: -0.16, y: -0.46, z: 0.11 },
     l_hip: { x: -0.11, y: -0.04, z: 0.12 },
-    r_heel: { x: 0.14, y: -0.92, z: 0.05 },
-    r_toe: { x: 0.14, y: -0.70, z: 0.04 },
-    r_ankle: { x: 0.14, y: -0.86, z: 0.07 },
+    r_heel: { x: 0.18, y: -0.88, z: 0.04 },
+    r_toe: { x: 0.28, y: -1.06, z: 0.03 },
+    r_ankle: { x: 0.18, y: -0.92, z: 0.07 },
     r_knee: { x: 0.16, y: -0.46, z: 0.11 },
     r_hip: { x: 0.11, y: -0.04, z: 0.12 },
     pelvis: { x: 0.00, y: 0.00, z: 0.13 },
     abdomen: { x: 0.00, y: 0.14, z: 0.14 },
     chest: { x: 0.00, y: 0.24, z: 0.15 },
-    neck: { x: -0.02, y: 0.36, z: 0.21 },
-    skull: { x: -0.05, y: 0.44, z: 0.27 },
+    neck: { x: -0.01, y: 0.38, z: 0.22 },
+    skull: { x: -0.02, y: 0.48, z: 0.26 },
     l_shoulder: lShoulder,
     r_shoulder: rShoulder,
     ...rifleJoints({ l_shoulder: lShoulder, r_shoulder: rShoulder }, stock, muzzle, {
-      rAlong: 0.20,
-      lAlong: 0.44,
-      rHint: { x: 0.18, y: -0.02, z: -0.06 },
-      lHint: { x: -0.14, y: 0.04, z: 0.02 },
-      elbowMinZ: 0.11,
+      rAlong: 0.19,
+      lAlong: 0.40,
+      rHint: { x: 0.16, y: 0.00, z: -0.04 },
+      lHint: { x: -0.12, y: 0.04, z: 0.02 },
+      elbowMinZ: 0.10,
     }),
-    look: { x: 0.04, y: 1, z: -0.04 },
+    look: aimLook(),
+    proneFeet: true,
   };
 }
 
