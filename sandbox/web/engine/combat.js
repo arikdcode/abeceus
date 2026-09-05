@@ -2,6 +2,10 @@ import {
   add, sub, scale, length, normalize, rotate, angleOf, clampToAabb, pointInAabb, rayAabb, rayEllipse,
 } from "./vec.js";
 import { emptyChannels, unitAlive, Posture, Gait, ShotMode, AimRegion } from "./model.js";
+import {
+  localHitboxes, unitHitboxes, muzzleWorld, rayLocalBox, rayCover,
+  projectBoxesToView, regionCenterOffset,
+} from "./body.js";
 
 const PERSON_R = 0.28;
 const CLEAR = 0.12;
@@ -90,26 +94,26 @@ export function silhouetteFor(p) {
   ];
 }
 
-export function aimRegionRects(posture, aim) {
+export function aimRegionRects(posture, aim, attacker, target) {
+  if (attacker && target) {
+    const boxes = unitHitboxes(target);
+    const sil = projectBoxesToView(attacker, target, boxes);
+    if (aim === AimRegion.Head) return sil.filter((s) => s.name === "head");
+    if (aim === AimRegion.Legs) return sil.filter((s) => s.name === "l_leg" || s.name === "r_leg");
+    return sil.filter((s) => s.name === "torso" || s.name === "abdomen");
+  }
   const sil = silhouetteFor(posture);
   if (aim === AimRegion.Head) return sil.filter((s) => s.name === "head");
   if (aim === AimRegion.Legs) return sil.filter((s) => s.name === "l_leg" || s.name === "r_leg");
   return sil.filter((s) => s.name === "torso" || s.name === "abdomen");
 }
 
-export function resolveAimOffset(aim, posture, override) {
+export function resolveAimOffset(aim, posture, override, attacker, target) {
   const z = override?.z ?? override?.y;
   if (override && Number.isFinite(override.x) && Number.isFinite(z)) {
     return { x: override.x, z };
   }
-  const rects = aimRegionRects(posture, aim);
-  if (!rects.length) return { x: 0, z: 1.15 * silhouetteScaleZ(posture) };
-  let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
-  for (const r of rects) {
-    x0 = Math.min(x0, r.x0); x1 = Math.max(x1, r.x1);
-    z0 = Math.min(z0, r.z0); z1 = Math.max(z1, r.z1);
-  }
-  return { x: (x0 + x1) * 0.5, z: (z0 + z1) * 0.5 };
+  return regionCenterOffset(aim, posture, attacker, target);
 }
 
 export function aimPointOffset(aim, p, override) {
@@ -142,16 +146,26 @@ export function sampleDiskOffset(rng, radius) {
 }
 
 export function coverHeightAt(world, attacker, target, lat) {
-  const { perp, dist } = shotFrame(attacker, target);
+  const origin = muzzleWorld(attacker);
+  const { perp } = shotFrame(attacker, target);
   const through = add(target.pos, scale(perp, lat));
-  const shotDir = normalize(sub(through, attacker.pos));
-  let h = 0;
-  for (const c of world.map.cover) {
-    if (c.durability <= 0) continue;
-    const t = rayAabb(attacker.pos, shotDir, c.min, c.max, dist + 0.15);
-    if (t != null && t < dist + 0.15) h = Math.max(h, c.height);
+  let blockedZ = 0;
+  for (let z = 0.04; z <= 2.2; z += 0.07) {
+    const raw = { x: through.x - origin.x, y: through.y - origin.y, z: z - origin.z };
+    const len = Math.max(1e-6, Math.hypot(raw.x, raw.y, raw.z));
+    const dir = { x: raw.x / len, y: raw.y / len, z: raw.z / len };
+    let hit = false;
+    for (const c of world.map.cover) {
+      if (c.durability <= 0) continue;
+      const t = rayCover(origin, dir, c, len);
+      if (t != null && t > 0.08 && t < len - 0.06) {
+        hit = true;
+        break;
+      }
+    }
+    if (hit) blockedZ = z;
   }
-  return h;
+  return blockedZ;
 }
 
 export function coverProfile(world, attacker, target, x0, x1, steps = 28) {
@@ -165,7 +179,7 @@ export function coverProfile(world, attacker, target, x0, x1, steps = 28) {
 
 export function movementConeMult(g) {
   if (g === Gait.Run) return 1.65;
-  if (g === Gait.Sprint) return 3.2;
+  if (g === Gait.Sprint) return 4.6;
   return 1;
 }
 
@@ -267,58 +281,77 @@ export function resolveConeSample(world, attacker, target, mode, aim, dLat, dH, 
     armor_result: "",
   };
   const { dist, perp } = shotFrame(attacker, target);
-  const aimOff = resolveAimOffset(aim, target.posture, aimOffset);
+  const aimOff = resolveAimOffset(aim, target.posture, aimOffset, attacker, target);
   const lat = aimOff.x + (dLat || 0);
   const height = aimOff.z + (dH || 0);
   out.lateral = lat;
   out.height = height;
-  const through = add(target.pos, scale(perp, lat));
-  const shotDir = normalize(sub(through, attacker.pos));
+  const through2 = add(target.pos, scale(perp, lat));
+  const origin = muzzleWorld(attacker);
+  const through = { x: through2.x, y: through2.y, z: height };
+  const raw = { x: through.x - origin.x, y: through.y - origin.y, z: through.z - origin.z };
+  const len = Math.max(1e-6, Math.hypot(raw.x, raw.y, raw.z));
+  const shotDir3 = { x: raw.x / len, y: raw.y / len, z: raw.z / len };
+  const shotDir = normalize({ x: shotDir3.x, y: shotDir3.y });
   out.shot_dir = shotDir;
-  out.point = through;
+  out.origin3 = origin;
+  out.dir3 = shotDir3;
+  out.point = through2;
   const maxT = attacker.max_range;
 
   let bestT = maxT + 1;
+  let hitKind = "miss";
+  let hitUnit = 0;
+  let hitCover = -1;
+  let hitRegion = "miss";
+
   for (let i = 0; i < world.map.cover.length; i++) {
-    const t = coverBlocksHeight(world.map.cover[i], attacker.pos, shotDir, maxT, height);
-    if (t != null && t < bestT && t < dist + 0.15) {
+    const c = world.map.cover[i];
+    if (c.durability <= 0) continue;
+    const t = rayCover(origin, shotDir3, c, maxT);
+    if (t != null && t < bestT && t > 0.05) {
       bestT = t;
-      out.hit_cover = true;
-      out.cover_index = i;
-      out.point = add(attacker.pos, scale(shotDir, t));
-      out.t = t;
-      out.region = "cover";
+      hitKind = "cover";
+      hitCover = i;
+      hitRegion = "cover";
     }
   }
-  if (out.hit_cover) return out;
-
-  const sil = silhouetteFor(target.posture);
-  const reg = regionOf(sil, lat, height);
-  if (reg) {
-    out.hit_unit = true;
-    out.unit = target.id;
-    out.region = reg;
-    out.t = dist;
-    out.point = add(target.pos, scale(perp, lat));
-    return out;
-  }
-
   for (const u of world.units) {
-    if (u.id === attacker.id || u.id === target.id || !unitAlive(u)) continue;
-    const t = rayEllipse(attacker.pos, shotDir, u.pos, u.facing, u.sil_w * 0.5, u.sil_d * 0.5, maxT);
-    if (t != null && t < bestT && t > 0.2) {
-      bestT = t;
-      out.hit_unit = true;
-      out.unit = u.id;
-      out.t = t;
-      out.point = add(attacker.pos, scale(shotDir, t));
-      out.region = "torso";
+    if (u.id === attacker.id || !unitAlive(u)) continue;
+    for (const b of localHitboxes(u.posture, u.cover_use)) {
+      if (!b.flesh) continue;
+      const t = rayLocalBox(origin, shotDir3, b, u.pos, u.facing || 0, maxT);
+      if (t != null && t < bestT && t > 0.05) {
+        bestT = t;
+        hitKind = "unit";
+        hitUnit = u.id;
+        hitRegion = b.name;
+      }
     }
   }
-  if (!out.hit_unit) {
-    out.t = maxT;
-    out.point = add(attacker.pos, scale(shotDir, maxT));
+
+  out.t = bestT <= maxT ? bestT : maxT;
+  out.point = {
+    x: origin.x + shotDir3.x * out.t,
+    y: origin.y + shotDir3.y * out.t,
+  };
+  out.point3 = {
+    x: origin.x + shotDir3.x * out.t,
+    y: origin.y + shotDir3.y * out.t,
+    z: origin.z + shotDir3.z * out.t,
+  };
+  if (hitKind === "cover") {
+    out.hit_cover = true;
+    out.cover_index = hitCover;
+    out.region = "cover";
+  } else if (hitKind === "unit") {
+    out.hit_unit = true;
+    out.unit = hitUnit;
+    out.region = hitRegion;
+  } else {
     out.region = "miss";
+    out.t = maxT;
+    out.point = { x: origin.x + shotDir.x * maxT, y: origin.y + shotDir.y * maxT };
   }
   return out;
 }
@@ -339,10 +372,10 @@ function eachDiskSample(radius, fn) {
 export function previewDisk(world, attacker, target, mode, aim, aimOffset) {
   const { dist, perp } = shotFrame(attacker, target);
   const { acc, radius } = accuracyRadius(attacker, mode, dist, attacker.last_gait);
-  const aimOff = resolveAimOffset(aim, target.posture, aimOffset);
+  const aimOff = resolveAimOffset(aim, target.posture, aimOffset, attacker, target);
   const aimWorld = add(target.pos, scale(perp, aimOff.x));
   const shotDir = normalize(sub(aimWorld, attacker.pos));
-  const sil = silhouetteFor(target.posture);
+  const sil = projectBoxesToView(attacker, target, unitHitboxes(target));
   let hits = 0;
   let covers = 0;
   let n = 0;
@@ -364,6 +397,7 @@ export function previewDisk(world, attacker, target, mode, aim, aimOffset) {
     p_hit: n ? hits / n : 0,
     p_cover: n ? covers / n : 0,
     origin: { ...attacker.pos },
+    origin3: muzzleWorld(attacker),
     aim_dir: shotDir,
     aim_world: aimWorld,
     aim_offset: aimOff,

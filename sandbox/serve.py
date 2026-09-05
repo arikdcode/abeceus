@@ -2,17 +2,48 @@
 """Static server for the browser sandbox. Open http://127.0.0.1:8080/web/"""
 
 import http.server
+import json
 import os
 import socketserver
 import sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
+AGENT = os.path.join(ROOT, ".agent")
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8080
+
+
+def _write_dump(payload):
+    os.makedirs(AGENT, exist_ok=True)
+    last = os.path.join(AGENT, "last.json")
+    hist = os.path.join(AGENT, "history.jsonl")
+    text = json.dumps(payload, default=str)
+    with open(last, "w", encoding="utf-8") as f:
+        f.write(text)
+        f.write("\n")
+    with open(hist, "a", encoding="utf-8") as f:
+        f.write(text)
+        f.write("\n")
+    lines = open(hist, encoding="utf-8").read().splitlines()
+    if len(lines) > 40:
+        with open(hist, "w", encoding="utf-8") as f:
+            f.write("\n".join(lines[-40:]))
+            f.write("\n")
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=ROOT, **kwargs)
+
+    def end_headers(self):
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        super().end_headers()
+
+    def do_OPTIONS(self):
+        self.send_response(204)
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.end_headers()
 
     def do_GET(self):
         if self.path in ("/", "/index.html"):
@@ -20,7 +51,33 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.send_header("Location", "/web/")
             self.end_headers()
             return
+        if self.path.split("?")[0] in ("/debug/last.json", "/debug/dump"):
+            path = os.path.join(AGENT, "last.json")
+            if not os.path.isfile(path):
+                self.send_error(404, "no dump yet")
+                return
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            with open(path, "rb") as f:
+                self.wfile.write(f.read())
+            return
         return super().do_GET()
+
+    def do_POST(self):
+        if self.path.split("?")[0] != "/debug/dump":
+            self.send_error(404)
+            return
+        n = int(self.headers.get("Content-Length") or 0)
+        raw = self.rfile.read(n) if n else b"{}"
+        try:
+            payload = json.loads(raw.decode("utf-8"))
+        except json.JSONDecodeError:
+            self.send_error(400, "bad json")
+            return
+        _write_dump(payload)
+        self.send_response(204)
+        self.end_headers()
 
     def log_message(self, fmt, *args):
         sys.stderr.write("%s - %s\n" % (self.address_string(), fmt % args))

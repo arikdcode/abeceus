@@ -11,6 +11,10 @@ import {
   resolveAimOffset, worldAimPoint,
 } from "./combat.js";
 import { add, sub, scale, length, normalize, angleOf, clampToAabb, dot } from "./vec.js";
+import { partCenterOffset } from "./body.js";
+import {
+  CoverMode, resolveCoverUse, nearestUse, canPostOver, coverTransitionCost,
+} from "./cover.js";
 
 let nextQueueId = 1;
 
@@ -144,6 +148,15 @@ export function actionCost(unit, action, world) {
     if (contact) c.reaction = t;
     else c.legs = t;
     c.label = action.posture || "posture";
+  } else if (action.type === ActionType.CoverPost || action.type === ActionType.CoverHide) {
+    const mode = action.type === ActionType.CoverPost ? CoverMode.Post : CoverMode.Hide;
+    const t = coverTransitionCost(unit.cover_use?.mode || null, mode);
+    if (t) {
+      c.hands = t.hands * stretch;
+      c.legs = t.legs;
+      c.focus = t.focus * stretch;
+      c.label = t.label;
+    }
   } else if (action.type === ActionType.ReadyWeapon) {
     if (contact) c.reaction = 0.6;
     else {
@@ -176,6 +189,7 @@ export class Engine {
     this.initial = null;
     this.rng = new Rng(1);
     this.queue = [];
+    this.lastExec = null;
     this.overlap = false;
     this.fog = false;
     this.viewer = 0;
@@ -201,6 +215,7 @@ export class Engine {
     world.pending_ow = { active: false, watcher: 0, mover: 0 };
     this.queue = [];
     this.startContact();
+    if (world.skip_contact) this.skipContact();
     return true;
   }
 
@@ -396,11 +411,60 @@ export class Engine {
   plannedPos(unit) {
     let pos = { ...unit.pos };
     for (const item of this.queue) {
-      if (item.action.type === ActionType.Move && item.actor === unit.id && item.action.dest) {
+      if (item.actor !== unit.id) continue;
+      if ((item.action.type === ActionType.Move || item.action.type === ActionType.CoverPost || item.action.type === ActionType.CoverHide)
+        && item.action.dest) {
         pos = { ...item.action.dest };
       }
     }
     return pos;
+  }
+
+  plannedCover(unit) {
+    let use = unit.cover_use ? { ...unit.cover_use } : null;
+    for (const item of this.queue) {
+      if (item.actor !== unit.id) continue;
+      if (item.action.type === ActionType.Move || item.action.type === ActionType.SetPosture) use = null;
+      if (item.action.type === ActionType.CoverPost || item.action.type === ActionType.CoverHide) {
+        use = item.action.cover_use ? { ...item.action.cover_use } : { mode: item.action.type === ActionType.CoverPost ? CoverMode.Post : CoverMode.Hide };
+      }
+    }
+    return use;
+  }
+
+  plannedPosture(unit) {
+    let p = unit.posture;
+    for (const item of this.queue) {
+      if (item.actor === unit.id && item.action.type === ActionType.SetPosture && item.action.posture) {
+        p = item.action.posture;
+      }
+    }
+    return p;
+  }
+
+  plannedGait(unit) {
+    let g = unit.last_gait;
+    for (const item of this.queue) {
+      if (item.actor !== unit.id) continue;
+      if (item.action.type === ActionType.Move && item.action.gait) g = item.action.gait;
+      if (item.action.type === ActionType.CoverPost || item.action.type === ActionType.CoverHide || item.action.type === ActionType.SetPosture) {
+        g = Gait.Walk;
+      }
+    }
+    return g;
+  }
+
+  previewActor(unit, overrides = {}) {
+    if (!unit) return null;
+    const cover_use = overrides.cover_use !== undefined ? overrides.cover_use : this.plannedCover(unit);
+    return {
+      ...unit,
+      pos: overrides.pos ? { x: overrides.pos.x, y: overrides.pos.y } : this.plannedPos(unit),
+      posture: overrides.posture || this.plannedPosture(unit),
+      facing: overrides.facing != null ? overrides.facing : (cover_use?.facing ?? unit.facing),
+      last_gait: overrides.last_gait || this.plannedGait(unit),
+      cover_use,
+    };
   }
 
   earliestSlot(unit, cost, windowEnd = TURN_SECONDS) {
@@ -438,7 +502,7 @@ export class Engine {
     return Math.max(0, TURN_SECONDS - this.world.clock);
   }
 
-  schedule(raw) {
+  planQueueItem(raw) {
     const w = this.world;
     if (w.combat_over) return { ok: false, error: "combat is over" };
     if (w.pending_react.active || w.pending_ow.active) return { ok: false, error: "resolve interrupt first" };
@@ -454,13 +518,19 @@ export class Engine {
       action.from = preview.from;
       action.gait = preview.gait;
     }
-    const cost = actionCost(actor, action, w);
-    if (cost.duration < 0.01 && action.type !== ActionType.ContactReady) {
-      // free-ish actions still go on the queue at clock
+    if (action.type === ActionType.CoverPost || action.type === ActionType.CoverHide) {
+      const mode = action.type === ActionType.CoverPost ? CoverMode.Post : CoverMode.Hide;
+      const use = resolveCoverUse(w, this.plannedPos(actor), mode, {
+        index: action.cover_index, face: action.face,
+      });
+      if (!use) return { ok: false, error: mode === CoverMode.Post ? "not near postable cover" : "not near cover" };
+      action.dest = use.slot;
+      action.cover_index = use.index;
+      action.face = use.face;
+      action.cover_use = use;
     }
-    if (action.type === ActionType.Shoot && actor.last_gait === Gait.Sprint) {
-      return { ok: false, error: "cannot shoot while sprinting this turn" };
-    }
+    const costing = { ...actor, pos: this.plannedPos(actor), cover_use: this.plannedCover(actor) };
+    const cost = actionCost(costing, action, w);
     if (action.type === ActionType.Shoot && actor.mag <= 0) return { ok: false, error: "empty mag" };
     const overlap = !!(action.overlap ?? this.overlap);
     const t0 = overlap ? this.earliestSlot(actor, cost) : this.sequentialSlot(actor, cost);
@@ -468,22 +538,39 @@ export class Engine {
     if (w.clock + cost.duration > TURN_SECONDS + 1e-3 && t0 + cost.duration > TURN_SECONDS + 1e-3) {
       return { ok: false, error: "past the 5s window" };
     }
-    const item = {
-      id: nextQueueId++,
-      actor: actor.id,
-      action,
-      cost,
-      t0,
-      t1: t0 + Math.max(0.05, cost.duration),
-      overlap,
+    return {
+      ok: true,
+      item: {
+        id: 0,
+        actor: actor.id,
+        action,
+        cost,
+        t0,
+        t1: t0 + Math.max(0.05, cost.duration),
+        overlap,
+      },
     };
-    this.queue.push(item);
+  }
+
+  previewSchedule(raw) {
+    return this.planQueueItem(raw);
+  }
+
+  schedule(raw) {
+    const r = this.planQueueItem(raw);
+    if (!r.ok) return r;
+    r.item.id = nextQueueId++;
+    this.queue.push(r.item);
     this.queue.sort((a, b) => a.t0 - b.t0 || a.id - b.id);
-    return { ok: true, item };
+    return r;
   }
 
   unschedule(id) {
-    this.queue = this.queue.filter((q) => q.id !== id);
+    const items = [...this.queue].sort((a, b) => a.t0 - b.t0 || a.id - b.id);
+    const i = items.findIndex((q) => q.id === id);
+    if (i < 0) return;
+    const keep = new Set(items.slice(0, i).map((q) => q.id));
+    this.queue = this.queue.filter((q) => keep.has(q.id));
   }
 
   clearQueue() {
@@ -492,6 +579,7 @@ export class Engine {
 
   executeQueue() {
     const events = [];
+    const ran = [];
     if (!this.queue.length) return { ok: true, events: [{ kind: "rejected", text: "queue empty", actor: 0, other: 0, a: { x: 0, y: 0 }, b: { x: 0, y: 0 }, n: 0 }] };
     const items = [...this.queue];
     this.queue = [];
@@ -504,6 +592,17 @@ export class Engine {
       }
       const r = this.apply(item.action, { fromQueue: true, item });
       events.push(...r.events);
+      ran.push({
+        id: item.id,
+        type: item.action.type,
+        shot: item.action.shot || null,
+        gait: item.action.gait || null,
+        posture: item.action.posture || null,
+        t0: item.t0,
+        t1: item.t1,
+        ok: r.ok,
+        text: (r.events || []).map((e) => e.text).join(" | "),
+      });
       if (!r.ok) {
         ok = false;
         this.queue.unshift(...items.slice(items.indexOf(item) + 1));
@@ -512,6 +611,7 @@ export class Engine {
       this.world.clock = Math.max(this.world.clock, item.t1);
       this.recordTape(findUnit(this.world, item.actor), item.t0, item.cost);
     }
+    this.lastExec = { ok, clock: this.world.clock, ran, leftover: this.queue.map((q) => q.action.type) };
     return { ok, events };
   }
 
@@ -546,6 +646,8 @@ export class Engine {
         case ActionType.Reload: r = this.doReload(action); break;
         case ActionType.Bandage: r = this.doBandage(action); break;
         case ActionType.SetPosture: r = this.doPosture(action); break;
+        case ActionType.CoverPost:
+        case ActionType.CoverHide: r = this.doCoverUse(action); break;
         case ActionType.Overwatch: r = this.doOverwatch(action); break;
         case ActionType.ReadyWeapon: r = this.doReady(action); break;
         default: return this.reject(action, "illegal during play");
@@ -602,6 +704,7 @@ export class Engine {
     const from = { ...actor.pos };
     actor.pos = dest;
     actor.facing = angleOf(sub(dest, from));
+    actor.cover_use = null;
     const e = this.ev("moved", `${actor.name} ${gait}s`);
     e.actor = actor.id;
     e.a = from;
@@ -651,11 +754,14 @@ export class Engine {
       ls.shot_dir = s.shot_dir;
       ls.t = s.t;
       ls.region = s.region;
+      if (s.origin3) ls.origin3 = s.origin3;
+      if (s.dir3) ls.dir3 = s.dir3;
+      if (s.point3) ls.end3 = s.point3;
       if (s.hit_cover && s.cover_index >= 0) {
         applyCoverHit(w.map.cover[s.cover_index], actor.weapon_pen);
         ls.result = "cover";
         ls.blocked_cover = true;
-        events.push({ ...this.ev("shot", `${actor.name} hits cover`), actor: actor.id, other: target.id, a: actor.pos, b: s.point });
+        events.push({ ...this.ev("shot", `${actor.name} ${mode} hits cover`), actor: actor.id, other: target.id, a: actor.pos, b: s.point });
         continue;
       }
       if (s.hit_unit) {
@@ -670,7 +776,7 @@ export class Engine {
         ls.hit = true;
         ls.struck = struck.id;
         ls.result = s.region;
-        events.push({ ...this.ev("shot", `${actor.name} hits ${struck.name} ${wr.wound.description}`), actor: actor.id, other: struck.id, a: actor.pos, b: s.point });
+        events.push({ ...this.ev("shot", `${actor.name} ${mode} hits ${struck.name} ${wr.wound.description}`), actor: actor.id, other: struck.id, a: actor.pos, b: s.point });
         events.push({ ...this.ev("wound", wr.wound.description), actor: actor.id, other: struck.id, n: wr.wound.pain });
         if (wr.kill) {
           struck.dead = true;
@@ -682,7 +788,7 @@ export class Engine {
         }
       } else {
         ls.result = "miss";
-        events.push({ ...this.ev("shot", `${actor.name} misses ${target.name}`), actor: actor.id, other: target.id, a: actor.pos, b: s.point });
+        events.push({ ...this.ev("shot", `${actor.name} ${mode} misses ${target.name}`), actor: actor.id, other: target.id, a: actor.pos, b: s.point });
       }
     }
     w.last_shot = ls;
@@ -698,7 +804,6 @@ export class Engine {
     const w = this.world;
     const actor = findUnit(w, action.actor || w.active);
     if (!actor || actor.id !== w.active) return this.reject(action, "not your turn");
-    if (actor.last_gait === Gait.Sprint) return this.reject(action, "cannot shoot while sprinting this turn");
     const target = findUnit(w, action.target);
     if (!target || !unitAlive(target)) return this.reject(action, "bad target");
     if (target.team === actor.team) return this.reject(action, "friendly fire off");
@@ -766,7 +871,31 @@ export class Engine {
       if (err) return this.reject(action, err);
     }
     u.posture = action.posture;
+    u.cover_use = null;
     return { ok: true, events: [this.ev("moved", `${u.name} goes ${u.posture}`)] };
+  }
+
+  doCoverUse(action) {
+    const w = this.world;
+    const u = findUnit(w, action.actor || w.active);
+    if (!u || u.id !== w.active) return this.reject(action, "not your turn");
+    const mode = action.type === ActionType.CoverPost ? CoverMode.Post : CoverMode.Hide;
+    const use = action.cover_use || resolveCoverUse(w, u.pos, mode, {
+      index: action.cover_index, face: action.face,
+    });
+    if (!use) return this.reject(action, mode === CoverMode.Post ? "not near postable cover" : "not near cover");
+    if (u.cover_use?.mode === mode && u.cover_use.index === use.index && u.cover_use.face === use.face) {
+      return this.reject(action, mode === CoverMode.Post ? "already posted" : "already hidden");
+    }
+    const t = coverTransitionCost(u.cover_use?.mode || null, mode);
+    const err = spendChannels(u, t.hands, t.legs, t.focus, 0);
+    if (err) return this.reject(action, err);
+    u.pos = { ...use.slot };
+    u.facing = use.facing;
+    u.cover_use = { index: use.index, face: use.face, mode: use.mode, lip: use.lip };
+    u.last_gait = Gait.Walk;
+    const verb = mode === CoverMode.Post ? "posts on cover" : "hides behind cover";
+    return { ok: true, events: [this.ev("cover", `${u.name} ${verb}`)] };
   }
 
   doOverwatch(action) {
@@ -912,22 +1041,29 @@ export class Engine {
     return p;
   }
 
-  previewShot(actorId, targetId, mode, aim, aimOffset) {
+  previewShot(actorId, targetId, mode, aim, aimOffset, overrides) {
     const w = this.world;
     const actor = findUnit(w, actorId);
     const target = findUnit(w, targetId);
     const p = { ok: false, actor: actorId, target: targetId, distance: 0, cone_half_rad: 0, p_hit: 0, p_cover: 0, origin: actor?.pos, aim_dir: { x: 1, y: 0 } };
     if (!actor || !target || !unitAlive(actor) || !unitAlive(target)) return p;
-    const origin = this.plannedPos(actor);
-    const shooter = { ...actor, pos: origin };
-    if (length(sub(target.pos, origin)) < 0.2) return p;
+    const shooter = this.previewActor(actor, overrides);
+    if (length(sub(target.pos, shooter.pos)) < 0.2) return p;
     return previewDisk(w, shooter, target, mode || ShotMode.Snap, aim || AimRegion.Torso, aimOffset);
   }
 
-  defaultAimOffset(targetId, aim) {
+  defaultAimOffset(targetId, aim, overrides) {
     const target = findUnit(this.world, targetId);
+    const actor = findUnit(this.world, this.world.active);
     if (!target) return { x: 0, z: 1.1 };
-    return resolveAimOffset(aim || AimRegion.Torso, target.posture);
+    return resolveAimOffset(aim || AimRegion.Torso, target.posture, null, actor && this.previewActor(actor, overrides), target);
+  }
+
+  partAimOffset(targetId, part, overrides) {
+    const target = findUnit(this.world, targetId);
+    const actor = findUnit(this.world, this.world.active);
+    if (!target) return { x: 0, z: 1.1 };
+    return partCenterOffset(part, target.posture, actor && this.previewActor(actor, overrides), target);
   }
 
   bestAimOffset(_actorId, targetId, _mode, aim) {
@@ -973,7 +1109,7 @@ export class Engine {
       if (r.ok) return r.events;
     }
     const prev = this.previewShot(self.id, enemy.id, ShotMode.Snap, AimRegion.Torso);
-    if (self.mag > 0 && prev.p_hit > 0.18 && self.ch.hands > 1 && self.last_gait !== Gait.Sprint) {
+    if (self.mag > 0 && prev.p_hit > 0.18 && self.ch.hands > 1) {
       return this.apply({
         type: ActionType.Shoot, actor: self.id, target: enemy.id,
         shot: prev.p_hit > 0.35 && self.ch.hands > 1.8 ? ShotMode.Burst : ShotMode.Snap,
@@ -994,6 +1130,50 @@ export class Engine {
       if (r.ok) return r.events;
     }
     return this.apply({ type: ActionType.EndTurn, actor: self.id }).events;
+  }
+
+  dumpState(extra = {}) {
+    const w = this.world;
+    const u = findUnit(w, w.active);
+    return {
+      ...extra,
+      at: Date.now(),
+      scenario: w.scenario_name,
+      phase: w.phase,
+      round: w.round,
+      clock: w.clock,
+      window: this.remainingWindow(),
+      active: w.active,
+      last_gait: u?.last_gait || null,
+      planned: u ? {
+        pos: this.plannedPos(u),
+        posture: this.plannedPosture(u),
+        gait: this.plannedGait(u),
+        cover: this.plannedCover(u),
+      } : null,
+      queue: this.queue.map((q) => ({
+        id: q.id,
+        type: q.action.type,
+        shot: q.action.shot || null,
+        aim: q.action.aim || null,
+        gait: q.action.gait || null,
+        posture: q.action.posture || null,
+        target: q.action.target || null,
+        dest: q.action.dest || null,
+        t0: q.t0,
+        t1: q.t1,
+        overlap: !!q.overlap,
+        cost: q.cost,
+      })),
+      lastExec: this.lastExec,
+      units: w.units.map((x) => ({
+        id: x.id, name: x.name, team: x.team,
+        pos: { ...x.pos }, posture: x.posture, facing: x.facing,
+        last_gait: x.last_gait, cover_use: x.cover_use, mag: x.mag,
+        ch: { ...x.ch }, downed: x.downed, dead: x.dead,
+      })),
+      history: (w.history || []).slice(-40),
+    };
   }
 
   view(opts = {}) {
@@ -1053,7 +1233,7 @@ export class Engine {
         blood: u.blood, stress: u.stress, stress_tolerance: u.stress_tolerance,
         downed: u.downed, dead: u.dead, active: u.id === w.active,
         contact_ready: u.contact_ready, weapon_ready: u.weapon_ready, overwatch: u.overwatch,
-        visible: visibleTo(u), last_gait: u.last_gait,
+        visible: visibleTo(u), last_gait: u.last_gait, cover_use: u.cover_use,
         mag: u.mag, mag_size: u.mag_size, ammo: u.ammo,
         hands: u.ch.hands, legs: u.ch.legs, focus: u.ch.focus, voice: u.ch.voice,
         reaction_left: u.reaction_left, reaction_max: u.reaction_max,
@@ -1061,7 +1241,11 @@ export class Engine {
         armor: u.armor.map((p) => ({ name: p.name, region: p.region, dur: p.durability, max: p.durability_max })),
       })),
       last_shot: lastShotView(w, viewer, fog, visibleTo),
-      quotes: buildQuotes(w, quoteU, findUnit(w, w.pending_react.reactor)),
+      quotes: buildQuotes(w, quoteU, findUnit(w, w.pending_react.reactor), {
+        gait: this.plannedGait(quoteU),
+        pos: this.plannedPos(quoteU),
+        cover_use: this.plannedCover(quoteU),
+      }),
       move: moveInfo(w, quoteU),
     };
   }
@@ -1089,6 +1273,8 @@ function lastShotView(w, viewer, fog, visibleTo) {
     end: [end.x, end.y],
     cone_half_rad: s.cone_half_rad || 0,
     radius: s.radius || 0,
+    origin3: s.origin3 || null,
+    end3: s.end3 || null,
     hit: !!s.hit,
     result: s.result || "",
     region: s.region || "",
@@ -1113,10 +1299,12 @@ function q(id, label, contact, h, l, f, v, rx, ok, reason) {
   return { id, label, hands: h, legs: l, focus: f, voice: v, reaction: rx, ok, cost: fmtCost(contact, h, l, f, v, rx), reason: reason || "" };
 }
 
-function buildQuotes(world, u, reactor) {
+function buildQuotes(world, u, reactor, extras = {}) {
   if (!u) return { actions: [], shots: [], gaits: [], reactions: [] };
   const contact = world.phase === Phase.Contact;
   const stretch = channelStretch(u);
+  const plannedPos = extras.pos || u.pos;
+  const plannedCover = extras.cover_use !== undefined ? extras.cover_use : u.cover_use;
   const actions = [];
   const postureQ = (id, label, p, t) => {
     const already = u.posture === p;
@@ -1126,6 +1314,27 @@ function buildQuotes(world, u, reactor) {
   postureQ("crouch", "Crouch", Posture.Crouching, 0.45);
   postureQ("prone", "Prone", Posture.Prone, 0.8);
   postureQ("stand", "Stand", Posture.Standing, 0.45);
+  {
+    const near = nearestUse(world, plannedPos);
+    const coverQ = (id, label, mode) => {
+      const already = plannedCover?.mode === mode;
+      const t = coverTransitionCost(plannedCover?.mode || null, mode);
+      const postable = mode !== CoverMode.Post || (near && canPostOver(near.cover));
+      const zone = !!(near || plannedCover);
+      let reason = "";
+      if (contact) reason = "not in contact";
+      else if (already) reason = mode === CoverMode.Post ? "already posted" : "already hidden";
+      else if (!zone) reason = "stand in a cover ring first";
+      else if (!postable) reason = "cover is too high to post over";
+      const ok = !contact && !already && zone && postable && t && canSpend(
+        { ...u, cover_use: plannedCover }, t.hands, t.legs, t.focus, 0,
+      );
+      if (!ok && !reason) reason = "not enough time";
+      actions.push(q(id, label, false, (t?.hands || 0) * stretch, t?.legs || 0, (t?.focus || 0) * stretch, 0, 0, ok, reason));
+    };
+    coverQ("cover_post", "Post", CoverMode.Post);
+    coverQ("cover_hide", "Hide", CoverMode.Hide);
+  }
   {
     const hands = 2, focus = u.firearms >= 3 ? 0 : 0.6;
     const ok = !contact && u.mag < u.mag_size && u.ammo > 0 && canSpend(u, hands, 0, focus, 0);
@@ -1147,7 +1356,7 @@ function buildQuotes(world, u, reactor) {
   actions.push(q("contact_ready", "Ready up", true, 0, 0, 0, 0, 0, contact && !u.contact_ready, contact ? "" : "contact only"));
 
   const shotQ = (id, label, hands, focus, voice) => {
-    const ok = !contact && u.mag > 0 && u.last_gait !== Gait.Sprint && canSpend(u, hands, 0, focus, voice);
+    const ok = !contact && u.mag > 0 && canSpend(u, hands, 0, focus, voice);
     return q(id, label, false, hands * stretch, 0, focus * stretch, voice, 0, ok, contact ? "no shooting in contact" : ok ? "" : "not enough time");
   };
   const shots = [
@@ -1195,3 +1404,7 @@ function moveInfo(world, u) {
 export { defaultWorld } from "./model.js";
 export { worldFromScenario } from "./model.js";
 export { silhouetteFor, aimPointOffset, accuracyAngle, resolveAimOffset } from "./combat.js";
+export { unitHitboxes, coverBox, muzzleWorld, rayLocalBox, rayCover, partCenterOffset } from "./body.js";
+export {
+  CoverMode, inUseZone, nearestUse, resolveCoverUse, useBounds, COVER_USE_PAD,
+} from "./cover.js";

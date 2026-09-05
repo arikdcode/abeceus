@@ -7,6 +7,8 @@ export const ActionType = {
   Reload: "reload",
   Bandage: "bandage",
   SetPosture: "posture",
+  CoverPost: "cover_post",
+  CoverHide: "cover_hide",
   Overwatch: "overwatch",
   ReadyWeapon: "ready",
   ContactReady: "contact_ready",
@@ -23,6 +25,7 @@ export const Gait = { Walk: "walk", Run: "run", Sprint: "sprint" };
 export const ShotMode = { Snap: "snap", Precise: "precise", Aimed: "aimed", Burst: "burst" };
 export const AimRegion = { Torso: "torso", Head: "head", Legs: "legs" };
 export const Posture = { Standing: "stand", Crouching: "crouch", Prone: "prone" };
+export const CoverMode = { Post: "post", Hide: "hide" };
 export const Phase = { Contact: "contact", Play: "play", Over: "over" };
 
 export function findUnit(world, id) {
@@ -81,6 +84,7 @@ export function makeUnit(partial, id) {
     dead: false,
     panicked: false,
     last_gait: Gait.Walk,
+    cover_use: null,
     overwatch: false,
     ow_origin: { x: 0, y: 0 },
     ow_dir: { x: 1, y: 0 },
@@ -111,6 +115,7 @@ export function makeWorld() {
     round: 1,
     active: 0,
     clock: 0,
+    skip_contact: false,
     combat_over: false,
     winner_team: -1,
     last_shot: { valid: false },
@@ -125,6 +130,7 @@ export function worldFromScenario(data) {
   const w = makeWorld();
   w.scenario_name = src.name || "unnamed";
   w.seed = src.seed || 1;
+  w.skip_contact = !!(src.skip_contact || src.start_phase === "play");
   if (src.map) {
     const m = src.map;
     if (m.min) w.map.min = { x: m.min[0], y: m.min[1] };
@@ -154,6 +160,7 @@ export function defaultWorld() {
   return worldFromScenario({
     name: "2v2 courtyard",
     seed: 1,
+    skip_contact: true,
     map: {
       min: [0, 0],
       max: [20, 16],

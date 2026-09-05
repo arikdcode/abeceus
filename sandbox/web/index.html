@@ -13,10 +13,21 @@
     </div>
     <div class="toolbar">
       <button id="execute">Execute <kbd>Space</kbd></button>
-      <button id="endTurn">End / Ready <kbd>E</kbd></button>
+      <button id="endTurn">End / Ready <kbd>Enter</kbd></button>
       <button id="autoStep">AI step</button>
       <button id="skipContact" title="Dev: jump straight into initiative">Skip contact</button>
-      <button id="fogToggle" class="mode-btn" title="Player view follows the current actor.">Dev view</button>
+      <div class="mode-pair" id="fogPair" data-value="dev" title="Player follows the current actor.">
+        <button type="button" data-val="dev" class="on">Dev</button>
+        <button type="button" data-val="player">Player</button>
+      </div>
+      <div class="mode-pair" id="projPair" data-value="3d" title="Q/E rotate around the look-at. Wheel zooms. WASD pans. Home resets.">
+        <button type="button" data-val="3d" class="on">3D</button>
+        <button type="button" data-val="2d">2D</button>
+      </div>
+      <div class="mode-pair" id="camPair" data-value="strategy" title="Strategy looks at the board. FPV looks from the acting unit. V">
+        <button type="button" data-val="strategy" class="on">Strategy</button>
+        <button type="button" data-val="fpv">FPV</button>
+      </div>
     </div>
   </header>
   <main>
@@ -31,12 +42,8 @@
         <div id="prompt" class="prompt hidden"></div>
       </div>
       <section class="timeline-wrap">
-        <h2>Turn tape <span id="clockLabel"></span></h2>
+        <h2>Turn tape <span id="clockLabel"></span> <button id="clearQueue" type="button">Clear</button></h2>
         <div id="timeline"></div>
-        <div class="queue-row">
-          <ol id="queueList"></ol>
-          <button id="clearQueue">Clear</button>
-        </div>
       </section>
       <section class="roster-wrap">
         <h2>Turn order</h2>
@@ -44,14 +51,15 @@
       </section>
     </div>
     <aside class="orders-col">
+      <div class="orders-main">
       <section>
         <h2>Orders</h2>
         <div class="toggle-row">
           <span class="toggle-label">Gait</span>
-          <div class="icon-toggle" id="gait" data-value="walk">
-            <button type="button" data-val="walk" class="on" title="Walk">Walk</button>
+          <div class="icon-toggle" id="gait" data-value="sprint">
+            <button type="button" data-val="walk" title="Walk">Walk</button>
             <button type="button" data-val="run" title="Run">Run</button>
-            <button type="button" data-val="sprint" title="Sprint">Sprint</button>
+            <button type="button" data-val="sprint" class="on" title="Sprint">Sprint</button>
           </div>
         </div>
         <div class="toggle-row">
@@ -70,17 +78,17 @@
             <button type="button" data-val="legs" title="Both legs">Legs</button>
           </div>
         </div>
-        <div class="btns" id="actionBtns"></div>
-        <p class="note">Click queues the next action after the last one. Ctrl-click drops it on free channels. Esc clears the queue. Shift-click a unit to inspect.</p>
+        <div id="actionBtns"></div>
       </section>
       <section>
-        <h2>Current unit</h2>
-        <div id="turnInfo" class="panel"></div>
+        <h2>Acting</h2>
+        <div id="turnInfo"></div>
       </section>
-      <section class="events-wrap">
-        <h2>Events</h2>
-        <ol id="events"></ol>
-      </section>
+    </div>
+    <section class="events-wrap">
+      <h2>Events</h2>
+      <ol id="events"></ol>
+    </section>
     </aside>
   </main>
   <script type="module" src="./app.js"></script>

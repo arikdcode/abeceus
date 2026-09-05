@@ -1,6 +1,7 @@
 {
   "name": "2v2 courtyard",
   "seed": 1,
+  "skip_contact": true,
   "map": {
     "min": [0, 0],
     "max": [20, 16],

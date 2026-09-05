@@ -1,4 +1,5 @@
 build/
 *.log
 dumps/
+.agent/
 compile_commands.json

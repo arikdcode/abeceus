@@ -1,5 +1,5 @@
-import { Engine, actionCost, defaultWorld } from "./engine.js";
-import { ActionType, Gait, ShotMode, AimRegion } from "./model.js";
+import { Engine, actionCost, defaultWorld, unitHitboxes } from "./engine.js";
+import { ActionType, Gait, ShotMode, AimRegion, Posture } from "./model.js";
 
 function fail(msg) {
   console.error(msg);
@@ -14,6 +14,17 @@ function toPlay(eng) {
   return start;
 }
 
+{
+  const skip = new Engine();
+  if (!skip.loadWorld(defaultWorld())) fail("skip load failed");
+  if (skip.world.phase !== "play") fail("skip_contact should start in play");
+  const held = new Engine();
+  const raw = defaultWorld();
+  raw.skip_contact = false;
+  if (!held.loadWorld(raw)) fail("contact load failed");
+  if (held.world.phase !== "contact") fail("skip_contact false should start in contact");
+}
+
 const eng = new Engine();
 const start = toPlay(eng);
 console.log("loaded", eng.world.scenario_name, "phase", eng.world.phase);
@@ -22,6 +33,40 @@ console.log("play", eng.world.phase, "active", eng.world.active, start.map((e) =
 const actor = eng.world.active;
 const me = eng.world.units.find((u) => u.id === actor);
 const enemy = eng.world.units.find((u) => u.team !== me.team && !u.downed);
+const planned = eng.previewSchedule({ type: ActionType.Shoot, actor, target: enemy.id, shot: ShotMode.Snap });
+if (!planned.ok) fail(`previewSchedule snap failed: ${planned.error}`);
+if (eng.queue.length) fail("previewSchedule must not queue");
+
+const standShot = eng.previewShot(actor, enemy.id, ShotMode.Snap, AimRegion.Torso, null, { posture: Posture.Standing });
+const proneShot = eng.previewShot(actor, enemy.id, ShotMode.Snap, AimRegion.Torso, null, { posture: Posture.Prone });
+if (!standShot.ok || !proneShot.ok) fail("posture preview shots failed");
+if (Math.abs((standShot.origin3?.z || 0) - (proneShot.origin3?.z || 0)) < 0.4) {
+  fail(`prone preview should drop the muzzle: stand ${standShot.origin3?.z} prone ${proneShot.origin3?.z}`);
+}
+const movedShot = eng.previewShot(actor, enemy.id, ShotMode.Snap, AimRegion.Torso, null, { pos: { x: 8, y: 6 } });
+if (!movedShot.ok) fail("moved preview shot failed");
+if (Math.abs(movedShot.distance - standShot.distance) < 0.5) {
+  fail("moved preview should change shot distance");
+}
+eng.schedule({ type: ActionType.SetPosture, posture: Posture.Prone, actor });
+if (eng.plannedPosture(me) !== Posture.Prone) fail("queued prone should be planned posture");
+eng.clearQueue();
+const fromHere = eng.previewShot(actor, enemy.id, ShotMode.Snap, AimRegion.Torso);
+eng.schedule({ type: ActionType.Move, actor, dest: { x: 8, y: 6 }, gait: Gait.Run });
+eng.schedule({ type: ActionType.SetPosture, posture: Posture.Crouching, actor });
+const fromQueue = eng.previewShot(actor, enemy.id, ShotMode.Snap, AimRegion.Torso);
+if (Math.hypot((fromQueue.origin3?.x || 0) - 8, (fromQueue.origin3?.y || 0) - 6) > 1.5) {
+  fail(`queued run should move the shot origin: ${JSON.stringify(fromQueue.origin3)}`);
+}
+if (Math.abs((fromQueue.origin3?.z || 0) - (fromHere.origin3?.z || 0)) < 0.15) {
+  fail("queued crouch should lower the shot origin");
+}
+eng.clearQueue();
+eng.schedule({ type: ActionType.Move, actor, dest: { x: 8, y: 6 }, gait: Gait.Sprint });
+const afterSprint = eng.schedule({ type: ActionType.Shoot, actor, target: enemy.id, shot: ShotMode.Precise });
+if (!afterSprint.ok) fail(`precise after sprint should queue: ${afterSprint.error}`);
+eng.clearQueue();
+
 const snapCost = actionCost(me, { type: ActionType.Shoot, shot: ShotMode.Snap }, eng.world);
 if (snapCost.voice > 1e-6 || Math.abs(snapCost.hands - snapCost.focus) > 1e-6) {
   fail(`snap cost should be hands=focus, no voice; got ${JSON.stringify(snapCost)}`);
@@ -42,12 +87,34 @@ if (belly.p_cover < 0.45) fail("abdomen behind courtyard cover should clip");
 const center = eng.defaultAimOffset(enemy.id, AimRegion.Torso);
 const head = eng.defaultAimOffset(enemy.id, AimRegion.Head);
 console.log("centers", "torso", center.x.toFixed(2), center.z.toFixed(2), "head", head.x.toFixed(2), head.z.toFixed(2));
-if (Math.abs(center.x) > 1e-6 || Math.abs(head.x) > 1e-6) fail("default aims should be on the midline");
+if (Math.abs(center.x) > 0.08 || Math.abs(head.x) > 0.08) fail("default aims should be near the midline");
 if (head.z <= center.z) fail("head center should sit above torso center");
 const left = eng.previewShot(actor, enemy.id, ShotMode.Snap, AimRegion.Torso, { x: -0.3, z: 1.25 });
 const right = eng.previewShot(actor, enemy.id, ShotMode.Snap, AimRegion.Torso, { x: 0.3, z: 1.25 });
 console.log("aim world L/R", left.aim_world.y.toFixed(3), right.aim_world.y.toFixed(3));
 if (left.aim_world.y <= right.aim_world.y) fail("silhouette left should map to shooter-left");
+
+{
+  const openPost = eng.schedule({ type: ActionType.CoverPost, actor });
+  if (openPost.ok) fail("post should require a cover ring");
+  eng.clearQueue();
+  eng.schedule({ type: ActionType.Move, actor, dest: { x: 7.1, y: 4.2 }, gait: Gait.Sprint });
+  const post = eng.schedule({ type: ActionType.CoverPost, actor });
+  if (!post.ok) fail(`post near crate should queue: ${post.error}`);
+  const posted = eng.previewShot(actor, enemy.id, ShotMode.Precise, AimRegion.Head);
+  const crate = eng.world.map.cover[0];
+  if ((posted.origin3?.z || 0) < crate.height) fail(`posted muzzle should sit above the lip: ${posted.origin3?.z}`);
+  if (posted.origin3.x >= crate.min.x && posted.origin3.x <= crate.max.x && posted.origin3.y >= crate.min.y && posted.origin3.y <= crate.max.y && posted.origin3.z < crate.height) {
+    fail("posted muzzle must not start inside the crate");
+  }
+  const hide = eng.schedule({ type: ActionType.CoverHide, actor });
+  if (!hide.ok) fail(`hide after post should queue: ${hide.error}`);
+  const hidden = eng.previewActor(me);
+  const head = hidden && unitHitboxes(hidden).find((b) => b.name === "head");
+  const headTop = head ? Math.max(...head.corners.map((p) => p.z)) : 99;
+  if (headTop > crate.height - 0.02) fail(`hidden head should be below the lip: ${headTop} vs ${crate.height}`);
+  eng.clearQueue();
+}
 
 const walk = eng.schedule({ type: ActionType.Move, actor, dest: { x: 8, y: 6 }, gait: Gait.Walk });
 const thenSnap = eng.schedule({ type: ActionType.Shoot, actor, target: enemy.id, shot: ShotMode.Snap });
@@ -55,6 +122,8 @@ console.log("then walk", walk.ok, walk.item && `${walk.item.t0.toFixed(2)}-${wal
 console.log("then snap", thenSnap.ok, thenSnap.item && `${thenSnap.item.t0.toFixed(2)}-${thenSnap.item.t1.toFixed(2)}`);
 if (!walk.ok || !thenSnap.ok) fail("sequential queue failed");
 if (thenSnap.item.t0 + 1e-3 < walk.item.t1) fail("snap should wait until the walk ends");
+eng.unschedule(walk.item.id);
+if (eng.queue.length) fail("unschedule should drop the move and everything after");
 
 eng.clearQueue();
 const snap = eng.schedule({ type: ActionType.Shoot, actor, target: enemy.id, shot: ShotMode.Snap, overlap: true });
