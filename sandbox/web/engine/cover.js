@@ -81,6 +81,10 @@ export function nearestUse(world, pos) {
 
 export function resolveCoverUse(world, pos, mode, prefer = null) {
   let index = prefer?.index;
+  if (prefer?.id) {
+    const byId = world.map.cover.findIndex((c) => c.id === prefer.id);
+    if (byId >= 0) index = byId;
+  }
   let cover = index != null ? world.map.cover[index] : null;
   if (!cover || cover.durability <= 0 || (coverDistXY(pos, cover) > COVER_USE_PAD + 0.35 && !inUseZone(pos, cover))) {
     const near = nearestUse(world, pos);

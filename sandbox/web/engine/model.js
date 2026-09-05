@@ -48,6 +48,8 @@ export function makeUnit(partial, id) {
   return {
     id,
     name: partial.name || `Unit-${id}`,
+    character_id: partial.character_id || null,
+    weapon_id: partial.weapon_id || null,
     team: partial.team || 0,
     pos: { x: partial.pos?.[0] ?? partial.pos?.x ?? 0, y: partial.pos?.[1] ?? partial.pos?.y ?? 0 },
     facing: partial.facing || 0,
@@ -67,10 +69,11 @@ export function makeUnit(partial, id) {
     contact_ready: false,
     weapon_ready: true,
     ammo: partial.ammo ?? 24,
-    ammo_max: 30,
+    ammo_max: partial.ammo_max ?? 30,
     mag: partial.mag ?? 8,
     mag_size: partial.mag_size ?? 8,
-    weapon_spread: partial.accuracy_deg != null ? partial.accuracy_deg * 0.01745329252 : 0.038,
+    weapon_spread: partial.weapon_spread
+      ?? (partial.accuracy_deg != null ? partial.accuracy_deg * 0.01745329252 : 0.038),
     weapon_pen: partial.weapon_pen ?? 16,
     max_range: partial.max_range ?? 40,
     blood: 0,
@@ -79,12 +82,16 @@ export function makeUnit(partial, id) {
     stress: 0,
     stress_tolerance: 50,
     wounds: [],
-    armor: [],
+    armor: (partial.armor || []).map((a) => ({
+      id: a.id || a.region,
+      name: a.name, region: a.region, protection: a.protection,
+      durability: a.durability, durability_max: a.durability_max ?? a.durability,
+    })),
     downed: false,
     dead: false,
     panicked: false,
     last_gait: Gait.Walk,
-    cover_use: null,
+    cover_use: partial.cover_use || null,
     overwatch: false,
     ow_origin: { x: 0, y: 0 },
     ow_dir: { x: 1, y: 0 },
@@ -97,11 +104,13 @@ export function makeUnit(partial, id) {
 
 export function makeWorld() {
   return {
+    scenario_id: "",
     scenario_name: "unnamed",
     seed: 1,
     rng_state: 1,
     phase: Phase.Contact,
     map: {
+      id: "",
       min: { x: 0, y: 0 },
       max: { x: 20, y: 16 },
       grid: 1,
@@ -128,6 +137,7 @@ export function makeWorld() {
 export function worldFromScenario(data) {
   const src = data.scenario || data;
   const w = makeWorld();
+  w.scenario_id = src.id || src.name || "unnamed";
   w.scenario_name = src.name || "unnamed";
   w.seed = src.seed || 1;
   w.skip_contact = !!(src.skip_contact || src.start_phase === "play");
@@ -140,9 +150,11 @@ export function worldFromScenario(data) {
     if (m.surprise1 != null) w.map.surprise1 = m.surprise1;
     if (m.cover) {
       w.map.cover = m.cover.map((c) => ({
+        id: c.id || null,
         min: { x: c.min[0], y: c.min[1] },
         max: { x: c.max[0], y: c.max[1] },
         height: c.height ?? 1.1,
+        color: c.color || "#6a7b66",
         protection: c.protection ?? 16,
         durability: c.durability ?? 10,
         durability_max: c.durability ?? 10,
@@ -157,29 +169,7 @@ export function worldFromScenario(data) {
 }
 
 export function defaultWorld() {
-  return worldFromScenario({
-    name: "2v2 courtyard",
-    seed: 1,
-    skip_contact: true,
-    map: {
-      min: [0, 0],
-      max: [20, 16],
-      grid: 1,
-      surprise0: 1,
-      surprise1: 0.75,
-      cover: [
-        { min: [7.5, 3.0], max: [9.5, 6.5], height: 1.15, protection: 16, durability: 10 },
-        { min: [11.0, 9.5], max: [13.2, 12.8], height: 1.2, protection: 16, durability: 10 },
-        { min: [4.0, 11.0], max: [6.0, 13.0], height: 0.9, protection: 10, durability: 6 },
-      ],
-    },
-    units: [
-      { name: "Alpha-1", team: 0, pos: [3.0, 5.5], facing: 0, initiative: 4, firearms: 4, awareness: 4, endurance: 3, experience: 0.7 },
-      { name: "Alpha-2", team: 0, pos: [3.2, 10.5], facing: 0.15, initiative: 3, firearms: 3, awareness: 3, endurance: 3, experience: 0.3 },
-      { name: "Bravo-1", team: 1, pos: [17.0, 6.0], facing: 3.14, initiative: 4, firearms: 3, awareness: 3, endurance: 3, experience: 0.55 },
-      { name: "Bravo-2", team: 1, pos: [16.5, 11.2], facing: 3.0, initiative: 2, firearms: 2, awareness: 2, endurance: 3, experience: 0.2 },
-    ],
-  });
+  return makeWorld();
 }
 
 export function surpriseFor(world, team) {

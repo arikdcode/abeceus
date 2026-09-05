@@ -1,0 +1,10 @@
+{
+  "id": "open",
+  "name": "Open ground",
+  "min": [0, 0],
+  "max": [16, 12],
+  "grid": 1.0,
+  "surprise0": 1.0,
+  "surprise1": 1.0,
+  "cover": []
+}

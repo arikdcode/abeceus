@@ -1,0 +1,35 @@
+{
+  "id": "checkpoint",
+  "name": "Border checkpoint",
+  "min": [0, 0],
+  "max": [24, 18],
+  "grid": 1.0,
+  "surprise0": 1.0,
+  "surprise1": 0.7,
+  "cover": [
+    {"id": "fence-south", "min": [0.15, 0.12], "max": [23.85, 0.26], "height": 1.9, "color": "#5c666c", "protection": 12, "durability": 8},
+    {"id": "fence-north", "min": [0.15, 17.72], "max": [23.85, 17.88], "height": 1.9, "color": "#5c666c", "protection": 12, "durability": 8},
+    {"id": "fence-west-s", "min": [0.12, 0.12], "max": [0.26, 7.15], "height": 1.9, "color": "#5c666c", "protection": 12, "durability": 8},
+    {"id": "fence-west-n", "min": [0.12, 10.85], "max": [0.26, 17.88], "height": 1.9, "color": "#5c666c", "protection": 12, "durability": 8},
+    {"id": "fence-east-s", "min": [23.74, 0.12], "max": [23.88, 7.15], "height": 1.9, "color": "#5c666c", "protection": 12, "durability": 8},
+    {"id": "fence-east-n", "min": [23.74, 10.85], "max": [23.88, 17.88], "height": 1.9, "color": "#5c666c", "protection": 12, "durability": 8},
+
+    {"id": "jersey-south", "min": [2.2, 6.9], "max": [4.8, 7.55], "height": 1.05, "color": "#9b9a90", "protection": 18, "durability": 12},
+    {"id": "jersey-north", "min": [5.5, 10.35], "max": [8.2, 11.0], "height": 1.05, "color": "#9b9a90", "protection": 18, "durability": 12},
+
+    {"id": "booth-west", "min": [3.44, 11.5], "max": [3.60, 14.05], "height": 2.45, "color": "#8d7d6a", "protection": 20, "durability": 14},
+    {"id": "booth-east", "min": [6.00, 11.5], "max": [6.16, 14.05], "height": 2.45, "color": "#8d7d6a", "protection": 20, "durability": 14},
+    {"id": "booth-north", "min": [3.44, 13.89], "max": [6.16, 14.05], "height": 2.45, "color": "#8d7d6a", "protection": 20, "durability": 14},
+    {"id": "booth-south-w", "min": [3.44, 11.50], "max": [4.40, 11.66], "height": 2.45, "color": "#8d7d6a", "protection": 20, "durability": 14},
+    {"id": "booth-south-e", "min": [5.40, 11.50], "max": [6.16, 11.66], "height": 2.45, "color": "#8d7d6a", "protection": 20, "durability": 14},
+
+    {"id": "conex", "min": [10.5, 1.0], "max": [16.0, 3.5], "height": 2.4, "color": "#4a5540", "protection": 22, "durability": 16},
+    {"id": "crate-lane", "min": [11.2, 8.0], "max": [13.0, 9.6], "height": 1.15, "color": "#8a6b42", "protection": 16, "durability": 10},
+    {"id": "crate-east", "min": [18.8, 4.0], "max": [20.5, 5.6], "height": 1.18, "color": "#7d623c", "protection": 16, "durability": 10},
+    {"id": "planter", "min": [7.4, 4.2], "max": [8.2, 5.0], "height": 0.8, "color": "#5c4a3a", "protection": 10, "durability": 6},
+
+    {"id": "sandbag-e", "min": [18.4, 10.8], "max": [21.2, 11.55], "height": 0.72, "color": "#8a8068", "protection": 10, "durability": 7},
+    {"id": "sandbag-n", "min": [20.45, 10.8], "max": [21.2, 13.8], "height": 0.72, "color": "#8a8068", "protection": 10, "durability": 7},
+    {"id": "brick-wall", "min": [8.5, 14.6], "max": [15.5, 14.82], "height": 0.95, "color": "#7a5a4e", "protection": 14, "durability": 9}
+  ]
+}

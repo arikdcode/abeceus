@@ -1,0 +1,11 @@
+{
+  "weapons": ["rifle"],
+  "characters": ["alpha-1", "alpha-2", "bravo-1", "bravo-2"],
+  "maps": ["courtyard", "open", "checkpoint"],
+  "scenarios": [
+    { "id": "duel_2v2", "name": "2v2 courtyard" },
+    { "id": "posted_courtyard", "name": "Posted courtyard" },
+    { "id": "checkpoint", "name": "Checkpoint approach" },
+    { "id": "open_1v1", "name": "Open 1v1" }
+  ]
+}

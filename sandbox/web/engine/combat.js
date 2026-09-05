@@ -4,7 +4,7 @@ import {
 import { emptyChannels, unitAlive, Posture, Gait, ShotMode, AimRegion } from "./model.js";
 import {
   localHitboxes, unitHitboxes, muzzleWorld, rayLocalBox, rayCover,
-  projectBoxesToView, regionCenterOffset,
+  projectBoxesToView, regionCenterOffset, partFamily, prettyPart,
 } from "./body.js";
 
 const PERSON_R = 0.28;
@@ -48,8 +48,13 @@ export function finalizeUnit(u) {
   u.pain_tolerance = 38 + u.endurance * 12 + u.experience * 22;
   u.stress_tolerance = 28 + u.experience * 48 + u.endurance * 6;
   if (!u.armor.length) {
-    u.armor.push({ name: "chest plate", region: "torso", protection: 18, durability: 7, durability_max: 7 });
-    u.armor.push({ name: "abdomen panel", region: "abdomen", protection: 12, durability: 5, durability_max: 5 });
+    u.armor.push({ id: "front_plate", name: "front plate", region: "chest", protection: 18, durability: 8, durability_max: 8 });
+    u.armor.push({ id: "back_plate", name: "back plate", region: "chest", protection: 18, durability: 8, durability_max: 8 });
+    u.armor.push({ id: "abdomen_plate", name: "abdomen plate", region: "abdomen", protection: 12, durability: 5, durability_max: 5 });
+    u.armor.push({ id: "l_side_plate", name: "left side plate", region: "chest", protection: 14, durability: 5, durability_max: 5 });
+    u.armor.push({ id: "r_side_plate", name: "right side plate", region: "chest", protection: 14, durability: 5, durability_max: 5 });
+    u.armor.push({ id: "l_shoulder_pad", name: "left shoulder pad", region: "l_shoulder", protection: 12, durability: 4, durability_max: 4 });
+    u.armor.push({ id: "r_shoulder_pad", name: "right shoulder pad", region: "r_shoulder", protection: 12, durability: 4, durability_max: 4 });
   }
   if (u.mag_size <= 0) u.mag_size = 8;
   if (u.mag <= 0) u.mag = u.mag_size;
@@ -98,14 +103,14 @@ export function aimRegionRects(posture, aim, attacker, target) {
   if (attacker && target) {
     const boxes = unitHitboxes(target);
     const sil = projectBoxesToView(attacker, target, boxes);
-    if (aim === AimRegion.Head) return sil.filter((s) => s.name === "head");
-    if (aim === AimRegion.Legs) return sil.filter((s) => s.name === "l_leg" || s.name === "r_leg");
-    return sil.filter((s) => s.name === "torso" || s.name === "abdomen");
+    if (aim === AimRegion.Head) return sil.filter((s) => partFamily(s.name) === "head");
+    if (aim === AimRegion.Legs) return sil.filter((s) => partFamily(s.name) === "legs");
+    return sil.filter((s) => partFamily(s.name) === "torso");
   }
   const sil = silhouetteFor(posture);
-  if (aim === AimRegion.Head) return sil.filter((s) => s.name === "head");
-  if (aim === AimRegion.Legs) return sil.filter((s) => s.name === "l_leg" || s.name === "r_leg");
-  return sil.filter((s) => s.name === "torso" || s.name === "abdomen");
+  if (aim === AimRegion.Head) return sil.filter((s) => partFamily(s.name) === "head");
+  if (aim === AimRegion.Legs) return sil.filter((s) => partFamily(s.name) === "legs");
+  return sil.filter((s) => partFamily(s.name) === "torso");
 }
 
 export function resolveAimOffset(aim, posture, override, attacker, target) {
@@ -279,6 +284,8 @@ export function resolveConeSample(world, attacker, target, mode, aim, dLat, dH, 
     remaining_pen: 0,
     armor: "",
     armor_result: "",
+    plate: null,
+    covers: null,
   };
   const { dist, perp } = shotFrame(attacker, target);
   const aimOff = resolveAimOffset(aim, target.posture, aimOffset, attacker, target);
@@ -318,14 +325,16 @@ export function resolveConeSample(world, attacker, target, mode, aim, dLat, dH, 
   }
   for (const u of world.units) {
     if (u.id === attacker.id || !unitAlive(u)) continue;
-    for (const b of localHitboxes(u.posture, u.cover_use)) {
-      if (!b.flesh) continue;
+    for (const b of localHitboxes(u.posture, u.cover_use, u)) {
+      if (!b.flesh && !b.armor) continue;
       const t = rayLocalBox(origin, shotDir3, b, u.pos, u.facing || 0, maxT);
       if (t != null && t < bestT && t > 0.05) {
         bestT = t;
         hitKind = "unit";
         hitUnit = u.id;
-        hitRegion = b.name;
+        hitRegion = b.armor ? (b.covers || b.name) : b.name;
+        out.plate = b.armor ? (b.plate || b.name) : null;
+        out.covers = b.covers || null;
       }
     }
   }
@@ -439,11 +448,11 @@ export function applyCoverHit(cover, weaponPen) {
 
 export function applyArmorHit(victim, sample, weaponPen) {
   sample.remaining_pen = weaponPen;
-  const plate = victim.armor.find((p) =>
-    p.region === sample.region ||
-    (p.region === "arm" && (sample.region === "l_arm" || sample.region === "r_arm")) ||
-    (p.region === "leg" && (sample.region === "l_leg" || sample.region === "r_leg"))
-  );
+  if (!sample.plate) {
+    sample.armor_result = "unarmored";
+    return;
+  }
+  const plate = victim.armor.find((p) => p.id === sample.plate || p.name === sample.plate);
   if (!plate || plate.durability <= 0) {
     sample.armor_result = "unarmored";
     return;
@@ -478,7 +487,7 @@ export function generateWound(victim, sample) {
   const w = r.wound;
   const pen = sample.remaining_pen;
   if (pen <= 0.01) {
-    w.description = `stopped by armor — bruise (${sample.region})`;
+    w.description = `stopped by ${sample.armor || "armor"} — bruise (${prettyPart(sample.region)})`;
     w.pain = 6;
     w.stress = 3;
     return r;
@@ -487,24 +496,29 @@ export function generateWound(victim, sample) {
   if (pen > 6) depth = 1;
   if (pen > 12) depth = 2;
   if (pen > 20) depth = 3;
-  if (sample.region === "head" && pen > 10) depth = 3;
+  const fam = partFamily(sample.region);
+  if (fam === "head" && pen > 10) depth = 3;
   w.depth = depth;
   const depthN = ["graze", "shallow", "deep", "critical"];
-  w.description = `${depthN[depth]} kinetic hit to ${sample.region}`;
-  if (sample.armor_result && sample.armor_result !== "unarmored") w.description += ` (${sample.armor_result})`;
+  w.description = `${depthN[depth]} kinetic hit to ${prettyPart(sample.region)}`;
+  if (sample.armor && sample.armor_result && sample.armor_result !== "unarmored") {
+    w.description += ` (${sample.armor_result} ${sample.armor})`;
+  } else if (sample.armor_result && sample.armor_result !== "unarmored") {
+    w.description += ` (${sample.armor_result})`;
+  }
   if (depth === 0) {
     w.pain = 12; w.stress = 6; w.bleed_rate = 0.6;
   } else if (depth === 1) {
     w.pain = 24; w.stress = 10; w.bleed_rate = 2.2;
-    if (sample.region.includes("leg")) w.impairment = "limp";
-    if (sample.region.includes("arm")) w.impairment = "arm";
+    if (fam === "legs") w.impairment = "limp";
+    if (fam === "arms" || fam === "hands") w.impairment = "arm";
   } else if (depth === 2) {
     w.pain = 42; w.stress = 16; w.bleed_rate = 5.5;
-    if (sample.region.includes("leg")) w.impairment = "limp";
-    if (sample.region.includes("arm")) w.impairment = "arm";
+    if (fam === "legs") w.impairment = "limp";
+    if (fam === "arms" || fam === "hands") w.impairment = "arm";
   } else {
     w.pain = 80; w.stress = 28; w.bleed_rate = 14;
-    if (sample.region === "head" || sample.region === "torso") {
+    if (fam === "head" || sample.region === "chest") {
       r.incapacitate = true;
       if (pen > 24) r.kill = true;
       w.impairment = "vital";

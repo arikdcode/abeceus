@@ -1,0 +1,13 @@
+{
+  "id": "checkpoint",
+  "name": "Checkpoint approach",
+  "map": "checkpoint",
+  "seed": 2,
+  "skip_contact": true,
+  "units": [
+    {"character": "alpha-1", "pos": [1.6, 8.6], "facing": 0.0},
+    {"character": "alpha-2", "pos": [1.5, 12.4], "facing": 0.1},
+    {"character": "bravo-1", "pos": [4.9, 11.05], "facing": 3.4},
+    {"character": "bravo-2", "pos": [17.9, 11.2], "facing": 3.0}
+  ]
+}

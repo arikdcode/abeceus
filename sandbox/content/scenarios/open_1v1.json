@@ -1,0 +1,11 @@
+{
+  "id": "open_1v1",
+  "name": "Open 1v1",
+  "map": "open",
+  "seed": 7,
+  "skip_contact": true,
+  "units": [
+    {"character": "alpha-1", "pos": [4.0, 6.0], "facing": 0.0},
+    {"character": "bravo-1", "pos": [12.0, 6.0], "facing": 3.14}
+  ]
+}

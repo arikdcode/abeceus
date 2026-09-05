@@ -1,4 +1,4 @@
-import { Engine, worldFromScenario, defaultWorld, silhouetteFor, unitHitboxes, coverBox, muzzleWorld, rayLocalBox, rayCover, nearestUse, useBounds, resolveCoverUse, CoverMode } from "./engine/engine.js";
+import { Engine, loadCatalog, worldFromCatalog, silhouetteFor, unitHitboxes, coverBox, muzzleWorld, rayLocalBox, rayCover, nearestUse, useBounds, resolveCoverUse, CoverMode, partFamily, prettyPart } from "./engine/engine.js";
 import { ActionType, Gait, ShotMode, AimRegion, Phase } from "./engine/model.js";
 import { rotate } from "./engine/vec.js";
 import { makeCam3, drawScene3, drawFloor3, drawPolyline3, drawLabel3, screenRay, hitGround, orbitCam, zoomCam, project3, eyeOf } from "./view3d.js";
@@ -219,17 +219,14 @@ function worldFromEvent(ev) {
 }
 
 function aimRegionForPart(part) {
-  if (part === "head") return AimRegion.Head;
-  if (part === "l_leg" || part === "r_leg") return AimRegion.Legs;
+  const fam = partFamily(part);
+  if (fam === "head") return AimRegion.Head;
+  if (fam === "legs") return AimRegion.Legs;
   return AimRegion.Torso;
 }
 
 function partLabel(part) {
-  if (part === "l_arm") return "left arm";
-  if (part === "r_arm") return "right arm";
-  if (part === "l_leg") return "left leg";
-  if (part === "r_leg") return "right leg";
-  return part || "";
+  return prettyPart(part);
 }
 
 function pickFromEvent(ev) {
@@ -243,7 +240,7 @@ function pickFromEvent(ev) {
       const u = worldUnit(vu.id);
       if (!u) continue;
       for (const b of unitHitboxes(u)) {
-        if (b.flesh === false) continue;
+        if (!b.flesh && !b.armor) continue;
         const t = rayLocalBox(ray.origin, ray.dir, b, u.pos, u.facing || 0, 80);
         if (t != null && t < best) {
           best = t;
@@ -324,8 +321,10 @@ function drawCover() {
     const a = toScreen([c.min[0], c.max[1]]);
     const b = toScreen([c.max[0], c.min[1]]);
     const frac = c.durability_max ? c.durability / c.durability_max : 1;
-    ctx.fillStyle = frac < 0.05 ? "#2a2a2a" : `rgba(61,74,58,${0.35 + 0.5 * frac})`;
+    ctx.globalAlpha = frac < 0.05 ? 1 : 0.45 + 0.5 * frac;
+    ctx.fillStyle = frac < 0.05 ? "#2a2a2a" : (c.color || "#6a7b66");
     ctx.fillRect(a.x, a.y, b.x - a.x, b.y - a.y);
+    ctx.globalAlpha = 1;
     ctx.strokeStyle = i === hot ? "#d7b15a" : "#6d7c64";
     ctx.strokeRect(a.x, a.y, b.x - a.x, b.y - a.y);
     if (i === hot || coverPreview) {
@@ -529,10 +528,13 @@ function drawUnits() {
 }
 
 function partHex(name, team, down, hot) {
-  if (name === "gun") return "#2a3036";
+  if (name === "gun" || name.startsWith("gun_")) return name === "gun" ? "#3a4048" : "#2c3238";
+  const fam = partFamily(name);
+  if (fam === "armor") return hot ? "#c4b48a" : (down ? "#3a3a3a" : "#7a828c");
   if (down) return "#3a3a3a";
   const [r, g, b] = team === 0 ? [110, 168, 255] : [255, 138, 110];
-  const k = name === "head" ? 0.7 : name.includes("leg") ? 0.52 : name.includes("arm") ? 0.78 : name === "abdomen" ? 0.86 : 1;
+  const k = fam === "head" ? 0.62 : fam === "legs" ? 0.52 : fam === "hands" ? 0.72 : fam === "arms" ? 0.78
+    : name === "abdomen" || name === "pelvis" ? 0.86 : 1;
   const mix = hot ? 0.45 : 0;
   const h = (n, gold) => Math.max(0, Math.min(255, Math.round(n * k * (1 - mix) + gold * mix))).toString(16).padStart(2, "0");
   return `#${h(r, 240)}${h(g, 215)}${h(b, 138)}`;
@@ -648,7 +650,7 @@ function render3() {
       height: c.height,
     });
     const frac = c.durability_max ? c.durability / c.durability_max : 1;
-    parts.push({ ...box, color: frac < 0.05 ? "#3a3a3a" : "#6a7b66", facing: 0 });
+    parts.push({ ...box, color: frac < 0.05 ? "#3a3a3a" : (c.color || "#6a7b66"), facing: 0 });
   }
   const ghost = ghostActor();
   const realActor = worldUnit(actorId());
@@ -796,8 +798,13 @@ function render2d() {
 
 function unitStatTable(u) {
   const wounds = (u.wounds || []).map((w) =>
-    `<tr><th>Wound</th><td>${w.region}: ${w.text}${w.treated ? " [bound]" : ""}</td></tr>`
+    `<tr><th>Wound</th><td>${prettyPart(w.region)}: ${w.text}${w.treated ? " [bound]" : ""}</td></tr>`
   ).join("");
+  const plates = (u.armor || []).map((p) => {
+    const max = p.max || p.durability_max || p.dur || 0;
+    const dur = p.dur ?? p.durability ?? 0;
+    return `<tr><th>${p.name || prettyPart(p.id || p.region)}</th><td>${dur.toFixed(1)} / ${max.toFixed(1)}</td></tr>`;
+  }).join("");
   return `<h3 style="color:${teamColor(u.team)}">${u.name}</h3>
     <table class="stat-table">
       <tr><th>Posture</th><td>${u.cover_use?.mode === "post" ? "posted" : u.cover_use?.mode === "hide" ? "hidden" : u.posture}</td></tr>
@@ -807,6 +814,7 @@ function unitStatTable(u) {
       <tr><th>Blood</th><td>${u.blood.toFixed(0)}</td></tr>
       <tr><th>Pain</th><td>${u.pain.toFixed(0)} / ${u.pain_tolerance.toFixed(0)}</td></tr>
       <tr><th>Stress</th><td>${u.stress.toFixed(0)} / ${u.stress_tolerance.toFixed(0)}</td></tr>
+      ${plates}
       ${wounds}
     </table>`;
 }
@@ -1121,7 +1129,9 @@ function drawSilhouette(sil, target, preview) {
   for (const r of regions) {
     const a = toP(r.x0, r.z1);
     const b = toP(r.x1, r.z0);
-    sctx.fillStyle = r.name === "head" ? "#6e4a4a" : r.name.includes("arm") ? "#4a5a6e" : r.name.includes("leg") ? "#4a6e5a" : "#5a5a4a";
+    const fam = partFamily(r.name);
+    sctx.fillStyle = fam === "head" ? "#6e4a4a" : fam === "armor" ? "#8a9098"
+      : fam === "arms" || fam === "hands" ? "#4a5a6e" : fam === "legs" ? "#4a6e5a" : "#5a5a4a";
     sctx.fillRect(a.x, a.y, b.x - a.x, b.y - a.y);
     sctx.strokeStyle = "#c8d0da";
     sctx.strokeRect(a.x, a.y, b.x - a.x, b.y - a.y);
@@ -1626,22 +1636,54 @@ window.__sandbox = {
   tapOrbit(which) { stepOrbitKey(cam3, which); render(); return cam3.yaw; },
 };
 
-async function boot() {
-  let world = defaultWorld();
-  const paths = ["../scenarios/duel_2v2.json", "/scenarios/duel_2v2.json"];
-  for (const p of paths) {
-    try {
-      const res = await fetch(p);
-      if (res.ok) {
-        world = worldFromScenario(await res.json());
-        break;
-      }
-    } catch {
-      /* use default */
-    }
-  }
-  eng.loadWorld(world);
+const SCENARIO_KEY = "sandbox.lastScenario";
+let catalog = null;
+
+async function readContent(path) {
+  const res = await fetch(`/content/${path}`);
+  if (!res.ok) throw new Error(`content ${path}: ${res.status}`);
+  return res.text();
+}
+
+function rememberedScenario(index) {
+  const id = localStorage.getItem(SCENARIO_KEY);
+  if (id && index.scenarios.some((s) => s.id === id)) return id;
+  return index.scenarios[0]?.id || "duel_2v2";
+}
+
+function fillScenarioSelect(index, selected) {
+  const sel = document.getElementById("scenarioSelect");
+  sel.innerHTML = index.scenarios.map((s) =>
+    `<option value="${s.id}"${s.id === selected ? " selected" : ""}>${s.name}</option>`
+  ).join("");
+}
+
+function loadScenario(id) {
+  if (!catalog?.scenarios[id]) return false;
+  localStorage.setItem(SCENARIO_KEY, id);
+  eventLog.length = 0;
+  tapePreview = null;
+  posePreview = null;
+  coverPreview = null;
+  movePreview = null;
+  shotPreview = null;
+  inspected = 0;
+  aimOffset = null;
+  const world = worldFromCatalog(catalog, id);
+  if (!eng.loadWorld(world)) return false;
+  document.getElementById("scenarioSelect").value = id;
   refresh();
+  agentDump(`scenario ${id}`);
+  return true;
+}
+
+async function boot() {
+  catalog = await loadCatalog(readContent);
+  fillScenarioSelect(catalog.index, rememberedScenario(catalog.index));
+  document.getElementById("scenarioSelect").onchange = () => {
+    loadScenario(document.getElementById("scenarioSelect").value);
+  };
+  loadScenario(rememberedScenario(catalog.index));
   tickCam();
 }
 boot();

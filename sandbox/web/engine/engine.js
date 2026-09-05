@@ -1,7 +1,7 @@
 import { Rng } from "./rng.js";
 import {
   ActionType, Gait, ShotMode, AimRegion, Posture, Phase, TURN_SECONDS,
-  findUnit, unitAlive, surpriseFor, defaultWorld, emptyTape,
+  findUnit, unitAlive, surpriseFor, emptyTape, makeWorld,
 } from "./model.js";
 import {
   finalizeUnit, resetChannels, spendChannels, canSpend, channelStretch,
@@ -11,7 +11,7 @@ import {
   resolveAimOffset, worldAimPoint,
 } from "./combat.js";
 import { add, sub, scale, length, normalize, angleOf, clampToAabb, dot } from "./vec.js";
-import { partCenterOffset } from "./body.js";
+import { partCenterOffset, prettyPart } from "./body.js";
 import {
   CoverMode, resolveCoverUse, nearestUse, canPostOver, coverTransitionCost,
 } from "./cover.js";
@@ -185,7 +185,7 @@ function channelBusy(intervals, t0, t1) {
 
 export class Engine {
   constructor() {
-    this.world = defaultWorld();
+    this.world = makeWorld();
     this.initial = null;
     this.rng = new Rng(1);
     this.queue = [];
@@ -854,7 +854,7 @@ export class Engine {
     open.treated = true;
     open.bleed_rate *= 0.15;
     tgt.pain = Math.max(0, tgt.pain - 8);
-    return { ok: true, events: [this.ev("treated", `${u.name} bandages ${tgt.name} (${open.region})`)] };
+    return { ok: true, events: [this.ev("treated", `${u.name} bandages ${tgt.name} (${prettyPart(open.region) || open.region})`)] };
   }
 
   doPosture(action) {
@@ -1139,6 +1139,7 @@ export class Engine {
       ...extra,
       at: Date.now(),
       scenario: w.scenario_name,
+      scenario_id: w.scenario_id || null,
       phase: w.phase,
       round: w.round,
       clock: w.clock,
@@ -1221,8 +1222,10 @@ export class Engine {
         surprise0: w.map.surprise0,
         surprise1: w.map.surprise1,
         cover: w.map.cover.map((c) => ({
+          id: c.id || null,
           min: [c.min.x, c.min.y], max: [c.max.x, c.max.y],
-          height: c.height, durability: c.durability, durability_max: c.durability_max,
+          height: c.height, color: c.color || "#6a7b66",
+          durability: c.durability, durability_max: c.durability_max,
         })),
       },
       units: w.units.map((u) => ({
@@ -1238,7 +1241,7 @@ export class Engine {
         hands: u.ch.hands, legs: u.ch.legs, focus: u.ch.focus, voice: u.ch.voice,
         reaction_left: u.reaction_left, reaction_max: u.reaction_max,
         wounds: u.wounds.map((x) => ({ region: x.region, text: x.description, bleed: x.bleed_rate, treated: x.treated, impairment: x.impairment })),
-        armor: u.armor.map((p) => ({ name: p.name, region: p.region, dur: p.durability, max: p.durability_max })),
+        armor: u.armor.map((p) => ({ id: p.id, name: p.name, region: p.region, dur: p.durability, max: p.durability_max })),
       })),
       last_shot: lastShotView(w, viewer, fog, visibleTo),
       quotes: buildQuotes(w, quoteU, findUnit(w, w.pending_react.reactor), {
@@ -1401,10 +1404,10 @@ function moveInfo(world, u) {
   };
 }
 
-export { defaultWorld } from "./model.js";
-export { worldFromScenario } from "./model.js";
+export { defaultWorld, worldFromScenario } from "./model.js";
+export { loadCatalog, loadCatalogSync, assembleWorld, worldFromCatalog } from "./content.js";
 export { silhouetteFor, aimPointOffset, accuracyAngle, resolveAimOffset } from "./combat.js";
-export { unitHitboxes, coverBox, muzzleWorld, rayLocalBox, rayCover, partCenterOffset } from "./body.js";
+export { unitHitboxes, coverBox, muzzleWorld, rayLocalBox, rayCover, partCenterOffset, partFamily, prettyPart } from "./body.js";
 export {
   CoverMode, inUseZone, nearestUse, resolveCoverUse, useBounds, COVER_USE_PAD,
 } from "./cover.js";

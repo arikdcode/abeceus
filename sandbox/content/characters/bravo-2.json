@@ -1,0 +1,21 @@
+{
+  "id": "bravo-2",
+  "name": "Bravo-2",
+  "team": 1,
+  "initiative": 2,
+  "firearms": 2,
+  "awareness": 2,
+  "endurance": 3,
+  "experience": 0.2,
+  "medicine": 1,
+  "weapon": "rifle",
+  "armor": [
+    { "id": "front_plate", "name": "front plate", "region": "chest", "protection": 18, "durability": 8 },
+    { "id": "back_plate", "name": "back plate", "region": "chest", "protection": 18, "durability": 8 },
+    { "id": "l_side_plate", "name": "left side plate", "region": "chest", "protection": 14, "durability": 5 },
+    { "id": "r_side_plate", "name": "right side plate", "region": "chest", "protection": 14, "durability": 5 },
+    { "id": "abdomen_plate", "name": "abdomen plate", "region": "abdomen", "protection": 12, "durability": 5 },
+    { "id": "l_shoulder_pad", "name": "left shoulder pad", "region": "l_shoulder", "protection": 12, "durability": 4 },
+    { "id": "r_shoulder_pad", "name": "right shoulder pad", "region": "r_shoulder", "protection": 12, "durability": 4 }
+  ]
+}

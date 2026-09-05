@@ -47,6 +47,14 @@ button.on, .mode-btn.player { outline: 1px solid var(--gold); background: #3a342
   box-shadow: inset 0 0 0 1px var(--gold);
 }
 #execute { background: #3a3424; border-color: var(--gold); }
+.scenario-pick {
+  display: flex; align-items: center; gap: 6px;
+  color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+}
+.scenario-pick select {
+  background: #2a3340; color: var(--ink); border: 1px solid #3d4b5c;
+  padding: 3px 6px; border-radius: 4px; font-size: 12px; text-transform: none; letter-spacing: 0;
+}
 kbd { font: 11px ui-monospace, monospace; color: var(--muted); }
 main {
   flex: 1 1 0;

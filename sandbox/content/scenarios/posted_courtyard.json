@@ -1,0 +1,13 @@
+{
+  "id": "posted_courtyard",
+  "name": "Posted courtyard",
+  "map": "courtyard",
+  "seed": 1,
+  "skip_contact": true,
+  "units": [
+    {"character": "alpha-1", "pos": [7.1, 4.2], "cover": {"mode": "post", "id": "crate-west", "face": "minx"}},
+    {"character": "alpha-2", "pos": [3.8, 12.0], "cover": {"mode": "hide", "id": "crate-corner", "face": "minx"}},
+    {"character": "bravo-1", "pos": [9.9, 4.8], "cover": {"mode": "post", "id": "crate-west", "face": "maxx"}},
+    {"character": "bravo-2", "pos": [13.6, 11.2], "cover": {"mode": "hide", "id": "crate-north", "face": "maxx"}}
+  ]
+}

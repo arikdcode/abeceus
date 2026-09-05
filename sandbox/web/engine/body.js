@@ -332,10 +332,10 @@ function postJoints(aimZ) {
 }
 
 function hideJoints(lip) {
-  const lShoulder = { x: -0.18, y: 0.08, z: 0.76 };
-  const rShoulder = { x: 0.18, y: 0.04, z: 0.75 };
-  const stock = { x: 0.14, y: 0.20, z: 0.64 };
-  const muzzle = { x: 0.56, y: 0.30, z: 0.60 };
+  const lShoulder = { x: -0.18, y: 0.04, z: 0.75 };
+  const rShoulder = { x: 0.18, y: 0.08, z: 0.76 };
+  const stock = { x: 0.08, y: 0.18, z: 0.62 };
+  const muzzle = { x: -0.50, y: 0.24, z: 0.58 };
   return {
     l_heel: { x: -0.16, y: 0.18, z: 0.03 },
     l_toe: { x: -0.17, y: 0.40, z: 0.025 },
@@ -356,10 +356,10 @@ function hideJoints(lip) {
     r_shoulder: rShoulder,
     ...rifleJoints({ l_shoulder: lShoulder, r_shoulder: rShoulder }, stock, muzzle, {
       rAlong: 0.18,
-      lAlong: 0.40,
+      lAlong: 0.42,
     }),
-    r_elbow: { x: 0.26, y: 0.06, z: 0.50 },
-    l_elbow: { x: 0.06, y: 0.22, z: 0.56 },
+    r_elbow: { x: 0.22, y: 0.10, z: 0.52 },
+    l_elbow: { x: -0.22, y: 0.12, z: 0.52 },
     look: { x: 0.04, y: 1, z: -0.22 },
   };
 }

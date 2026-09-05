@@ -1,0 +1,10 @@
+{
+  "id": "rifle",
+  "name": "Rifle",
+  "spread": 0.038,
+  "pen": 16,
+  "max_range": 40,
+  "mag_size": 8,
+  "ammo": 24,
+  "ammo_max": 30
+}
