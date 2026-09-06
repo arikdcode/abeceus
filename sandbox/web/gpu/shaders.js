@@ -1,223 +1,225 @@
-export const SHADER = /* wgsl */ `
-struct Frame {
-  r: vec4f,
-  u: vec4f,
-  f: vec4f,
-  eye: vec4f,
-  sun: vec4f,
-  fog: vec4f,
-  params: vec4f,
+const FRAME = /* glsl */ `
+layout(std140) uniform Frame {
+  vec4 frame_r;
+  vec4 frame_u;
+  vec4 frame_f;
+  vec4 frame_eye;
+  vec4 frame_sun;
+  vec4 frame_fog;
+  vec4 frame_params;
 };
 
-@group(0) @binding(0) var<uniform> frame: Frame;
+vec4 to_clip(vec3 p) {
+  vec3 v = p - frame_eye.xyz;
+  float vx = dot(v, frame_r.xyz);
+  float vy = dot(v, frame_u.xyz);
+  float vz = max(dot(v, frame_f.xyz), 0.05);
+  float fov = frame_params.z;
+  float aspect = frame_params.x / max(frame_params.y, 1.0);
+  float near = max(frame_params.w, 0.05);
+  float far = 250.0;
+  float z_clip = ((far + near) / (far - near)) * vz + (-2.0 * far * near / (far - near));
+  return vec4(vx / (fov * aspect), vy / fov, z_clip, vz);
+}
+`;
 
-struct LitIn {
-  @location(0) pos: vec4f,
-  @location(1) normal: vec4f,
-  @location(2) color: vec4f,
-  @location(3) mat: vec4f,
-};
+export const VS_LIT = /* glsl */ `#version 300 es
+${FRAME}
+layout(location = 0) in vec4 a_pos;
+layout(location = 1) in vec4 a_normal;
+layout(location = 2) in vec4 a_color;
+layout(location = 3) in vec4 a_mat;
+out vec3 v_world;
+out vec3 v_normal;
+out vec4 v_color;
+out vec4 v_shade;
+out vec4 v_extra;
+void main() {
+  gl_Position = to_clip(a_pos.xyz);
+  v_world = a_pos.xyz;
+  v_normal = a_normal.xyz;
+  v_color = a_color;
+  v_shade = vec4(a_mat.x, a_mat.y, a_mat.z, a_normal.w);
+  v_extra = vec4(a_pos.w, max(dot(a_pos.xyz - frame_eye.xyz, frame_f.xyz), 0.2), 0.0, 0.0);
+}
+`;
 
-struct LitOut {
-  @builtin(position) clip: vec4f,
-  @location(0) world: vec3f,
-  @location(1) normal: vec3f,
-  @location(2) color: vec4f,
-  @location(3) shade: vec4f,
-  @location(4) extra: vec4f,
-};
+export const FS_LIT = /* glsl */ `#version 300 es
+precision highp float;
+${FRAME}
+in vec3 v_world;
+in vec3 v_normal;
+in vec4 v_color;
+in vec4 v_shade;
+in vec4 v_extra;
+out vec4 frag;
 
-fn to_clip(p: vec3f) -> vec4f {
-  let v = p - frame.eye.xyz;
-  let vx = dot(v, frame.r.xyz);
-  let vy = dot(v, frame.u.xyz);
-  let vz = dot(v, frame.f.xyz);
-  let fov = frame.params.z;
-  let aspect = frame.params.x / max(frame.params.y, 1.0);
-  let near = frame.params.w;
-  return vec4f(vx / (fov * aspect), vy / fov, near, vz);
+float hash21(vec2 p) {
+  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
 }
 
-fn hash21(p: vec2f) -> f32 {
-  return fract(sin(dot(p, vec2f(127.1, 311.7))) * 43758.5453);
-}
-
-fn face_uv(p: vec3f, n: vec3f) -> vec2f {
-  let an = abs(n);
-  if (an.z >= an.x && an.z >= an.y) { return p.xy; }
-  if (an.y >= an.x) { return p.xz; }
+vec2 face_uv(vec3 p, vec3 n) {
+  vec3 an = abs(n);
+  if (an.z >= an.x && an.z >= an.y) return p.xy;
+  if (an.y >= an.x) return p.xz;
   return p.yz;
 }
 
-fn apply_tex(base: vec3f, p: vec3f, n: vec3f, tex: f32) -> vec3f {
-  let id = i32(tex + 0.5);
-  if (id == 0) { return base; }
-  let uv = face_uv(p, n);
+vec3 apply_tex(vec3 base, vec3 p, vec3 n, float tex) {
+  int id = int(tex + 0.5);
+  if (id == 0) return base;
+  vec2 uv = face_uv(p, n);
   if (id == 1) {
-    let g = abs(fract(uv.x * 3.2) - 0.5);
-    return mix(base, base * vec3f(0.55, 0.52, 0.48), 1.0 - smoothstep(0.04, 0.1, g));
+    float g = abs(fract(uv.x * 3.2) - 0.5);
+    return mix(base, base * vec3(0.55, 0.52, 0.48), 1.0 - smoothstep(0.04, 0.1, g));
   }
   if (id == 2) {
-    let g = abs(fract(uv.y * 2.1) - 0.5);
-    let v = abs(fract(uv.x * 0.55) - 0.5);
-    var rgb = mix(base, base * 0.62, 1.0 - smoothstep(0.06, 0.14, g));
+    float g = abs(fract(uv.y * 2.1) - 0.5);
+    float v = abs(fract(uv.x * 0.55) - 0.5);
+    vec3 rgb = mix(base, base * 0.62, 1.0 - smoothstep(0.06, 0.14, g));
     rgb = mix(rgb, rgb * 0.78, 1.0 - smoothstep(0.02, 0.07, v));
     return rgb;
   }
   if (id == 3) {
-    let row = floor(uv.y * 1.4);
-    let g = length(vec2f(fract(uv.x * 1.15 + row * 0.35) - 0.5, fract(uv.y * 1.4) - 0.5));
+    float row = floor(uv.y * 1.4);
+    float g = length(vec2(fract(uv.x * 1.15 + row * 0.35) - 0.5, fract(uv.y * 1.4) - 0.5));
     return mix(base * 0.7, base, smoothstep(0.28, 0.42, g));
   }
   if (id == 4) {
-    let g = abs(fract(uv.y * 4.5) - 0.5);
+    float g = abs(fract(uv.y * 4.5) - 0.5);
     return mix(base, base * 0.72, 1.0 - smoothstep(0.03, 0.08, g));
   }
   if (id == 5) {
-    let g = abs(fract(uv.x * 2.4 + uv.y * 0.18) - 0.5);
+    float g = abs(fract(uv.x * 2.4 + uv.y * 0.18) - 0.5);
     return mix(base, base * 0.8, 1.0 - smoothstep(0.08, 0.16, g));
   }
   if (id == 6) {
-    let gx = abs(fract(uv.x * 5.0) - 0.5);
-    let gy = abs(fract(uv.y * 5.0) - 0.5);
-    let line = 1.0 - smoothstep(0.03, 0.08, min(gx, gy));
-    return mix(base, base * vec3f(0.28, 0.3, 0.32), line * 0.7);
+    float gx = abs(fract(uv.x * 5.0) - 0.5);
+    float gy = abs(fract(uv.y * 5.0) - 0.5);
+    float line = 1.0 - smoothstep(0.03, 0.08, min(gx, gy));
+    return mix(base, base * vec3(0.28, 0.3, 0.32), line * 0.7);
   }
   if (id == 7) {
-    let band = step(0.32, fract(uv.y * 0.55)) * (1.0 - step(0.58, fract(uv.y * 0.55)));
-    return mix(base, vec3f(0.82, 0.67, 0.16), band * 0.45);
+    float band = step(0.32, fract(uv.y * 0.55)) * (1.0 - step(0.58, fract(uv.y * 0.55)));
+    return mix(base, vec3(0.82, 0.67, 0.16), band * 0.45);
   }
-  let cell = floor(uv * 2.6);
-  let speck = hash21(cell + vec2f(floor(p.z * 3.0), 0.0));
+  vec2 cell = floor(uv * 2.6);
+  float speck = hash21(cell + vec2(floor(p.z * 3.0), 0.0));
   return mix(base * 0.78, base * 1.08, speck);
 }
 
-@vertex
-fn vs_lit(input: LitIn) -> LitOut {
-  var out: LitOut;
-  out.clip = to_clip(input.pos.xyz);
-  out.world = input.pos.xyz;
-  out.normal = input.normal.xyz;
-  out.color = input.color;
-  out.shade = vec4f(input.mat.x, input.mat.y, input.mat.z, input.normal.w);
-  out.extra = vec4f(input.pos.w, max(dot(input.pos.xyz - frame.eye.xyz, frame.f.xyz), 0.2), 0.0, 0.0);
-  return out;
-}
-
-@fragment
-fn fs_lit(input: LitOut) -> @location(0) vec4f {
-  var n = normalize(input.normal);
-  let toward = -frame.f.xyz;
-  if (dot(n, toward) < 0.0) { n = -n; }
-  var rgb = apply_tex(input.color.rgb, input.world, n, input.extra.x);
-  let spec_k = input.shade.x;
-  let shine = max(input.shade.y, 1.0);
-  let wrap_k = input.shade.z;
-  let emit_k = input.shade.w;
+void main() {
+  vec3 n = normalize(v_normal);
+  vec3 toward = -frame_f.xyz;
+  if (dot(n, toward) < 0.0) n = -n;
+  vec3 rgb = apply_tex(v_color.rgb, v_world, n, v_extra.x);
+  float spec_k = v_shade.x;
+  float shine = max(v_shade.y, 1.0);
+  float wrap_k = v_shade.z;
+  float emit_k = v_shade.w;
   if (emit_k > 0.001) {
-    rgb = min(rgb * (1.15 + 0.35 * emit_k) + vec3f(0.16, 0.11, 0.03) * emit_k, vec3f(1.0));
+    rgb = min(rgb * (1.15 + 0.35 * emit_k) + vec3(0.16, 0.11, 0.03) * emit_k, vec3(1.0));
   } else {
-    var ndot = dot(n, frame.sun.xyz);
-    if (wrap_k > 0.0) { ndot = (ndot + wrap_k) / (1.0 + wrap_k); }
-    let lambert = max(ndot, 0.0);
-    let hemi = n.z * 0.5 + 0.5;
-    let under = max(-n.z, 0.0);
-    let ambient = 0.16 + 0.22 * hemi + 0.07 * under;
-    let diffuse = 0.78 * lambert;
-    let h = normalize(frame.sun.xyz + toward);
-    let spec = pow(max(dot(n, h), 0.0), shine) * spec_k;
-    let warm = 0.55 * lambert;
-    rgb = rgb * (ambient * vec3f(0.86, 0.90, 0.96) + diffuse * vec3f(0.92 + 0.16 * warm, 0.90 + 0.08 * warm, 0.82));
-    rgb = rgb * vec3f(1.08, 0.92, 0.72);
-    rgb = rgb + spec * vec3f(0.72, 0.60, 0.48);
+    float ndot = dot(n, frame_sun.xyz);
+    if (wrap_k > 0.0) ndot = (ndot + wrap_k) / (1.0 + wrap_k);
+    float lambert = max(ndot, 0.0);
+    float hemi = n.z * 0.5 + 0.5;
+    float under = max(-n.z, 0.0);
+    float ambient = 0.16 + 0.22 * hemi + 0.07 * under;
+    float diffuse = 0.78 * lambert;
+    vec3 h = normalize(frame_sun.xyz + toward);
+    float spec = pow(max(dot(n, h), 0.0), shine) * spec_k;
+    float warm = 0.55 * lambert;
+    rgb = rgb * (ambient * vec3(0.86, 0.90, 0.96) + diffuse * vec3(0.92 + 0.16 * warm, 0.90 + 0.08 * warm, 0.82));
+    rgb = rgb * vec3(1.08, 0.92, 0.72);
+    rgb = rgb + spec * vec3(0.72, 0.60, 0.48);
   }
-  let fog_a = min(0.62, 1.0 - exp(-input.extra.y * 0.0115));
-  rgb = mix(rgb, frame.fog.rgb, fog_a);
-  return vec4f(rgb, input.color.a);
+  float fog_a = min(0.62, 1.0 - exp(-v_extra.y * 0.0115));
+  rgb = mix(rgb, frame_fog.rgb, fog_a);
+  frag = vec4(rgb, v_color.a);
 }
+`;
 
-@vertex
-fn vs_sky(@builtin(vertex_index) i: u32) -> @builtin(position) vec4f {
-  var p = array<vec2f, 3>(vec2f(-1.0, -1.0), vec2f(3.0, -1.0), vec2f(-1.0, 3.0));
-  return vec4f(p[i], 0.0, 1.0);
+export const VS_SKY = /* glsl */ `#version 300 es
+${FRAME}
+void main() {
+  if (gl_VertexID == 0) gl_Position = vec4(-1.0, -1.0, 0.0, 1.0);
+  else if (gl_VertexID == 1) gl_Position = vec4(3.0, -1.0, 0.0, 1.0);
+  else gl_Position = vec4(-1.0, 3.0, 0.0, 1.0);
 }
+`;
 
-@fragment
-fn fs_sky(@builtin(position) pos: vec4f) -> @location(0) vec4f {
-  let w = max(frame.params.x, 1.0);
-  let hgt = max(frame.params.y, 1.0);
-  let fov = frame.params.z;
-  let t = pos.y / hgt;
-  let top = vec3f(0.078, 0.118, 0.157);
-  let mid = vec3f(0.165, 0.235, 0.282);
-  let hor = vec3f(0.690, 0.455, 0.251);
-  var rgb = mix(top, mid, clamp(t * 1.6, 0.0, 1.0));
+export const FS_SKY = /* glsl */ `#version 300 es
+precision highp float;
+${FRAME}
+out vec4 frag;
+void main() {
+  float w = max(frame_params.x, 1.0);
+  float hgt = max(frame_params.y, 1.0);
+  float fov = frame_params.z;
+  float t = gl_FragCoord.y / hgt;
+  vec3 top = vec3(0.078, 0.118, 0.157);
+  vec3 mid = vec3(0.165, 0.235, 0.282);
+  vec3 hor = vec3(0.690, 0.455, 0.251);
+  vec3 rgb = mix(top, mid, clamp(t * 1.6, 0.0, 1.0));
   rgb = mix(rgb, hor, smoothstep(0.45, 1.0, t));
-  let nx = (pos.x - w * 0.5) * 2.0 * fov / hgt;
-  let ny = -(pos.y - hgt * 0.5) * 2.0 * fov / hgt;
-  let dir = normalize(frame.f.xyz + frame.r.xyz * nx + frame.u.xyz * ny);
-  let sun = pow(max(dot(dir, frame.sun.xyz), 0.0), 48.0);
-  let glow = pow(max(dot(dir, frame.sun.xyz), 0.0), 8.0);
-  rgb = rgb + vec3f(1.0, 0.78, 0.42) * sun * 0.95 + vec3f(0.92, 0.55, 0.22) * glow * 0.28;
-  return vec4f(rgb, 1.0);
+  float nx = (gl_FragCoord.x - w * 0.5) * 2.0 * fov / hgt;
+  float ny = -(gl_FragCoord.y - hgt * 0.5) * 2.0 * fov / hgt;
+  vec3 dir = normalize(frame_f.xyz + frame_r.xyz * nx + frame_u.xyz * ny);
+  float sun = pow(max(dot(dir, frame_sun.xyz), 0.0), 48.0);
+  float glow = pow(max(dot(dir, frame_sun.xyz), 0.0), 8.0);
+  rgb = rgb + vec3(1.0, 0.78, 0.42) * sun * 0.95 + vec3(0.92, 0.55, 0.22) * glow * 0.28;
+  frag = vec4(rgb, 1.0);
 }
+`;
 
-struct OverlayIn {
-  @location(0) pos: vec3f,
-  @location(1) color: vec4f,
-};
-
-struct OverlayOut {
-  @builtin(position) clip: vec4f,
-  @location(0) color: vec4f,
-};
-
-@vertex
-fn vs_overlay(input: OverlayIn) -> OverlayOut {
-  var out: OverlayOut;
-  out.clip = to_clip(input.pos);
-  out.color = input.color;
-  return out;
+export const VS_OVERLAY = /* glsl */ `#version 300 es
+${FRAME}
+layout(location = 0) in vec3 a_pos;
+layout(location = 1) in vec4 a_color;
+out vec4 v_color;
+void main() {
+  gl_Position = to_clip(a_pos);
+  v_color = a_color;
 }
+`;
 
-@fragment
-fn fs_overlay(input: OverlayOut) -> @location(0) vec4f {
-  return input.color;
+export const FS_OVERLAY = /* glsl */ `#version 300 es
+precision highp float;
+in vec4 v_color;
+out vec4 frag;
+void main() {
+  frag = v_color;
 }
+`;
 
-struct TextIn {
-  @location(0) pos: vec3f,
-  @location(1) uv: vec2f,
-  @location(2) color: vec4f,
-};
-
-struct TextOut {
-  @builtin(position) clip: vec4f,
-  @location(0) uv: vec2f,
-  @location(1) color: vec4f,
-};
-
-@group(1) @binding(0) var font_tex: texture_2d<f32>;
-@group(1) @binding(1) var font_samp: sampler;
-
-@vertex
-fn vs_text(input: TextIn) -> TextOut {
-  var out: TextOut;
-  let w = max(frame.params.x, 1.0);
-  let h = max(frame.params.y, 1.0);
-  let z = max(input.pos.z, 0.2);
-  let ndc_x = (input.pos.x / w) * 2.0 - 1.0;
-  let ndc_y = 1.0 - (input.pos.y / h) * 2.0;
-  out.clip = vec4f(ndc_x * z, ndc_y * z, frame.params.w, z);
-  out.uv = input.uv;
-  out.color = input.color;
-  return out;
+export const VS_TEXT = /* glsl */ `#version 300 es
+${FRAME}
+layout(location = 0) in vec3 a_pos;
+layout(location = 1) in vec2 a_uv;
+layout(location = 2) in vec4 a_color;
+out vec2 v_uv;
+out vec4 v_color;
+void main() {
+  float w = max(frame_params.x, 1.0);
+  float h = max(frame_params.y, 1.0);
+  float ndc_x = (a_pos.x / w) * 2.0 - 1.0;
+  float ndc_y = 1.0 - (a_pos.y / h) * 2.0;
+  gl_Position = vec4(ndc_x, ndc_y, 0.0, 1.0);
+  v_uv = a_uv;
+  v_color = a_color;
 }
+`;
 
-@fragment
-fn fs_text(input: TextOut) -> @location(0) vec4f {
-  let a = textureSample(font_tex, font_samp, input.uv).a;
-  if (a < 0.12) { discard; }
-  return vec4f(input.color.rgb, input.color.a * a);
+export const FS_TEXT = /* glsl */ `#version 300 es
+precision highp float;
+uniform sampler2D u_font;
+in vec2 v_uv;
+in vec4 v_color;
+out vec4 frag;
+void main() {
+  float a = texture(u_font, v_uv).a;
+  if (a < 0.12) discard;
+  frag = vec4(v_color.rgb, v_color.a * a);
 }
 `;

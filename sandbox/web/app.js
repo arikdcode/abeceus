@@ -1660,17 +1660,15 @@ async function boot() {
   try {
     phase.textContent = "loading catalog…";
     catalog = await loadCatalog(readContent);
-    phase.textContent = "starting WebGPU…";
+    phase.textContent = "starting WebGL2…";
     const ok = await initRenderer();
     if (!ok) {
-      const why = initError() || "WebGPU init failed";
-      phase.textContent = `WebGPU failed: ${why}`;
+      const why = initError() || "WebGL2 init failed";
+      phase.textContent = `WebGL2 failed: ${why}`;
       const prompt = document.getElementById("prompt");
       if (prompt) {
         prompt.classList.remove("hidden");
-        prompt.textContent = why.includes("adapter") || why.includes("timed out")
-          ? "WebGPU never got a GPU adapter. Cursor's built-in browser cannot do this. In desktop Chrome: quit fully, confirm chrome://gpu says Vulkan, then hard-refresh. The yellow banner was --enable-unsafe-webgpu (now removed — not needed on Chrome 146)."
-          : `WebGPU failed: ${why}`;
+        prompt.textContent = `WebGL2 failed: ${why}`;
       }
       console.error("sandbox gpu:", why);
       return;
@@ -1682,7 +1680,7 @@ async function boot() {
     return;
   }
   try {
-    phase.textContent = "WebGPU ready — waiting for canvas…";
+    phase.textContent = "WebGL2 ready — waiting for canvas…";
     await new Promise((r) => requestAnimationFrame(r));
     const rect = canvas.getBoundingClientRect();
     resizeCanvas(canvas, Math.max(1, Math.round(rect.width)), Math.max(1, Math.round(rect.height)));

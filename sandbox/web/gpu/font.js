@@ -3,7 +3,7 @@ const CH = 12;
 const COLS = 16;
 const ROWS = 6;
 
-export async function createFontAtlas(device) {
+export function rasterFontAtlas() {
   const canvas = document.createElement("canvas");
   canvas.width = COLS * CW;
   canvas.height = ROWS * CH;
@@ -18,16 +18,5 @@ export async function createFontAtlas(device) {
     const y = Math.floor((i - 32) / COLS) * CH;
     ctx.fillText(String.fromCharCode(i), x, y);
   }
-  const tex = device.createTexture({
-    size: { width: canvas.width, height: canvas.height },
-    format: "rgba8unorm",
-    usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
-  });
-  device.queue.copyExternalImageToTexture(
-    { source: canvas },
-    { texture: tex },
-    { width: canvas.width, height: canvas.height },
-  );
-  const samp = device.createSampler({ magFilter: "linear", minFilter: "linear" });
-  return { tex, samp };
+  return canvas;
 }

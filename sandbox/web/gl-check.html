@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>WebGL2 check</title>
+  <style>
+    body { font: 14px/1.45 ui-monospace, monospace; background: #12151a; color: #e8edf4; padding: 20px; }
+    canvas { width: 160px; height: 100px; border: 1px solid #3a4450; }
+    .ok { color: #6ecf9a; }
+    .bad { color: #ff8a6e; }
+  </style>
+</head>
+<body>
+  <h1>WebGL2 check</h1>
+  <pre id="out">running…</pre>
+  <canvas id="c" width="160" height="100"></canvas>
+  <script>
+    const lines = [];
+    const out = document.getElementById("out");
+    const log = (s) => { lines.push(s); out.textContent = lines.join("\n"); };
+    log("ua: " + navigator.userAgent);
+    log("electron: " + (/Electron|Cursor\//i.test(navigator.userAgent) ? "yes" : "no"));
+    const c = document.getElementById("c");
+    const gl = c.getContext("webgl2", { alpha: false, antialias: false, depth: true });
+    if (!gl) {
+      log("FAIL: getContext(webgl2) is null");
+      document.title = "WebGL2 FAIL";
+      window.__glCheck = { ok: false };
+    } else {
+      log("webgl2: yes");
+      log("vendor: " + gl.getParameter(gl.VENDOR));
+      log("renderer: " + gl.getParameter(gl.RENDERER));
+      log("version: " + gl.getParameter(gl.VERSION));
+      gl.viewport(0, 0, c.width, c.height);
+      gl.clearColor(0.2, 0.55, 0.35, 1);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      log("clear: ok");
+      log("OK: WebGL2 works in this browser");
+      document.title = "WebGL2 OK";
+      window.__glCheck = { ok: true, renderer: gl.getParameter(gl.RENDERER) };
+    }
+  </script>
+</body>
+</html>
