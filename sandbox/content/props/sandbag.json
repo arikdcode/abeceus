@@ -1,6 +1,6 @@
 {
   "id": "sandbag",
   "parts": [
-    { "min": [-1.2, -0.35], "max": [1.2, 0.35], "z0": 0, "z1": 0.72, "color": "#8e8468", "mat": "canvas", "tex": "bags", "cover": true, "protection": 10, "durability": 7 }
+    { "min": [-1.2, -0.35], "max": [1.2, 0.35], "z0": 0, "z1": 0.72, "color": "#f2f0ea", "mat": "canvas", "surf": "sandbag", "cover": true, "protection": 10, "durability": 7 }
   ]
 }

@@ -124,15 +124,17 @@ export function assembleWorld(catalog, scenario) {
   }
   applyMap(w, map, catalog);
   w.look = !!(src.look || src.skip_contact);
+  w.skip_units = !!src.skip_units;
   if (src.sun != null) w.sun = !!src.sun;
   if (src.sun_az != null) w.sun_az = src.sun_az;
   if (src.sun_el != null) w.sun_el = src.sun_el;
+  if (src.sun_intensity != null) w.sun_intensity = src.sun_intensity;
   w.rules = mergeRules(DEFAULT_RULES, catalog.rules);
   if (src.turn_seconds != null) w.rules.turn_seconds = src.turn_seconds;
   if (src.surprise0 != null) w.map.surprise0 = src.surprise0;
   if (src.surprise1 != null) w.map.surprise1 = src.surprise1;
   let next = 1;
-  for (const place of src.units || []) {
+  for (const place of src.skip_units ? [] : (src.units || [])) {
     const charId = place.character;
     const character = charId ? catalog.characters[charId] : null;
     if (charId && !character) throw new Error(`unknown character: ${charId}`);

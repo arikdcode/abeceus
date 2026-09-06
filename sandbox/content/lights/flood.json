@@ -10,8 +10,8 @@
   "angle": 48,
   "penumbra": 14,
   "parts": [
-    { "id": "pole", "role": "pole", "min": [-0.09, -0.09], "max": [0.09, 0.09], "z0": 0, "z1": 4.35, "color": "#3a3e42", "mat": "metal", "cover": false },
-    { "id": "yoke", "min": [-0.28, -0.08], "max": [0.28, 0.08], "z0": 4.18, "z1": 4.42, "color": "#2e3236", "mat": "metal", "cover": false },
+    { "id": "pole", "role": "pole", "min": [-0.09, -0.09], "max": [0.09, 0.09], "z0": 0, "z1": 4.35, "color": "#f2f0ea", "mat": "metal", "surf": "steel", "cover": false },
+    { "id": "yoke", "min": [-0.28, -0.08], "max": [0.28, 0.08], "z0": 4.18, "z1": 4.42, "color": "#f2f0ea", "mat": "metal", "surf": "steel", "cover": false },
     { "id": "head", "min": [-0.38, -0.28], "max": [0.38, 0.28], "z0": 4.0, "z1": 4.48, "color": "#f4f1e6", "mat": "emit", "cover": false }
   ]
 }

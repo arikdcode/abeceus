@@ -7,7 +7,7 @@
   "range": 15,
   "z": 3.3,
   "parts": [
-    { "id": "pole", "role": "pole", "min": [-0.1, -0.1], "max": [0.1, 0.1], "z0": 0, "z1": 3.22, "color": "#3a3f44", "mat": "metal", "cover": false },
+    { "id": "pole", "role": "pole", "min": [-0.1, -0.1], "max": [0.1, 0.1], "z0": 0, "z1": 3.22, "color": "#f2f0ea", "mat": "metal", "surf": "steel", "cover": false },
     { "id": "head", "min": [-0.24, -0.24], "max": [0.24, 0.24], "z0": 3.02, "z1": 3.5, "color": "#e8c86a", "mat": "emit", "cover": false }
   ]
 }

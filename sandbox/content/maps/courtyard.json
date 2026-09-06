@@ -7,8 +7,8 @@
   "surprise0": 1.0,
   "surprise1": 0.75,
   "cover": [
-    {"id": "crate-west", "min": [7.5, 3.0], "max": [9.5, 6.5], "height": 1.15, "color": "#7d6a3e", "protection": 16, "durability": 10},
-    {"id": "crate-north", "min": [11.0, 9.5], "max": [13.2, 12.8], "height": 1.2, "color": "#6b7a4e", "protection": 16, "durability": 10},
-    {"id": "crate-corner", "min": [4.0, 11.0], "max": [6.0, 13.0], "height": 0.9, "color": "#8a8068", "protection": 10, "durability": 6}
+    {"id": "crate-west", "min": [7.5, 3.0], "max": [9.5, 6.5], "height": 1.15, "color": "#f2f0ea", "mat": "wood", "surf": "crate_wood", "protection": 16, "durability": 10},
+    {"id": "crate-north", "min": [11.0, 9.5], "max": [13.2, 12.8], "height": 1.2, "color": "#f2f0ea", "mat": "wood", "surf": "crate_wood", "protection": 16, "durability": 10},
+    {"id": "crate-corner", "min": [4.0, 11.0], "max": [6.0, 13.0], "height": 0.9, "color": "#f2f0ea", "mat": "canvas", "surf": "sandbag", "protection": 10, "durability": 6}
   ]
 }

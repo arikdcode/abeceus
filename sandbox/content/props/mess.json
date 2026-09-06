@@ -1,13 +1,13 @@
 {
   "id": "mess",
   "parts": [
-    { "id": "post-sw", "min": [-2.9, -2.1], "max": [-2.72, -1.92], "z0": 0, "z1": 2.48, "color": "#4a4034", "mat": "metal", "cover": false },
-    { "id": "post-se", "min": [2.72, -2.1], "max": [2.9, -1.92], "z0": 0, "z1": 2.48, "color": "#4a4034", "mat": "metal", "cover": false },
-    { "id": "post-nw", "min": [-2.9, 1.92], "max": [-2.72, 2.1], "z0": 0, "z1": 2.48, "color": "#4a4034", "mat": "metal", "cover": false },
-    { "id": "post-ne", "min": [2.72, 1.92], "max": [2.9, 2.1], "z0": 0, "z1": 2.48, "color": "#4a4034", "mat": "metal", "cover": false },
-    { "id": "roof", "role": "roof", "min": [-3.1, -2.3], "max": [3.1, 2.3], "z0": 2.62, "z1": 2.86, "color": "#5c4230", "mat": "canvas", "tex": "canvas", "cover": false },
-    { "id": "table-a", "min": [-1.8, -0.7], "max": [-0.2, 0.7], "z0": 0, "z1": 0.85, "color": "#6a5340", "mat": "wood", "tex": "planks", "cover": true, "protection": 8, "durability": 5 },
-    { "id": "table-b", "min": [0.2, -0.7], "max": [1.8, 0.7], "z0": 0, "z1": 0.85, "color": "#6a5340", "mat": "wood", "tex": "planks", "cover": true, "protection": 8, "durability": 5 },
-    { "id": "cooler", "min": [2.05, -0.45], "max": [2.55, 0.45], "z0": 0, "z1": 0.95, "color": "#3a4a38", "mat": "metal", "cover": true, "protection": 8, "durability": 5 }
+    { "id": "post-sw", "min": [-2.9, -2.1], "max": [-2.72, -1.92], "z0": 0, "z1": 2.48, "color": "#f2f0ea", "mat": "metal", "surf": "steel", "cover": false },
+    { "id": "post-se", "min": [2.72, -2.1], "max": [2.9, -1.92], "z0": 0, "z1": 2.48, "color": "#f2f0ea", "mat": "metal", "surf": "steel", "cover": false },
+    { "id": "post-nw", "min": [-2.9, 1.92], "max": [-2.72, 2.1], "z0": 0, "z1": 2.48, "color": "#f2f0ea", "mat": "metal", "surf": "steel", "cover": false },
+    { "id": "post-ne", "min": [2.72, 1.92], "max": [2.9, 2.1], "z0": 0, "z1": 2.48, "color": "#f2f0ea", "mat": "metal", "surf": "steel", "cover": false },
+    { "id": "roof", "role": "roof", "min": [-3.1, -2.3], "max": [3.1, 2.3], "z0": 2.62, "z1": 2.86, "color": "#f2f0ea", "mat": "canvas", "surf": "tarp_tan", "cover": false },
+    { "id": "table-a", "min": [-1.8, -0.7], "max": [-0.2, 0.7], "z0": 0, "z1": 0.85, "color": "#f2f0ea", "mat": "wood", "surf": "pine", "cover": true, "protection": 8, "durability": 5 },
+    { "id": "table-b", "min": [0.2, -0.7], "max": [1.8, 0.7], "z0": 0, "z1": 0.85, "color": "#f2f0ea", "mat": "wood", "surf": "pine", "cover": true, "protection": 8, "durability": 5 },
+    { "id": "cooler", "min": [2.05, -0.45], "max": [2.55, 0.45], "z0": 0, "z1": 0.95, "color": "#f2f0ea", "mat": "metal", "surf": "steel_od", "cover": true, "protection": 8, "durability": 5 }
   ]
 }

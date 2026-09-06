@@ -640,8 +640,7 @@ function collectFrame() {
     if (!u) continue;
     if (camKind === "fpv" && u.id === actorId()) continue;
     const drawn = (u.id === actorId() && ghost && !ghostMoved) ? ghost : u;
-    const faded = u.id === actorId() && ghostMoved;
-    pushUnitParts(drawn, vu.team, vu.downed || vu.dead, faded, vu);
+    pushUnitParts(drawn, vu.team, vu.downed || vu.dead, false, vu);
   }
   if (ghostMoved && ghost && camKind !== "fpv") {
     const vu = view.units.find((x) => x.id === ghost.id);
@@ -756,6 +755,7 @@ function collectFrame() {
     map,
     sun: sunOn,
     sunDir: sunDir(sunAz, sunEl),
+    sunIntensity: sunOn ? (view?.sun_intensity ?? 1) : 0,
     exact: exactLights,
     lights: map.lights || [],
     solids: [...worldParts, ...bodyParts],

@@ -206,9 +206,9 @@
       "protection": 12,
       "durability": 8,
       "z1": 1.9,
-      "color": "#5c666c",
+      "color": "#e4e6e8",
       "mat": "metal",
-      "tex": "mesh"
+      "surf": "grate_wall"
     },
     {
       "prop": "slab",
@@ -224,9 +224,9 @@
       "protection": 12,
       "durability": 8,
       "z1": 1.9,
-      "color": "#5c666c",
+      "color": "#e4e6e8",
       "mat": "metal",
-      "tex": "mesh"
+      "surf": "grate_wall"
     },
     {
       "prop": "slab",
@@ -242,9 +242,9 @@
       "protection": 12,
       "durability": 8,
       "z1": 1.9,
-      "color": "#5c666c",
+      "color": "#e4e6e8",
       "mat": "metal",
-      "tex": "mesh"
+      "surf": "grate_wall"
     },
     {
       "prop": "slab",
@@ -260,9 +260,9 @@
       "protection": 12,
       "durability": 8,
       "z1": 1.9,
-      "color": "#5c666c",
+      "color": "#e4e6e8",
       "mat": "metal",
-      "tex": "mesh"
+      "surf": "grate_wall"
     },
     {
       "prop": "lamp",
@@ -1178,9 +1178,9 @@
         8
       ],
       "z1": 2.4,
-      "color": "#6a6558",
+      "color": "#eeebe6",
       "mat": "concrete",
-      "tex": "siding",
+      "surf": "concrete_panel",
       "protection": 16,
       "durability": 10
     },
@@ -1196,9 +1196,9 @@
         8
       ],
       "z1": 2.4,
-      "color": "#6a6558",
+      "color": "#eeebe6",
       "mat": "concrete",
-      "tex": "siding",
+      "surf": "concrete_panel",
       "protection": 16,
       "durability": 10
     },
@@ -1214,9 +1214,9 @@
         0.18
       ],
       "z1": 2.4,
-      "color": "#6a6558",
+      "color": "#eeebe6",
       "mat": "concrete",
-      "tex": "siding",
+      "surf": "concrete_panel",
       "protection": 16,
       "durability": 10
     },
@@ -1232,9 +1232,9 @@
         0.18
       ],
       "z1": 2.4,
-      "color": "#6a6558",
+      "color": "#eeebe6",
       "mat": "concrete",
-      "tex": "siding",
+      "surf": "concrete_panel",
       "protection": 16,
       "durability": 10
     },

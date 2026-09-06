@@ -1,16 +1,16 @@
 {
   "id": "booth",
   "parts": [
-    { "id": "wall-w", "min": [-1.35, -1.25], "max": [-1.18, 1.25], "z0": 0, "z1": 2.32, "color": "#9a8870", "mat": "paint", "tex": "siding", "cover": true, "protection": 20, "durability": 14 },
-    { "id": "wall-e", "min": [1.18, -1.25], "max": [1.35, 1.25], "z0": 0, "z1": 2.32, "color": "#9a8870", "mat": "paint", "tex": "siding", "cover": true, "protection": 20, "durability": 14 },
-    { "id": "wall-n", "min": [-1.35, 1.08], "max": [1.35, 1.25], "z0": 0, "z1": 2.32, "color": "#9a8870", "mat": "paint", "tex": "siding", "cover": true, "protection": 20, "durability": 14 },
-    { "id": "wall-s-w", "min": [-1.35, -1.25], "max": [-0.25, -1.08], "z0": 0, "z1": 2.32, "color": "#9a8870", "mat": "paint", "tex": "siding", "cover": true, "protection": 20, "durability": 14 },
-    { "id": "wall-s-e", "min": [0.25, -1.25], "max": [1.35, -1.08], "z0": 0, "z1": 2.32, "color": "#9a8870", "mat": "paint", "tex": "siding", "cover": true, "protection": 20, "durability": 14 },
-    { "id": "door", "min": [-0.22, -1.22], "max": [0.22, -1.05], "z0": 0, "z1": 1.95, "color": "#4a4034", "mat": "wood", "cover": true, "protection": 10, "durability": 6 },
+    { "id": "wall-w", "min": [-1.35, -1.25], "max": [-1.18, 1.25], "z0": 0, "z1": 2.32, "color": "#f2f0ea", "mat": "paint", "surf": "stucco", "cover": true, "protection": 20, "durability": 14 },
+    { "id": "wall-e", "min": [1.18, -1.25], "max": [1.35, 1.25], "z0": 0, "z1": 2.32, "color": "#f2f0ea", "mat": "paint", "surf": "stucco", "cover": true, "protection": 20, "durability": 14 },
+    { "id": "wall-n", "min": [-1.35, 1.08], "max": [1.35, 1.25], "z0": 0, "z1": 2.32, "color": "#f2f0ea", "mat": "paint", "surf": "stucco", "cover": true, "protection": 20, "durability": 14 },
+    { "id": "wall-s-w", "min": [-1.35, -1.25], "max": [-0.25, -1.08], "z0": 0, "z1": 2.32, "color": "#f2f0ea", "mat": "paint", "surf": "stucco", "cover": true, "protection": 20, "durability": 14 },
+    { "id": "wall-s-e", "min": [0.25, -1.25], "max": [1.35, -1.08], "z0": 0, "z1": 2.32, "color": "#f2f0ea", "mat": "paint", "surf": "stucco", "cover": true, "protection": 20, "durability": 14 },
+    { "id": "door", "min": [-0.22, -1.22], "max": [0.22, -1.05], "z0": 0, "z1": 1.95, "color": "#f2f0ea", "mat": "wood", "surf": "pine", "cover": true, "protection": 10, "durability": 6 },
     { "id": "win-w", "min": [-1.38, -0.45], "max": [-1.16, 0.55], "z0": 1.05, "z1": 1.95, "color": "#1a2830", "mat": "glass", "cover": false },
     { "id": "win-e", "min": [1.16, -0.45], "max": [1.38, 0.55], "z0": 1.05, "z1": 1.95, "color": "#1a2830", "mat": "glass", "cover": false },
     { "id": "win-s", "min": [-0.15, -1.28], "max": [0.15, -1.1], "z0": 1.15, "z1": 1.85, "color": "#243038", "mat": "glass", "cover": false },
-    { "id": "sign", "min": [-0.7, -1.32], "max": [0.7, -1.22], "z0": 2.05, "z1": 2.28, "color": "#8a2020", "mat": "paint", "cover": false },
-    { "id": "roof", "role": "roof", "min": [-1.42, -1.32], "max": [1.42, 1.32], "z0": 2.46, "z1": 2.72, "color": "#4a443c", "mat": "metal", "cover": false }
+    { "id": "sign", "min": [-0.7, -1.32], "max": [0.7, -1.22], "z0": 2.05, "z1": 2.28, "color": "#f2f0ea", "mat": "paint", "surf": "hazard_red", "cover": false },
+    { "id": "roof", "role": "roof", "min": [-1.42, -1.32], "max": [1.42, 1.32], "z0": 2.46, "z1": 2.72, "color": "#f2f0ea", "mat": "metal", "surf": "corrugated", "cover": false }
   ]
 }

@@ -203,6 +203,7 @@ export function buildFrame(eng, opts = {}) {
     cam: opts.cam,
     sun: opts.sun ?? w.sun !== false,
     sunDir: sunDir(w.sun_az ?? 210, w.sun_el ?? 48),
+    sunIntensity: opts.sunIntensity ?? w.sun_intensity ?? 1,
     lights: map.lights || [],
     map,
     solids: [...visible, ...bodies],

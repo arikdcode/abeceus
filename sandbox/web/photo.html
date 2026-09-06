@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>object photo</title>
+  <style>
+    html, body { margin: 0; background: #111; color: #ddd; font: 13px/1.4 ui-monospace, monospace; }
+    #tile { display: none; }
+    #mosaic { display: block; max-width: 100%; }
+  </style>
+</head>
+<body>
+  <canvas id="tile" data-capture="1" width="320" height="240"></canvas>
+  <canvas id="mosaic"></canvas>
+  <pre id="out">shooting…</pre>
+  <script type="module">
+    import { loadCatalog } from "./engine/engine.js";
+    import { drawFrame, initRenderer } from "./gpu/renderer.js";
+    import { PHOTO_ANGLES, buildStudioFrame, photoObjects } from "./gpu/studio.js";
+
+    const q = new URLSearchParams(location.search);
+    const only = q.get("prop") || "";
+    const out = document.getElementById("out");
+    const tile = document.getElementById("tile");
+    const mosaic = document.getElementById("mosaic");
+
+    async function readContent(path) {
+      const res = await fetch(`/content/${path}`);
+      if (!res.ok) throw new Error(`content ${path}: ${res.status}`);
+      return res.text();
+    }
+
+    function drawLabel(ctx, text, x, y, h) {
+      ctx.fillStyle = "#1a1c20";
+      ctx.fillRect(x, y, 148, h);
+      ctx.fillStyle = "#f4ecd4";
+      ctx.font = "15px ui-monospace, monospace";
+      ctx.textBaseline = "middle";
+      ctx.fillText(text, x + 12, y + h * 0.5);
+    }
+
+    try {
+      const catalog = await loadCatalog(readContent);
+      const defs = photoObjects(catalog).filter((d) => !only || d.id === only);
+      if (!defs.length) throw new Error(only ? `unknown prop ${only}` : "no props");
+      if (!await initRenderer()) throw new Error("WebGL2 init failed");
+
+      const tw = tile.width;
+      const th = tile.height;
+      const labelW = 148;
+      mosaic.width = labelW + PHOTO_ANGLES.length * tw;
+      mosaic.height = defs.length * th;
+      const ctx = mosaic.getContext("2d");
+      ctx.fillStyle = "#121418";
+      ctx.fillRect(0, 0, mosaic.width, mosaic.height);
+
+      for (let row = 0; row < defs.length; row++) {
+        const def = defs[row];
+        drawLabel(ctx, def.id, 0, row * th, th);
+        for (let col = 0; col < PHOTO_ANGLES.length; col++) {
+          const frame = buildStudioFrame(def, { angle: PHOTO_ANGLES[col] });
+          for (let i = 0; i < 3; i++) {
+            if (!drawFrame(tile, frame)) throw new Error(`draw ${def.id} ${PHOTO_ANGLES[col].id}`);
+          }
+          ctx.drawImage(tile, labelW + col * tw, row * th);
+        }
+      }
+
+      const name = only ? `object-${only}` : "object-mosaic";
+      const png = mosaic.toDataURL("image/png");
+      const res = await fetch("/debug/shot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, png }),
+      });
+      if (!res.ok) throw new Error(`save ${res.status}`);
+      out.textContent = `saved ${name} (${defs.length} objects × ${PHOTO_ANGLES.length} angles)`;
+      document.title = "SHOT OK";
+      window.__shot = { ok: true, name, count: defs.length };
+    } catch (err) {
+      out.textContent = String(err && err.message ? err.message : err);
+      document.title = "SHOT FAIL";
+      window.__shot = { ok: false, reason: String(err && err.message ? err.message : err) };
+    }
+  </script>
+</body>
+</html>

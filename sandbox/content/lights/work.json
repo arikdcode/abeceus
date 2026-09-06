@@ -10,9 +10,9 @@
   "angle": 32,
   "penumbra": 12,
   "parts": [
-    { "id": "leg-l", "min": [-0.22, -0.08], "max": [-0.1, 0.08], "z0": 0, "z1": 2.05, "color": "#3a3a36", "mat": "metal", "cover": false },
-    { "id": "leg-r", "min": [0.1, -0.08], "max": [0.22, 0.08], "z0": 0, "z1": 2.05, "color": "#3a3a36", "mat": "metal", "cover": false },
-    { "id": "neck", "min": [-0.08, -0.08], "max": [0.08, 0.08], "z0": 1.9, "z1": 2.28, "color": "#32322e", "mat": "metal", "cover": false },
+    { "id": "leg-l", "min": [-0.22, -0.08], "max": [-0.1, 0.08], "z0": 0, "z1": 2.05, "color": "#f2f0ea", "mat": "metal", "surf": "steel", "cover": false },
+    { "id": "leg-r", "min": [0.1, -0.08], "max": [0.22, 0.08], "z0": 0, "z1": 2.05, "color": "#f2f0ea", "mat": "metal", "surf": "steel", "cover": false },
+    { "id": "neck", "min": [-0.08, -0.08], "max": [0.08, 0.08], "z0": 1.9, "z1": 2.28, "color": "#f2f0ea", "mat": "metal", "surf": "steel", "cover": false },
     { "id": "head", "min": [-0.2, -0.2], "max": [0.2, 0.2], "z0": 2.2, "z1": 2.55, "color": "#ffd089", "mat": "emit", "cover": false }
   ]
 }

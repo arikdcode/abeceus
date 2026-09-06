@@ -20,6 +20,7 @@ import { rasterFontAtlas } from "./font.js";
 import { mergeLights, pushGround, pushSolids } from "./world.js";
 import { buildLabels, buildOverlay, pushOverlayGrid } from "./overlay.js";
 import { buildLightGrid, buildOccluderGrid, collectOccluders, packLights, packOccluders } from "./restir.js";
+import { sunShadowCam } from "./shadow.js";
 
 const surfaces = new WeakMap();
 const litMesh = new MeshWriter(LIT_STRIDE);
@@ -339,6 +340,7 @@ function surfaceOf(canvas) {
     meshKey: "",
     litN: 0,
     ghostN: 0,
+    ghostKey: "",
   };
   surfaces.set(canvas, s);
   return s;
@@ -350,7 +352,7 @@ function lookDepth(cam, eye) {
   return Math.max(4, Math.hypot(look.x - eye.x, look.y - eye.y, (look.z || 0) - eye.z));
 }
 
-function writeFrame(gl, ubo, cam, w, h, sunOn, prev, restir, frameSun) {
+function writeFrame(gl, ubo, cam, w, h, sunAmt, prev, restir, frameSun) {
   const { eye, f, r, u } = camBasis(cam);
   const p = prev || { r, u, f, eye };
   frameData.set([r.x, r.y, r.z, 0], 0);
@@ -358,7 +360,7 @@ function writeFrame(gl, ubo, cam, w, h, sunOn, prev, restir, frameSun) {
   frameData.set([f.x, f.y, f.z, 0], 8);
   frameData.set([eye.x, eye.y, eye.z, 0], 12);
   const sun = frameSun || SUN;
-  frameData.set([sun.x, sun.y, sun.z, sunOn ? 1 : 0], 16);
+  frameData.set([sun.x, sun.y, sun.z, sunAmt], 16);
   frameData.set([FOG.r, FOG.g, FOG.b, lookDepth(cam, eye)], 20);
   frameData.set([w, h, fovOf(cam), 0.04], 24);
   frameData.set([p.r.x, p.r.y, p.r.z, 0], 28);
@@ -540,7 +542,7 @@ export function drawFrame(canvas, frame) {
   const s = surfaceOf(canvas);
   const gl = s.gl;
   ensureTargets(s, w, h);
-  const sunOn = frame.sun !== false;
+  const sunAmt = frame.sun === false ? 0 : Number(frame.sunIntensity ?? 1);
   const marks = frame.marks || {};
   const lights = mergeLights(marks.shadows, frame.lights);
   const occ = collectOccluders(frame.casters || frame.solids);
@@ -581,27 +583,44 @@ export function drawFrame(canvas, frame) {
     cols: grid.cols,
     rows: grid.rows,
   };
-  const camNow = writeFrame(gl, s.ubo, frame.cam, w, h, sunOn, s.prevCam, restir, frame.sunDir);
+  const camNow = writeFrame(gl, s.ubo, frame.cam, w, h, sunAmt, s.prevCam, restir, frame.sunDir);
 
   overlayMesh.reset();
   textMesh.reset();
+  const worldSolids = [];
+  const ghostSolids = [];
+  for (const part of frame.solids || []) (part.ghost ? ghostSolids : worldSolids).push(part);
   const meshKey = [
-    (frame.solids || []).length,
+    worldSolids.length,
     frame.map?.ground || "",
     frame.map?.surfaces?.length || 0,
-    frame.solids?.[0]?.corners?.[0]?.x ?? 0,
-    frame.solids?.[frame.solids.length - 1]?.z1 ?? 0,
+    worldSolids[0]?.corners?.[0]?.x ?? 0,
+    worldSolids[worldSolids.length - 1]?.z1 ?? 0,
     groundAtlas() ? "atlas" : "flat",
     surfAtlas() ? "surf" : "nosurf",
   ].join(":");
+  const ghostKey = ghostSolids.length
+    ? [
+      ghostSolids.length,
+      ghostSolids[0]?.corners?.[0]?.x ?? 0,
+      ghostSolids[0]?.corners?.[0]?.y ?? 0,
+      ghostSolids[ghostSolids.length - 1]?.corners?.[0]?.x ?? 0,
+      ghostSolids[ghostSolids.length - 1]?.corners?.[0]?.y ?? 0,
+    ].join(":")
+    : "none";
   if (s.meshKey !== meshKey) {
     litMesh.reset();
-    ghostMesh.reset();
     if (frame.map) pushGround(litMesh, frame.map);
-    pushSolids(litMesh, ghostMesh, frame.solids);
+    pushSolids(litMesh, ghostMesh, worldSolids);
     s.litN = upload(gl, s.litVbo, litMesh.view());
-    s.ghostN = upload(gl, s.ghostVbo, ghostMesh.view());
     s.meshKey = meshKey;
+    s.ghostKey = "";
+  }
+  if (s.ghostKey !== ghostKey) {
+    ghostMesh.reset();
+    pushSolids(litMesh, ghostMesh, ghostSolids);
+    s.ghostN = upload(gl, s.ghostVbo, ghostMesh.view());
+    s.ghostKey = ghostKey;
   }
   buildOverlay(overlayMesh, marks, frame.cam);
   if (marks.grid && frame.map) pushOverlayGrid(overlayMesh, frame.map);
@@ -613,7 +632,19 @@ export function drawFrame(canvas, frame) {
   const textN = upload(gl, s.textVbo, textMesh.view());
   const litVerts = litN / LIT_STRIDE;
 
-  writeShadow(gl, s.shadowUbo, null);
+  if (sunAmt > 0.01 && frame.map) {
+    const sun = frame.sunDir || SUN;
+    const shadowKey = [s.meshKey, sceneKey, sun.x.toFixed(3), sun.y.toFixed(3), sun.z.toFixed(3)].join(":");
+    if (s.shadowKey !== shadowKey) {
+      const sunCam = sunShadowCam(frame.map, sun);
+      drawShadowMap(gl, s, sunCam, s.litVbo, litVerts);
+      s.shadowKey = shadowKey;
+      s.sunCam = sunCam;
+    }
+    writeShadow(gl, s.shadowUbo, s.sunCam);
+  } else {
+    writeShadow(gl, s.shadowUbo, null);
+  }
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, s.gFbo);
   gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1, gl.COLOR_ATTACHMENT2]);

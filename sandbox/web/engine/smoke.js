@@ -65,7 +65,14 @@ function toPlay(eng) {
   if (firstTwo.some((u) => !u || u.team !== 0)) fail("checkpoint should open on Alpha's breach");
 
   const op = worldFromCatalog(catalog, "outpost");
-  if (op.units.length < 8) fail("outpost should field more than a fireteam");
+  if (op.sun !== true) fail("outpost should default the sun on");
+  if ((op.sun_el ?? 48) > 16) fail("outpost sun should sit near the horizon");
+  if ((op.sun_intensity ?? 1) > 0.62 || (op.sun_intensity ?? 1) < 0.3) fail("outpost sun should be sunset-dim");
+  if (op.skip_units !== true) fail("outpost should skip characters");
+  if (op.units.length) fail("outpost should load without characters");
+  const opEng = new Engine();
+  if (!opEng.loadWorld(op)) fail("outpost load");
+  if (opEng.view({ fog: false }).units.length) fail("outpost view should stay empty");
   if ((op.map.max.x - op.map.min.x) < 50) fail("outpost should be a large map");
   if (!op.map.surfaces?.some((s) => s.kind === "road")) fail("outpost should have a road surface");
   if (!op.map.surfaces?.some((s) => s.kind === "tracks")) fail("outpost should have approach tracks");
@@ -73,7 +80,13 @@ function toPlay(eng) {
   if (!op.map.decor?.length) fail("outpost should place elevated decor");
   if (!op.map.cover.some((c) => c.id === "tower-cabin" && (c.z0 || 0) > 4)) fail("tower cabin should sit off the ground");
   if (!op.map.cover.some((c) => c.id === "crate-gate")) fail("outpost should keep a postable gate crate");
-  if (op.units.filter((u) => u.cover_use?.mode === "hide").length < 8) fail("outpost teams should start in hide");
+  for (const [id, surf] of [["crate-gate", "crate_wood"], ["conex-south", "corrugated"], ["fence-south", "grate_wall"], ["tent-wall-n", "tarp_tan"]]) {
+    const c = [...(op.map.cover || []), ...(op.map.decor || [])].find((x) => x.id === id);
+    if (!c || c.surf !== surf) fail(`${id} should wear ${surf}`);
+  }
+  const postedYard = worldFromCatalog(catalog, "posted_courtyard");
+  if (postedYard.skip_units) fail("skip_units should stay off unless a scenario asks for it");
+  if (postedYard.units.length < 4) fail("posted courtyard should still load its fireteams");
   if (!op.map.decor.some((c) => c.roof && (c.id || "").includes("office"))) fail("office roof should stay in the map as hidden-by-default decor");
 
   const lightYard = worldFromCatalog(catalog, "light_yard");

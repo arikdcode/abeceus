@@ -1210,6 +1210,7 @@ export class Engine {
       sun: w.sun,
       sun_az: w.sun_az,
       sun_el: w.sun_el,
+      sun_intensity: w.sun_intensity,
       viewer: viewer?.id || 0,
       turn_order: [...w.turn_order],
       pending_react: { ...w.pending_react },

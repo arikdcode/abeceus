@@ -208,7 +208,7 @@ export function pushSolids(opaque, ghost, solids) {
       dest,
       part.corners,
       hexRgb(part.color),
-      part.ghost ? 0.5 : 1,
+      part.ghost ? 0.62 : 1,
       matOf(part.mat),
       partTexId(part),
       part.emit || (part.mat === "emit" ? 1 : 0),

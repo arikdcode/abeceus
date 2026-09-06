@@ -1,18 +1,18 @@
 {
   "id": "tent",
   "parts": [
-    { "id": "wall-n", "min": [-6.0, 3.85], "max": [6.0, 4.05], "z0": 0, "z1": 2.96, "color": "#7a6540", "mat": "canvas", "tex": "canvas", "cover": true, "protection": 8, "durability": 6 },
-    { "id": "wall-w", "min": [-6.05, -4.05], "max": [-5.85, 4.05], "z0": 0, "z1": 2.96, "color": "#7a6540", "mat": "canvas", "tex": "canvas", "cover": true, "protection": 8, "durability": 6 },
-    { "id": "wall-e-n", "min": [5.85, 0.6], "max": [6.05, 4.05], "z0": 0, "z1": 2.96, "color": "#7a6540", "mat": "canvas", "tex": "canvas", "cover": true, "protection": 8, "durability": 6 },
-    { "id": "wall-e-s", "min": [5.85, -4.05], "max": [6.05, -0.6], "z0": 0, "z1": 2.96, "color": "#7a6540", "mat": "canvas", "tex": "canvas", "cover": true, "protection": 8, "durability": 6 },
-    { "id": "wall-s-w", "min": [-6.0, -4.05], "max": [-1.2, -3.85], "z0": 0, "z1": 2.96, "color": "#7a6540", "mat": "canvas", "tex": "canvas", "cover": true, "protection": 8, "durability": 6 },
-    { "id": "wall-s-e", "min": [1.2, -4.05], "max": [6.0, -3.85], "z0": 0, "z1": 2.96, "color": "#7a6540", "mat": "canvas", "tex": "canvas", "cover": true, "protection": 8, "durability": 6 },
-    { "id": "flap-l", "min": [-1.15, -4.12], "max": [-0.15, -3.92], "z0": 0.15, "z1": 2.55, "color": "#6a5434", "mat": "canvas", "cover": false },
-    { "id": "flap-r", "min": [0.15, -4.12], "max": [1.15, -3.92], "z0": 0.15, "z1": 2.55, "color": "#6a5434", "mat": "canvas", "cover": false },
-    { "id": "ridge", "min": [-6.1, -0.12], "max": [6.1, 0.12], "z0": 3.2, "z1": 3.42, "color": "#4a4030", "mat": "metal", "cover": false },
-    { "id": "roof", "role": "roof", "min": [-6.2, -4.2], "max": [6.2, 4.2], "z0": 3.12, "z1": 3.48, "color": "#5e4c32", "mat": "canvas", "tex": "canvas", "cover": false },
-    { "id": "bench", "min": [-3.2, 1.4], "max": [1.6, 2.6], "z0": 0, "z1": 1.05, "color": "#4a4538", "mat": "wood", "tex": "planks", "cover": true, "protection": 12, "durability": 8 },
-    { "id": "stake-sw", "min": [-6.35, -4.35], "max": [-6.18, -4.18], "z0": 0, "z1": 0.42, "color": "#3a3428", "mat": "metal", "cover": false },
-    { "id": "stake-se", "min": [6.18, -4.35], "max": [6.35, -4.18], "z0": 0, "z1": 0.42, "color": "#3a3428", "mat": "metal", "cover": false }
+    { "id": "wall-n", "min": [-6.0, 3.85], "max": [6.0, 4.05], "z0": 0, "z1": 2.96, "color": "#f2f0ea", "mat": "canvas", "surf": "tarp_tan", "cover": true, "protection": 8, "durability": 6 },
+    { "id": "wall-w", "min": [-6.05, -4.05], "max": [-5.85, 4.05], "z0": 0, "z1": 2.96, "color": "#f2f0ea", "mat": "canvas", "surf": "tarp_tan", "cover": true, "protection": 8, "durability": 6 },
+    { "id": "wall-e-n", "min": [5.85, 0.6], "max": [6.05, 4.05], "z0": 0, "z1": 2.96, "color": "#f2f0ea", "mat": "canvas", "surf": "tarp_tan", "cover": true, "protection": 8, "durability": 6 },
+    { "id": "wall-e-s", "min": [5.85, -4.05], "max": [6.05, -0.6], "z0": 0, "z1": 2.96, "color": "#f2f0ea", "mat": "canvas", "surf": "tarp_tan", "cover": true, "protection": 8, "durability": 6 },
+    { "id": "wall-s-w", "min": [-6.0, -4.05], "max": [-1.2, -3.85], "z0": 0, "z1": 2.96, "color": "#f2f0ea", "mat": "canvas", "surf": "tarp_tan", "cover": true, "protection": 8, "durability": 6 },
+    { "id": "wall-s-e", "min": [1.2, -4.05], "max": [6.0, -3.85], "z0": 0, "z1": 2.96, "color": "#f2f0ea", "mat": "canvas", "surf": "tarp_tan", "cover": true, "protection": 8, "durability": 6 },
+    { "id": "flap-l", "min": [-1.15, -4.12], "max": [-0.15, -3.92], "z0": 0.15, "z1": 2.55, "color": "#efe8dc", "mat": "canvas", "surf": "canvas", "cover": false },
+    { "id": "flap-r", "min": [0.15, -4.12], "max": [1.15, -3.92], "z0": 0.15, "z1": 2.55, "color": "#efe8dc", "mat": "canvas", "surf": "canvas", "cover": false },
+    { "id": "ridge", "min": [-6.1, -0.12], "max": [6.1, 0.12], "z0": 3.2, "z1": 3.42, "color": "#f2f0ea", "mat": "metal", "surf": "steel", "cover": false },
+    { "id": "roof", "role": "roof", "min": [-6.2, -4.2], "max": [6.2, 4.2], "z0": 3.12, "z1": 3.48, "color": "#f2f0ea", "mat": "canvas", "surf": "tarp_tan", "cover": false },
+    { "id": "bench", "min": [-3.2, 1.4], "max": [1.6, 2.6], "z0": 0, "z1": 1.05, "color": "#f2f0ea", "mat": "wood", "surf": "pine", "cover": true, "protection": 12, "durability": 8 },
+    { "id": "stake-sw", "min": [-6.35, -4.35], "max": [-6.18, -4.18], "z0": 0, "z1": 0.42, "color": "#f2f0ea", "mat": "metal", "surf": "steel", "cover": false },
+    { "id": "stake-se", "min": [6.18, -4.35], "max": [6.35, -4.18], "z0": 0, "z1": 0.42, "color": "#f2f0ea", "mat": "metal", "surf": "steel", "cover": false }
   ]
 }

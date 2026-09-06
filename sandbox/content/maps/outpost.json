@@ -22,12 +22,12 @@
     { "kind": "road", "min": [0, 20], "max": [64, 26] }
   ],
   "places": [
-    { "prop": "slab", "id": "fence-south", "pos": [41, 8], "size": [38, 0.14], "z1": 1.9, "color": "#5c666c", "mat": "metal", "tex": "mesh", "protection": 12, "durability": 8 },
-    { "prop": "slab", "id": "fence-north", "pos": [41, 40], "size": [38, 0.14], "z1": 1.9, "color": "#5c666c", "mat": "metal", "tex": "mesh", "protection": 12, "durability": 8 },
-    { "prop": "slab", "id": "fence-west-s", "pos": [22, 14], "size": [0.14, 12], "z1": 1.9, "color": "#5c666c", "mat": "metal", "tex": "mesh", "protection": 12, "durability": 8 },
-    { "prop": "slab", "id": "fence-west-n", "pos": [22, 33], "size": [0.14, 14], "z1": 1.9, "color": "#5c666c", "mat": "metal", "tex": "mesh", "protection": 12, "durability": 8 },
-    { "prop": "slab", "id": "fence-east-s", "pos": [60, 14], "size": [0.14, 12], "z1": 1.9, "color": "#5c666c", "mat": "metal", "tex": "mesh", "protection": 12, "durability": 8 },
-    { "prop": "slab", "id": "fence-east-n", "pos": [60, 33], "size": [0.14, 14], "z1": 1.9, "color": "#5c666c", "mat": "metal", "tex": "mesh", "protection": 12, "durability": 8 },
+    { "prop": "slab", "id": "fence-south", "pos": [41, 8], "size": [38, 0.14], "z1": 1.9, "color": "#e4e6e8", "mat": "metal", "surf": "grate_wall", "protection": 12, "durability": 8 },
+    { "prop": "slab", "id": "fence-north", "pos": [41, 40], "size": [38, 0.14], "z1": 1.9, "color": "#e4e6e8", "mat": "metal", "surf": "grate_wall", "protection": 12, "durability": 8 },
+    { "prop": "slab", "id": "fence-west-s", "pos": [22, 14], "size": [0.14, 12], "z1": 1.9, "color": "#e4e6e8", "mat": "metal", "surf": "grate_wall", "protection": 12, "durability": 8 },
+    { "prop": "slab", "id": "fence-west-n", "pos": [22, 33], "size": [0.14, 14], "z1": 1.9, "color": "#e4e6e8", "mat": "metal", "surf": "grate_wall", "protection": 12, "durability": 8 },
+    { "prop": "slab", "id": "fence-east-s", "pos": [60, 14], "size": [0.14, 12], "z1": 1.9, "color": "#e4e6e8", "mat": "metal", "surf": "grate_wall", "protection": 12, "durability": 8 },
+    { "prop": "slab", "id": "fence-east-n", "pos": [60, 33], "size": [0.14, 14], "z1": 1.9, "color": "#e4e6e8", "mat": "metal", "surf": "grate_wall", "protection": 12, "durability": 8 },
 
     { "prop": "fence_post", "id": "fp-s1", "pos": [24, 8] },
     { "prop": "fence_post", "id": "fp-s2", "pos": [30, 8] },
@@ -55,7 +55,7 @@
     { "prop": "jersey", "id": "jersey-gate-s", "pos": [23.2, 19.55] },
     { "prop": "jersey", "id": "jersey-gate-n", "pos": [23.2, 26.45] },
     { "prop": "jersey", "id": "jersey-road-s", "pos": [31.6, 19.4], "yaw": 0.08 },
-    { "prop": "slab", "id": "gate-boom", "pos": [22.15, 23], "size": [0.16, 5.4], "z0": 1.65, "z1": 1.88, "color": "#2a2a28", "mat": "metal", "usable": false, "protection": 10, "durability": 6 },
+    { "prop": "slab", "id": "gate-boom", "pos": [22.15, 23], "size": [0.16, 5.4], "z0": 1.65, "z1": 1.88, "color": "#f2f0ea", "mat": "metal", "surf": "steel", "usable": false, "protection": 10, "durability": 6 },
     { "prop": "fence_post", "id": "boom-s", "pos": [22.15, 20.4] },
     { "prop": "fence_post", "id": "boom-n", "pos": [22.15, 25.6] },
 

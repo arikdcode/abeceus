@@ -1347,9 +1347,9 @@
         0.14
       ],
       "z1": 1.9,
-      "color": "#5c666c",
+      "color": "#e4e6e8",
       "mat": "metal",
-      "tex": "mesh"
+      "surf": "grate_wall"
     },
     {
       "prop": "slab",
@@ -1363,9 +1363,9 @@
         0.14
       ],
       "z1": 1.9,
-      "color": "#5c666c",
+      "color": "#e4e6e8",
       "mat": "metal",
-      "tex": "mesh"
+      "surf": "grate_wall"
     },
     {
       "prop": "slab",
@@ -1379,9 +1379,9 @@
         92
       ],
       "z1": 1.9,
-      "color": "#5c666c",
+      "color": "#e4e6e8",
       "mat": "metal",
-      "tex": "mesh"
+      "surf": "grate_wall"
     },
     {
       "prop": "slab",
@@ -1395,9 +1395,9 @@
         92
       ],
       "z1": 1.9,
-      "color": "#5c666c",
+      "color": "#e4e6e8",
       "mat": "metal",
-      "tex": "mesh"
+      "surf": "grate_wall"
     },
     {
       "prop": "slab",
@@ -1411,9 +1411,9 @@
         0.22
       ],
       "z1": 4.6,
-      "color": "#4a5048",
+      "color": "#e2e4dc",
       "mat": "metal",
-      "tex": "ribs"
+      "surf": "corrugated"
     },
     {
       "prop": "slab",
@@ -1427,9 +1427,9 @@
         12
       ],
       "z1": 4.6,
-      "color": "#4a5048",
+      "color": "#e2e4dc",
       "mat": "metal",
-      "tex": "ribs"
+      "surf": "corrugated"
     },
     {
       "prop": "slab",
@@ -1443,9 +1443,9 @@
         12
       ],
       "z1": 4.6,
-      "color": "#4a5048",
+      "color": "#e2e4dc",
       "mat": "metal",
-      "tex": "ribs"
+      "surf": "corrugated"
     },
     {
       "prop": "slab",
@@ -1460,8 +1460,9 @@
       ],
       "z0": 4.55,
       "z1": 4.88,
-      "color": "#3a3e38",
-      "mat": "metal"
+      "color": "#f2f0ea",
+      "mat": "metal",
+      "surf": "steel"
     },
     {
       "prop": "slab",
@@ -1475,9 +1476,9 @@
         0.22
       ],
       "z1": 3.4,
-      "color": "#6a6558",
+      "color": "#eeebe6",
       "mat": "concrete",
-      "tex": "siding"
+      "surf": "concrete_panel"
     },
     {
       "prop": "slab",
@@ -1491,9 +1492,9 @@
         0.22
       ],
       "z1": 2.4,
-      "color": "#6a6558",
+      "color": "#eeebe6",
       "mat": "concrete",
-      "tex": "siding"
+      "surf": "concrete_panel"
     },
     {
       "prop": "slab",
@@ -1507,9 +1508,9 @@
         22
       ],
       "z1": 2.8,
-      "color": "#5a4a58",
+      "color": "#e8dce4",
       "mat": "concrete",
-      "tex": "siding"
+      "surf": "concrete_panel"
     },
     {
       "prop": "slab",
@@ -1523,9 +1524,9 @@
         10
       ],
       "z1": 2.6,
-      "color": "#6a6558",
+      "color": "#eeebe6",
       "mat": "concrete",
-      "tex": "siding"
+      "surf": "concrete_panel"
     },
     {
       "prop": "slab",
@@ -1539,9 +1540,9 @@
         0.2
       ],
       "z1": 2.6,
-      "color": "#6a6558",
+      "color": "#eeebe6",
       "mat": "concrete",
-      "tex": "siding"
+      "surf": "concrete_panel"
     },
     {
       "prop": "humvee",

@@ -280,18 +280,18 @@ void main() {
   vec3 ground = vec3(0.26, 0.18, 0.11);
   float hemi = n.z * 0.5 + 0.5;
   vec3 sun_dir = frame_sun.xyz;
-  vec3 sun_col = vec3(1.02, 0.84, 0.60);
+  vec3 sun_col = mix(vec3(1.18, 0.48, 0.18), vec3(1.02, 0.84, 0.60), clamp(sun_dir.z * 1.7, 0.0, 1.0));
   float sun_n = wrap_n(dot(n, sun_dir), wrap_k);
   vec3 sun_h = normalize(sun_dir + view_dir);
   float sun_spec = pow(max(dot(n, sun_h), 0.0), shine) * spec_k;
-  float sun_on = frame_sun.w;
-  float sun_vis = sun_on > 0.5 ? pcf_sun(v_world, sun_n) : 0.0;
+  float sun_amt = frame_sun.w;
+  float sun_vis = sun_amt > 0.01 ? pcf_sun(v_world, sun_n) : 0.0;
   vec3 ambient = mix(ground, sky, hemi) * 0.20 + vec3(0.075, 0.068, 0.058);
-  vec3 lit = albedo * (ambient + sun_col * sun_n * 0.86 * sun_vis) + sun_col * sun_spec * 0.4 * sun_vis;
+  vec3 lit = albedo * (ambient + sun_col * sun_n * 0.86 * sun_vis * sun_amt) + sun_col * sun_spec * 0.4 * sun_vis * sun_amt;
 
   vec3 fill_dir = normalize(-sun_dir + vec3(0.0, 0.0, 0.42));
   float fill_n = max(dot(n, fill_dir), 0.0);
-  lit += albedo * vec3(0.20, 0.26, 0.36) * fill_n * 0.22 * sun_on;
+  lit += albedo * vec3(0.20, 0.26, 0.36) * fill_n * 0.22 * sun_amt;
 
   int n_lights = int(light_count.x + 0.5);
   for (int i = 0; i < MAX_LIGHTS; i++) {
@@ -634,12 +634,6 @@ bool occ_hidden(vec3 origin, int li) {
   return occ_hit(origin + d * 0.10, d, max(max_t - 0.16, 0.02), lp, rad);
 }
 
-bool sun_hidden(vec3 origin) {
-  if (frame_sun.w < 0.5) return false;
-  vec3 d = normalize(frame_sun.xyz);
-  return occ_hit(origin + d * 0.12, d, 96.0, vec3(0.0), 0.0);
-}
-
 void restir_add(inout vec4 res, int y, float phat, float w, float u) {
   res.y += w;
   res.z += 1.0;
@@ -681,14 +675,14 @@ void main() {
   vec3 ground = vec3(0.26, 0.18, 0.11);
   float hemi = n.z * 0.5 + 0.5;
   vec3 sun_dir = frame_sun.xyz;
-  vec3 sun_col = vec3(1.02, 0.84, 0.60);
+  vec3 sun_col = mix(vec3(1.18, 0.48, 0.18), vec3(1.02, 0.84, 0.60), clamp(sun_dir.z * 1.7, 0.0, 1.0));
   float sun_n = wrap_n(dot(n, sun_dir), wrap_k);
-  float sun_on = frame_sun.w;
-  float sun_vis = sun_on > 0.5 && !sun_hidden(world) ? 1.0 : 0.0;
+  float sun_amt = frame_sun.w;
+  float sun_vis = sun_amt > 0.01 ? pcf_sun(world, sun_n) : 0.0;
   vec3 ambient = mix(ground, sky, hemi) * 0.20 + vec3(0.075, 0.068, 0.058);
-  vec3 lit = albedo * (ambient + sun_col * sun_n * 0.86 * sun_vis);
+  vec3 lit = albedo * (ambient + sun_col * sun_n * 0.86 * sun_vis * sun_amt);
   vec3 fill_dir = normalize(-sun_dir + vec3(0.0, 0.0, 0.42));
-  lit += albedo * vec3(0.20, 0.26, 0.36) * max(dot(n, fill_dir), 0.0) * 0.22 * sun_on;
+  lit += albedo * vec3(0.20, 0.26, 0.36) * max(dot(n, fill_dir), 0.0) * 0.22 * sun_amt;
 
   int n_local = min(fetch_local_count(world), 32);
   int frame_i = int(frame_restir.x + 0.5);
@@ -798,9 +792,11 @@ void main() {
   vec3 albedo = v_color.rgb;
   float wrap_k = v_shade.z;
   float hemi = n.z * 0.5 + 0.5;
-  vec3 ambient = mix(vec3(0.26, 0.18, 0.11), vec3(0.40, 0.50, 0.64), hemi) * 0.20 + vec3(0.075, 0.068, 0.058);
+  vec3 ambient = mix(vec3(0.22, 0.16, 0.12), vec3(0.62, 0.52, 0.40), hemi) * 0.62 + vec3(0.18, 0.16, 0.13);
   float sun_n = wrap_n(dot(n, frame_sun.xyz), wrap_k);
-  vec3 lit = albedo * (ambient + vec3(1.02, 0.84, 0.60) * sun_n * 0.5 * frame_sun.w);
+  float sun_amt = max(frame_sun.w, 0.4);
+  vec3 lit = albedo * (ambient + vec3(1.08, 0.82, 0.52) * sun_n * 0.72 * sun_amt);
+  lit += albedo * 0.22;
   frag = vec4(lit, v_color.a);
 }
 `;
@@ -879,9 +875,11 @@ void main() {
   float nx = (gl_FragCoord.x - w * 0.5) * 2.0 * fov / hgt;
   float ny = -(gl_FragCoord.y - hgt * 0.5) * 2.0 * fov / hgt;
   vec3 dir = normalize(frame_f.xyz + frame_r.xyz * nx + frame_u.xyz * ny);
+  float amt = max(frame_sun.w, 0.0);
   float sun = pow(max(dot(dir, frame_sun.xyz), 0.0), 48.0);
   float glow = pow(max(dot(dir, frame_sun.xyz), 0.0), 8.0);
-  rgb = rgb + vec3(1.0, 0.78, 0.42) * sun * 0.95 + vec3(0.92, 0.55, 0.22) * glow * 0.28;
+  vec3 disk = mix(vec3(1.0, 0.42, 0.12), vec3(1.0, 0.78, 0.42), clamp(frame_sun.z * 1.7, 0.0, 1.0));
+  rgb = rgb + disk * sun * 0.95 * amt + vec3(0.92, 0.45, 0.16) * glow * 0.28 * amt;
   frag = vec4(rgb, 1.0);
 }
 `;

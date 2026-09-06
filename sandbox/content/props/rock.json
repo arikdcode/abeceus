@@ -1,8 +1,8 @@
 {
   "id": "rock",
   "parts": [
-    { "id": "main", "min": [-1.1, -0.85], "max": [1.1, 0.85], "z0": 0, "z1": 1.12, "color": "#6e685c", "mat": "stone", "cover": true, "protection": 20, "durability": 14 },
-    { "id": "chunk", "min": [0.4, -1.15], "max": [1.25, -0.2], "z0": 0, "z1": 0.7, "color": "#5c564c", "mat": "stone", "cover": true, "protection": 16, "durability": 10 },
-    { "id": "cap", "min": [-0.55, -0.35], "max": [0.45, 0.4], "z0": 0.95, "z1": 1.38, "color": "#625c52", "mat": "stone", "cover": true, "usable": false, "protection": 16, "durability": 10 }
+    { "id": "main", "min": [-1.1, -0.85], "max": [1.1, 0.85], "z0": 0, "z1": 1.12, "color": "#f2f0ea", "mat": "stone", "surf": "stone_block", "cover": true, "protection": 20, "durability": 14 },
+    { "id": "chunk", "min": [0.4, -1.15], "max": [1.25, -0.2], "z0": 0, "z1": 0.7, "color": "#efece6", "mat": "stone", "surf": "stone_block", "cover": true, "protection": 16, "durability": 10 },
+    { "id": "cap", "min": [-0.55, -0.35], "max": [0.45, 0.4], "z0": 0.95, "z1": 1.38, "color": "#f0eee8", "mat": "stone", "surf": "stone_block", "cover": true, "usable": false, "protection": 16, "durability": 10 }
   ]
 }
