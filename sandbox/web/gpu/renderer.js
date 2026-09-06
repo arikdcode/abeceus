@@ -15,9 +15,8 @@ import { FOG, SUN, SUN_SHADOW_SIZE } from "./theme.js";
 import { FS_BLIT, FS_DEPTH, FS_GBUF, FS_GHOST, FS_OVERLAY, FS_RESTIR, FS_SKY, FS_TEXT, VS_DEPTH, VS_LIT, VS_OVERLAY, VS_SKY, VS_TEXT } from "./shaders.js";
 import { LIT_STRIDE, MeshWriter, OVERLAY_STRIDE, TEXT_STRIDE } from "./mesh.js";
 import { rasterFontAtlas } from "./font.js";
-import { collectLights, pushCasters, pushGround, pushSolids } from "./world.js";
+import { mergeLights, pushGround, pushSolids } from "./world.js";
 import { buildLabels, buildOverlay, pushOverlayGrid } from "./overlay.js";
-import { sunShadowCam } from "./shadow.js";
 import { buildLightGrid, buildOccluderGrid, collectOccluders, packLights, packOccluders } from "./restir.js";
 
 const surfaces = new WeakMap();
@@ -327,6 +326,13 @@ function surfaceOf(canvas) {
     lindexTex: gl.createTexture(),
     exactLoc: gl.getUniformLocation(restir, "u_exact"),
     prevCam: null,
+    sceneKey: "",
+    sceneGrid: null,
+    sceneLgrid: null,
+    scenePacked: null,
+    meshKey: "",
+    litN: 0,
+    ghostN: 0,
   };
   surfaces.set(canvas, s);
   return s;
@@ -478,27 +484,39 @@ export function drawFrame(canvas, frame) {
   ensureTargets(s, w, h);
   const sunOn = frame.sun !== false;
   const marks = frame.marks || {};
-  const lights = collectLights(marks.shadows);
-  const packedL = packLights(lights);
+  const lights = mergeLights(marks.shadows, frame.lights);
   const occ = collectOccluders(frame.casters || frame.solids);
-  const packedO = packOccluders(occ);
-  const grid = buildOccluderGrid(occ, frame.map);
-  const lgrid = buildLightGrid(lights, grid);
-  const packedI = packIndexTex(grid.indices);
-  const packedG = packGridTex(grid);
-  const packedLI = packIndexTex(lgrid.indices);
-  const packedLG = packGridTex(lgrid);
-  uploadFloatTex(gl, s.lightTex, packedL.width, packedL.height, packedL.data);
-  uploadFloatTex(gl, s.occTex, packedO.width, packedO.height, packedO.data);
-  uploadFloatTex(gl, s.gridTex, grid.cols, grid.rows, packedG);
-  uploadFloatTex(gl, s.indexTex, packedI.w, packedI.h, packedI.data);
-  uploadFloatTex(gl, s.lgridTex, lgrid.cols, lgrid.rows, packedLG);
-  uploadFloatTex(gl, s.lindexTex, packedLI.w, packedLI.h, packedLI.data);
-
+  const sceneKey = [
+    lights.length, occ.length,
+    lights[0]?.x ?? 0, lights[0]?.intensity ?? 0,
+    occ[0]?.x0 ?? 0, occ[occ.length - 1]?.z1 ?? 0,
+    frame.map?.max?.x ?? 0,
+  ].join(":");
+  if (s.sceneKey !== sceneKey) {
+    const packedL = packLights(lights);
+    const packedO = packOccluders(occ);
+    const grid = buildOccluderGrid(occ, frame.map);
+    const lgrid = buildLightGrid(lights, grid);
+    const packedI = packIndexTex(grid.indices);
+    const packedG = packGridTex(grid);
+    const packedLI = packIndexTex(lgrid.indices);
+    const packedLG = packGridTex(lgrid);
+    uploadFloatTex(gl, s.lightTex, packedL.width, packedL.height, packedL.data);
+    uploadFloatTex(gl, s.occTex, packedO.width, packedO.height, packedO.data);
+    uploadFloatTex(gl, s.gridTex, grid.cols, grid.rows, packedG);
+    uploadFloatTex(gl, s.indexTex, packedI.w, packedI.h, packedI.data);
+    uploadFloatTex(gl, s.lgridTex, lgrid.cols, lgrid.rows, packedLG);
+    uploadFloatTex(gl, s.lindexTex, packedLI.w, packedLI.h, packedLI.data);
+    s.sceneKey = sceneKey;
+    s.sceneGrid = grid;
+    s.sceneLgrid = lgrid;
+    s.scenePacked = { nLights: packedL.n, nOcc: packedO.n };
+  }
+  const grid = s.sceneGrid;
   const restir = {
     frame: frameIndex,
-    nLights: packedL.n,
-    nOcc: packedO.n,
+    nLights: s.scenePacked.nLights,
+    nOcc: s.scenePacked.nOcc,
     cell: grid.cell,
     x0: grid.x0,
     y0: grid.y0,
@@ -507,29 +525,34 @@ export function drawFrame(canvas, frame) {
   };
   const camNow = writeFrame(gl, s.ubo, frame.cam, w, h, sunOn, s.prevCam, restir);
 
-  litMesh.reset();
-  casterMesh.reset();
-  ghostMesh.reset();
   overlayMesh.reset();
   textMesh.reset();
-  if (frame.map) pushGround(litMesh, frame.map);
-  pushSolids(litMesh, ghostMesh, frame.solids);
-  pushCasters(casterMesh, frame.casters || frame.solids);
+  const meshKey = [
+    (frame.solids || []).length,
+    frame.map?.ground || "",
+    frame.solids?.[0]?.corners?.[0]?.x ?? 0,
+    frame.solids?.[frame.solids.length - 1]?.z1 ?? 0,
+  ].join(":");
+  if (s.meshKey !== meshKey) {
+    litMesh.reset();
+    ghostMesh.reset();
+    if (frame.map) pushGround(litMesh, frame.map);
+    pushSolids(litMesh, ghostMesh, frame.solids);
+    s.litN = upload(gl, s.litVbo, litMesh.view());
+    s.ghostN = upload(gl, s.ghostVbo, ghostMesh.view());
+    s.meshKey = meshKey;
+  }
   buildOverlay(overlayMesh, marks, frame.cam);
   if (marks.grid && frame.map) pushOverlayGrid(overlayMesh, frame.map);
   buildLabels(textMesh, marks, frame.cam, w, h);
 
-  const litN = upload(gl, s.litVbo, litMesh.view());
-  const casterN = upload(gl, s.casterVbo, casterMesh.view());
-  const ghostN = upload(gl, s.ghostVbo, ghostMesh.view());
+  const litN = s.litN;
+  const ghostN = s.ghostN;
   const overlayN = upload(gl, s.overlayVbo, overlayMesh.view());
   const textN = upload(gl, s.textVbo, textMesh.view());
   const litVerts = litN / LIT_STRIDE;
-  const casterCount = casterN / LIT_STRIDE;
 
-  const sunCam = frame.map ? sunShadowCam(frame.map) : null;
-  writeShadow(gl, s.shadowUbo, sunOn ? sunCam : null);
-  if (sunCam && sunOn) drawShadowMap(gl, s, sunCam, s.casterVbo, casterCount);
+  writeShadow(gl, s.shadowUbo, null);
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, s.gFbo);
   gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1, gl.COLOR_ATTACHMENT2]);

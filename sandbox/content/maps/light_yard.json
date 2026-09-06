@@ -1,0 +1,664 @@
+{
+  "id": "light_yard",
+  "name": "Light yard",
+  "min": [
+    0,
+    0
+  ],
+  "max": [
+    72,
+    48
+  ],
+  "grid": 1,
+  "ground": "dirt",
+  "surprise0": 1,
+  "surprise1": 0.85,
+  "surfaces": [
+    {
+      "kind": "grass",
+      "min": [
+        0,
+        0
+      ],
+      "max": [
+        72,
+        20
+      ]
+    },
+    {
+      "kind": "grass",
+      "min": [
+        0,
+        32
+      ],
+      "max": [
+        72,
+        48
+      ]
+    },
+    {
+      "kind": "road",
+      "min": [
+        0,
+        20
+      ],
+      "max": [
+        72,
+        32
+      ]
+    },
+    {
+      "kind": "concrete",
+      "min": [
+        47,
+        10
+      ],
+      "max": [
+        66,
+        22
+      ]
+    },
+    {
+      "kind": "gravel",
+      "min": [
+        20,
+        33
+      ],
+      "max": [
+        50,
+        42
+      ]
+    },
+    {
+      "kind": "concrete",
+      "min": [
+        52,
+        36
+      ],
+      "max": [
+        66,
+        44
+      ]
+    }
+  ],
+  "lights": [
+    {
+      "light": "street",
+      "id": "road-8",
+      "pos": [
+        8,
+        28
+      ]
+    },
+    {
+      "light": "sodium",
+      "id": "road-16",
+      "pos": [
+        16,
+        28
+      ]
+    },
+    {
+      "light": "street",
+      "id": "road-24",
+      "pos": [
+        24,
+        28
+      ]
+    },
+    {
+      "light": "sodium",
+      "id": "road-32",
+      "pos": [
+        32,
+        28
+      ]
+    },
+    {
+      "light": "street",
+      "id": "road-40",
+      "pos": [
+        40,
+        28
+      ]
+    },
+    {
+      "light": "sodium",
+      "id": "road-48",
+      "pos": [
+        48,
+        28
+      ]
+    },
+    {
+      "light": "street",
+      "id": "road-56",
+      "pos": [
+        56,
+        28
+      ]
+    },
+    {
+      "light": "sodium",
+      "id": "road-64",
+      "pos": [
+        64,
+        28
+      ]
+    },
+    {
+      "light": "mercury",
+      "id": "m1",
+      "pos": [
+        10,
+        10
+      ]
+    },
+    {
+      "light": "mercury",
+      "id": "m2",
+      "pos": [
+        18,
+        8
+      ]
+    },
+    {
+      "light": "mercury",
+      "id": "m3",
+      "pos": [
+        12,
+        16
+      ]
+    },
+    {
+      "light": "hangar",
+      "id": "hangar-1",
+      "pos": [
+        52,
+        16
+      ]
+    },
+    {
+      "light": "hangar",
+      "id": "hangar-2",
+      "pos": [
+        60,
+        16
+      ]
+    },
+    {
+      "light": "flood",
+      "id": "flood-yard",
+      "pos": [
+        36,
+        18
+      ]
+    },
+    {
+      "light": "work",
+      "id": "work-l",
+      "pos": [
+        48.4,
+        18.2
+      ],
+      "yaw": 0.15
+    },
+    {
+      "light": "work",
+      "id": "work-r",
+      "pos": [
+        63.6,
+        18.2
+      ],
+      "yaw": 3.041592653589793
+    },
+    {
+      "light": "search",
+      "id": "search-a",
+      "pos": [
+        22,
+        39.7
+      ],
+      "yaw": -1.2907963267948965,
+      "pole": false
+    },
+    {
+      "light": "search",
+      "id": "search-b",
+      "pos": [
+        30,
+        39.7
+      ],
+      "yaw": -1.6907963267948967,
+      "pole": false
+    },
+    {
+      "light": "search",
+      "id": "search-c",
+      "pos": [
+        40,
+        39.7
+      ],
+      "yaw": -1.1507963267948966,
+      "pole": false
+    },
+    {
+      "light": "search",
+      "id": "search-tower",
+      "pos": [
+        5.4,
+        42.4
+      ],
+      "yaw": -0.55,
+      "pole": false,
+      "z": 5.5,
+      "z_off": 1.7
+    },
+    {
+      "light": "headlamp",
+      "id": "hl-jersey",
+      "pos": [
+        42.4,
+        14.15
+      ],
+      "yaw": 0.2
+    },
+    {
+      "light": "beacon",
+      "id": "bek-a",
+      "pos": [
+        20,
+        44
+      ]
+    },
+    {
+      "light": "beacon",
+      "id": "bek-b",
+      "pos": [
+        68,
+        18
+      ]
+    },
+    {
+      "light": "chem",
+      "id": "chem-0",
+      "pos": [
+        8,
+        34.2
+      ],
+      "yaw": 0
+    },
+    {
+      "light": "chem",
+      "id": "chem-1",
+      "pos": [
+        9.4,
+        34.2
+      ],
+      "yaw": 0.4
+    },
+    {
+      "light": "chem",
+      "id": "chem-2",
+      "pos": [
+        10.8,
+        34.2
+      ],
+      "yaw": 0.8
+    },
+    {
+      "light": "chem",
+      "id": "chem-3",
+      "pos": [
+        12.2,
+        34.2
+      ],
+      "yaw": 1.2000000000000002
+    },
+    {
+      "light": "chem",
+      "id": "chem-4",
+      "pos": [
+        13.6,
+        34.2
+      ],
+      "yaw": 1.6
+    },
+    {
+      "light": "chem",
+      "id": "chem-5",
+      "pos": [
+        15,
+        34.2
+      ],
+      "yaw": 2
+    },
+    {
+      "light": "chem",
+      "id": "chem-6",
+      "pos": [
+        16.4,
+        34.2
+      ],
+      "yaw": 2.4000000000000004
+    },
+    {
+      "light": "chem",
+      "id": "chem-7",
+      "pos": [
+        17.799999999999997,
+        34.2
+      ],
+      "yaw": 2.8000000000000003
+    },
+    {
+      "light": "work",
+      "id": "work-office",
+      "pos": [
+        54.2,
+        38.2
+      ],
+      "yaw": 0.46
+    }
+  ],
+  "places": [
+    {
+      "prop": "slab",
+      "id": "fence-s",
+      "pos": [
+        36,
+        2
+      ],
+      "size": [
+        68,
+        0.14
+      ],
+      "z1": 1.9,
+      "color": "#5c666c",
+      "mat": "metal",
+      "tex": "mesh"
+    },
+    {
+      "prop": "slab",
+      "id": "fence-n",
+      "pos": [
+        36,
+        46
+      ],
+      "size": [
+        68,
+        0.14
+      ],
+      "z1": 1.9,
+      "color": "#5c666c",
+      "mat": "metal",
+      "tex": "mesh"
+    },
+    {
+      "prop": "slab",
+      "id": "fence-w",
+      "pos": [
+        2,
+        24
+      ],
+      "size": [
+        0.14,
+        44
+      ],
+      "z1": 1.9,
+      "color": "#5c666c",
+      "mat": "metal",
+      "tex": "mesh"
+    },
+    {
+      "prop": "slab",
+      "id": "fence-e",
+      "pos": [
+        70,
+        24
+      ],
+      "size": [
+        0.14,
+        44
+      ],
+      "z1": 1.9,
+      "color": "#5c666c",
+      "mat": "metal",
+      "tex": "mesh"
+    },
+    {
+      "prop": "slab",
+      "id": "search-wall",
+      "pos": [
+        36,
+        40
+      ],
+      "size": [
+        28,
+        0.22
+      ],
+      "z1": 3.4,
+      "color": "#6a6558",
+      "mat": "concrete",
+      "tex": "siding"
+    },
+    {
+      "prop": "slab",
+      "id": "hangar-back",
+      "pos": [
+        56,
+        12
+      ],
+      "size": [
+        18,
+        0.22
+      ],
+      "z1": 4.6,
+      "color": "#4a5048",
+      "mat": "metal",
+      "tex": "ribs"
+    },
+    {
+      "prop": "slab",
+      "id": "hangar-w",
+      "pos": [
+        47.2,
+        16
+      ],
+      "size": [
+        0.22,
+        8
+      ],
+      "z1": 4.6,
+      "color": "#4a5048",
+      "mat": "metal",
+      "tex": "ribs"
+    },
+    {
+      "prop": "slab",
+      "id": "hangar-e",
+      "pos": [
+        64.8,
+        16
+      ],
+      "size": [
+        0.22,
+        8
+      ],
+      "z1": 4.6,
+      "color": "#4a5048",
+      "mat": "metal",
+      "tex": "ribs"
+    },
+    {
+      "prop": "slab",
+      "id": "hangar-beam",
+      "pos": [
+        56,
+        16
+      ],
+      "size": [
+        17.6,
+        0.2
+      ],
+      "z0": 4.55,
+      "z1": 4.88,
+      "color": "#3a3e38",
+      "mat": "metal"
+    },
+    {
+      "prop": "slab",
+      "id": "alley-a",
+      "pos": [
+        22,
+        18
+      ],
+      "size": [
+        0.2,
+        10
+      ],
+      "z1": 2.6,
+      "color": "#6a6558",
+      "mat": "concrete",
+      "tex": "siding"
+    },
+    {
+      "prop": "slab",
+      "id": "alley-b",
+      "pos": [
+        28,
+        22
+      ],
+      "size": [
+        8,
+        0.2
+      ],
+      "z1": 2.6,
+      "color": "#6a6558",
+      "mat": "concrete",
+      "tex": "siding"
+    },
+    {
+      "prop": "humvee",
+      "id": "hv-1",
+      "pos": [
+        11.6,
+        22.6
+      ],
+      "yaw": 0
+    },
+    {
+      "prop": "humvee",
+      "id": "hv-2",
+      "pos": [
+        29.8,
+        12
+      ],
+      "yaw": 1.2
+    },
+    {
+      "prop": "jersey",
+      "id": "jersey-lamp",
+      "pos": [
+        42,
+        14
+      ],
+      "yaw": 0.2
+    },
+    {
+      "prop": "tower",
+      "id": "tower-nw",
+      "pos": [
+        5,
+        43
+      ]
+    },
+    {
+      "prop": "tower",
+      "id": "tower-se",
+      "pos": [
+        67,
+        5
+      ]
+    },
+    {
+      "prop": "sandbag",
+      "id": "bags-chem",
+      "pos": [
+        12.5,
+        34.8
+      ],
+      "yaw": 0
+    },
+    {
+      "prop": "sandbag",
+      "id": "bags-chem-2",
+      "pos": [
+        16.8,
+        34.8
+      ],
+      "yaw": 0
+    },
+    {
+      "prop": "office",
+      "id": "office-1",
+      "pos": [
+        58,
+        40
+      ],
+      "yaw": 3.141592653589793
+    },
+    {
+      "prop": "tent",
+      "id": "tent-1",
+      "pos": [
+        12,
+        8
+      ]
+    },
+    {
+      "prop": "conex",
+      "id": "cx-1",
+      "pos": [
+        24,
+        10
+      ],
+      "yaw": 1.5708
+    },
+    {
+      "prop": "conex",
+      "id": "cx-2",
+      "pos": [
+        24,
+        14
+      ],
+      "yaw": 1.5708
+    },
+    {
+      "prop": "crate",
+      "id": "cr-1",
+      "pos": [
+        34,
+        14
+      ],
+      "yaw": 0.4
+    },
+    {
+      "prop": "crate",
+      "id": "cr-2",
+      "pos": [
+        36,
+        15.2
+      ],
+      "yaw": -0.2
+    },
+    {
+      "prop": "booth",
+      "id": "booth-1",
+      "pos": [
+        42,
+        24
+      ]
+    }
+  ]
+}

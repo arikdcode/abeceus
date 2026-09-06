@@ -51,11 +51,11 @@ export function packLights(lights, max = MAX_SCENE_LIGHTS) {
     data[o + 8] = L.dx || 0;
     data[o + 9] = L.dy || 0;
     data[o + 10] = L.dz || 0;
-    const spot = (L.dx || 0) ** 2 + (L.dy || 0) ** 2 + (L.dz || 0) ** 2 > 0.05;
+    const spot = L.kind === "spot" || (L.dx || 0) ** 2 + (L.dy || 0) ** 2 + (L.dz || 0) ** 2 > 0.05;
     data[o + 11] = spot ? 1 : 0;
     data[o + 12] = spot ? 0.12 : 0.32;
-    data[o + 13] = 0;
-    data[o + 14] = 0;
+    data[o + 13] = spot ? (L.outerCos ?? 0.42) : 0;
+    data[o + 14] = spot ? (L.innerCos ?? 0.78) : 0;
     data[o + 15] = 0;
   }
   return { n, data, width: LIGHT_TEXELS, height: Math.max(1, n) };
@@ -66,6 +66,7 @@ export function collectOccluders(solids, max = MAX_OCCLUDERS) {
   for (const part of solids || []) {
     if (part.ghost) continue;
     if ((part.emit || 0) > 0) continue;
+    if (part.mat === "emit") continue;
     if (part.origin) continue;
     if (isPoleLike(part)) continue;
     const e = partSpan(part);

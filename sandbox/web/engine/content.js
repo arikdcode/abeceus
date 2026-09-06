@@ -1,12 +1,19 @@
 import { makeWorld, makeUnit, Posture } from "./model.js";
 import { resolveCoverUse, CoverMode } from "./cover.js";
 import { DEFAULT_RULES, mergeRules } from "./rules.js";
-import { instantiatePlaces, parseBox, parseSurface } from "./props.js";
+import { instantiatePlace, instantiatePlaces, parseBox, parseSurface } from "./props.js";
+import { instantiateLightFixtures, instantiateLights, parseLight } from "./lights.js";
 
 function loadProps(index, readOne) {
   const props = {};
   for (const id of index.props || []) props[id] = JSON.parse(readOne(`props/${id}.json`));
   return props;
+}
+
+function loadLights(index, readOne) {
+  const lights = {};
+  for (const id of index.lights || []) lights[id] = parseLight(JSON.parse(readOne(`lights/${id}.json`)));
+  return lights;
 }
 
 export function loadCatalogSync(readSync) {
@@ -20,7 +27,7 @@ export function loadCatalogSync(readSync) {
   const scenarios = {};
   for (const s of index.scenarios) scenarios[s.id] = JSON.parse(readSync(`scenarios/${s.id}.json`));
   const rules = index.rules ? JSON.parse(readSync(`${index.rules}.json`)) : JSON.parse(readSync("rules.json"));
-  return { index, weapons, characters, maps, scenarios, rules, props: loadProps(index, readSync) };
+  return { index, weapons, characters, maps, scenarios, rules, props: loadProps(index, readSync), lights: loadLights(index, readSync) };
 }
 
 export async function loadCatalog(read) {
@@ -36,7 +43,9 @@ export async function loadCatalog(read) {
   const rules = index.rules ? JSON.parse(await read(`${index.rules}.json`)) : JSON.parse(await read("rules.json"));
   const props = {};
   for (const id of index.props || []) props[id] = JSON.parse(await read(`props/${id}.json`));
-  return { index, weapons, characters, maps, scenarios, rules, props };
+  const lights = {};
+  for (const id of index.lights || []) lights[id] = parseLight(JSON.parse(await read(`lights/${id}.json`)));
+  return { index, weapons, characters, maps, scenarios, rules, props, lights };
 }
 
 function xy(p, fallback = { x: 0, y: 0 }) {
@@ -60,6 +69,9 @@ function applyMap(w, map, catalog) {
   w.map.cover = [...inline, ...placed.cover];
   w.map.decor = [...inlineDecor, ...placed.decor];
   w.map.surfaces = (map.surfaces || []).map(parseSurface);
+  w.map.lights = instantiateLights(map.lights, catalog?.lights);
+  const fixtures = instantiateLightFixtures(map.lights, catalog?.lights, instantiatePlace);
+  w.map.decor = [...w.map.decor, ...fixtures];
 }
 
 function mergePlacement(character, weapon, placement) {

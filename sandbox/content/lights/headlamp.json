@@ -1,0 +1,16 @@
+{
+  "id": "headlamp",
+  "name": "Headlamp",
+  "kind": "spot",
+  "color": "#e8d090",
+  "intensity": 1.35,
+  "range": 8,
+  "z": 0.9,
+  "dir": [1, 0, -0.08],
+  "angle": 28,
+  "penumbra": 10,
+  "parts": [
+    { "id": "housing", "min": [-0.08, -0.16], "max": [0.1, 0.16], "z0": 0.72, "z1": 1.04, "color": "#2a2e28", "mat": "metal", "cover": false },
+    { "id": "head", "min": [0.08, -0.14], "max": [0.16, 0.14], "z0": 0.76, "z1": 1.0, "color": "#e8d090", "mat": "emit", "cover": false }
+  ]
+}

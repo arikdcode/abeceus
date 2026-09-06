@@ -1,0 +1,13 @@
+{
+  "id": "mercury",
+  "name": "Mercury vapor",
+  "kind": "omni",
+  "color": "#c8e4ff",
+  "intensity": 1.7,
+  "range": 13,
+  "z": 3.4,
+  "parts": [
+    { "id": "pole", "role": "pole", "min": [-0.08, -0.08], "max": [0.08, 0.08], "z0": 0, "z1": 3.28, "color": "#3a4046", "mat": "metal", "cover": false },
+    { "id": "head", "min": [-0.22, -0.22], "max": [0.22, 0.22], "z0": 3.18, "z1": 3.58, "color": "#c8e4ff", "mat": "emit", "cover": false }
+  ]
+}

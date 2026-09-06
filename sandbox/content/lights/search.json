@@ -1,0 +1,17 @@
+{
+  "id": "search",
+  "name": "Searchlight",
+  "kind": "spot",
+  "color": "#fff6d8",
+  "intensity": 2.8,
+  "range": 24,
+  "z": 3.8,
+  "dir": [1, 0, -0.18],
+  "angle": 14,
+  "penumbra": 6,
+  "parts": [
+    { "id": "pole", "role": "pole", "min": [-0.09, -0.09], "max": [0.09, 0.09], "z0": 0, "z1": 3.55, "color": "#2a2e28", "mat": "metal", "cover": false },
+    { "id": "head", "min": [-0.28, -0.22], "max": [0.28, 0.22], "z0": 3.18, "z1": 3.82, "color": "#3a3e36", "mat": "metal", "cover": false },
+    { "id": "lens", "min": [0.2, -0.16], "max": [0.34, 0.16], "z0": 3.32, "z1": 3.72, "color": "#fff6d8", "mat": "emit", "cover": false }
+  ]
+}

@@ -76,6 +76,25 @@ function toPlay(eng) {
   if (op.units.filter((u) => u.cover_use?.mode === "hide").length < 8) fail("outpost teams should start in hide");
   if (!op.map.decor.some((c) => c.roof && (c.id || "").includes("office"))) fail("office roof should stay in the map as hidden-by-default decor");
 
+  const lightYard = worldFromCatalog(catalog, "light_yard");
+  if ((lightYard.map.lights || []).length < 20) fail(`light yard should place catalog lights, got ${lightYard.map.lights?.length}`);
+  const lightKinds = new Set(lightYard.map.lights.map((L) => L.light));
+  for (const id of ["street", "sodium", "mercury", "flood", "search", "work", "headlamp", "beacon", "chem", "hangar"]) {
+    if (!lightKinds.has(id)) fail(`light yard missing ${id}`);
+  }
+  const search = lightYard.map.lights.find((L) => L.id === "search-b");
+  if (!search || search.kind !== "spot") fail("searchlights should stay cones");
+  if (search.dy >= -0.55) fail(`searchlights should rake the yard, dy=${search.dy}`);
+  if (lightYard.map.cover.some((c) => (c.id || "").startsWith("search-box"))) fail("search housings should not float as bare cubes");
+  if (lightYard.map.cover.some((c) => (c.id || "").startsWith("pole-") || (c.id || "").startsWith("mpole-"))) {
+    fail("catalog lights should bring their own poles, not leftover sticks");
+  }
+  const fixtures = [...(lightYard.map.decor || []), ...(lightYard.map.cover || [])];
+  if (!fixtures.some((c) => (c.id || "").includes("road-8") && (c.id || "").includes("head"))) {
+    fail("street lamps should spawn a glowing head");
+  }
+  if (!fixtures.some((c) => (c.id || "").includes("chem-0"))) fail("chem lights should be visible sticks");
+
   const yard = worldFromCatalog(catalog, "posted_courtyard");
   const around = pathFind(yard.map, { x: 6.4, y: 4.6 }, { x: 10.6, y: 4.6 });
   if (!around.ok || around.points.length < 3) fail("path should bend around the west crate instead of stopping at it");

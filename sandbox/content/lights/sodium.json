@@ -1,0 +1,13 @@
+{
+  "id": "sodium",
+  "name": "Sodium vapor",
+  "kind": "omni",
+  "color": "#ff9a3c",
+  "intensity": 1.55,
+  "range": 18,
+  "z": 3.5,
+  "parts": [
+    { "id": "pole", "role": "pole", "min": [-0.1, -0.1], "max": [0.1, 0.1], "z0": 0, "z1": 3.42, "color": "#35383c", "mat": "metal", "cover": false },
+    { "id": "head", "min": [-0.26, -0.26], "max": [0.26, 0.26], "z0": 3.22, "z1": 3.72, "color": "#ff9a3c", "mat": "emit", "cover": false }
+  ]
+}

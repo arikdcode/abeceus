@@ -709,6 +709,7 @@ function collectFrame() {
     map,
     sun: sunOn,
     exact: exactLights,
+    lights: map.lights || [],
     solids: [...worldParts, ...bodyParts],
     casters: [...worldCasters, ...bodyParts],
     marks,

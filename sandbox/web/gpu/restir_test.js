@@ -88,4 +88,14 @@ const rangeView = rangeEng.view({ fog: false });
 const rangeLights = collectLights([...(rangeView.map.decor || []), ...(rangeView.map.cover || [])]);
 if (rangeLights.length < 60) fail(`night range should be crowded, lights=${rangeLights.length}`);
 
+const yardEng = new Engine();
+if (!yardEng.loadWorld(worldFromCatalog(catalog, "light_yard"))) fail("light_yard load");
+const yardView = yardEng.view({ fog: false });
+if ((yardView.map.lights || []).length < 20) fail(`light yard view should keep catalog lights, got ${yardView.map.lights?.length}`);
+const packedYard = packLights(yardView.map.lights);
+const searchIdx = yardView.map.lights.findIndex((L) => L.light === "search");
+if (searchIdx < 0) fail("light yard should keep a searchlight");
+if (packedYard.data[searchIdx * 16 + 11] !== 1) fail("searchlight should pack as a spot");
+if (!(packedYard.data[searchIdx * 16 + 13] > 0.9)) fail("tight search cone should pack a high outer cosine");
+
 console.log("restir_test ok");

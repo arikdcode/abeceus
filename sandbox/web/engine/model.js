@@ -120,6 +120,7 @@ export function makeWorld() {
       cover: [],
       decor: [],
       surfaces: [],
+      lights: [],
       ground: "dirt",
       surprise0: 1,
       surprise1: 1,

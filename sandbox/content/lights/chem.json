@@ -1,0 +1,12 @@
+{
+  "id": "chem",
+  "name": "Chem light",
+  "kind": "omni",
+  "color": "#6dff7a",
+  "intensity": 0.85,
+  "range": 5.5,
+  "z": 0.35,
+  "parts": [
+    { "id": "stick", "min": [-0.04, -0.04], "max": [0.04, 0.04], "z0": 0, "z1": 0.42, "color": "#6dff7a", "mat": "emit", "cover": false }
+  ]
+}

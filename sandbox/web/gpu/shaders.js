@@ -446,6 +446,16 @@ vec4 light_col(int i) { return texelFetch(u_lights, ivec2(1, i), 0); }
 vec4 light_dir(int i) { return texelFetch(u_lights, ivec2(2, i), 0); }
 vec4 light_rad(int i) { return texelFetch(u_lights, ivec2(3, i), 0); }
 
+float light_cone(int i, vec3 ldir) {
+  vec4 dd = light_dir(i);
+  if (dd.w < 0.5 || dot(dd.xyz, dd.xyz) < 0.05) return 1.0;
+  vec4 rad = light_rad(i);
+  float outer = rad.y;
+  float inner = rad.z;
+  if (inner <= outer) inner = min(outer + 0.12, 0.98);
+  return smoothstep(outer, inner, dot(-ldir, normalize(dd.xyz)));
+}
+
 float light_contrib(int i, vec3 world, vec3 n, vec3 view_dir, vec3 albedo, float spec_k, float shine, float wrap_k) {
   if (i < 0) return 0.0;
   vec4 pr = light_pos(i);
@@ -458,10 +468,7 @@ float light_contrib(int i, vec3 world, vec3 n, vec3 view_dir, vec3 albedo, float
   fall *= fall;
   vec3 ldir = to_l / max(dist, 1e-4);
   float nd = wrap_n(dot(n, ldir), wrap_k);
-  float cone = 1.0;
-  if (dd.w > 0.5 && dot(dd.xyz, dd.xyz) > 0.05) {
-    cone = smoothstep(0.42, 0.78, dot(-ldir, normalize(dd.xyz)));
-  }
+  float cone = light_cone(i, ldir);
   vec3 lcol = ci.rgb * ci.w;
   vec3 lh = normalize(ldir + view_dir);
   float lspec = pow(max(dot(n, lh), 0.0), shine) * spec_k * 0.4;
@@ -479,10 +486,7 @@ vec3 light_shade(int i, vec3 world, vec3 n, vec3 view_dir, vec3 albedo, float sp
   fall *= fall;
   vec3 ldir = to_l / max(dist, 1e-4);
   float nd = wrap_n(dot(n, ldir), wrap_k);
-  float cone = 1.0;
-  if (dd.w > 0.5 && dot(dd.xyz, dd.xyz) > 0.05) {
-    cone = smoothstep(0.42, 0.78, dot(-ldir, normalize(dd.xyz)));
-  }
+  float cone = light_cone(i, ldir);
   vec3 lcol = ci.rgb * ci.w;
   vec3 lh = normalize(ldir + view_dir);
   float lspec = pow(max(dot(n, lh), 0.0), shine) * spec_k * 0.4;
@@ -538,17 +542,9 @@ int fetch_local_at(vec3 world, int k) {
   return lindex_at(int(head.x + 0.5) + k);
 }
 
-bool occ_hidden(vec3 origin, int li) {
+bool occ_hit(vec3 o, vec3 d, float reach, vec3 skip_lp, float skip_rad) {
   int n_occ = int(frame_restir.z + 0.5);
-  if (n_occ <= 0 || li < 0) return false;
-  vec3 lp = light_pos(li).xyz;
-  float rad = max(light_rad(li).x, 0.2);
-  vec3 delta = lp - origin;
-  float max_t = length(delta);
-  if (max_t < 0.08) return false;
-  vec3 d = delta / max_t;
-  vec3 o = origin + d * 0.10;
-  float reach = max(max_t - 0.16, 0.02);
+  if (n_occ <= 0) return false;
   float cell = max(frame_restir.w, 1.0);
   vec2 origin_xy = frame_map.xy;
   float cols = max(frame_map.z, 1.0);
@@ -558,7 +554,7 @@ bool occ_hidden(vec3 origin, int li) {
   int step_x = d.x > 0.0 ? 1 : -1;
   int step_y = d.y > 0.0 ? 1 : -1;
   float t = 0.0;
-  const int MAX_HOPS = 40;
+  const int MAX_HOPS = 48;
   int seen0 = -1;
   int seen1 = -1;
   int seen2 = -1;
@@ -581,10 +577,12 @@ bool occ_hidden(vec3 origin, int li) {
         vec4 b = texelFetch(u_occluders, ivec2(1, id), 0);
         vec3 mn = a.xyz;
         vec3 mx = vec3(a.w, b.x, b.y);
-        if (light_owns(lp, rad, mn, mx)) continue;
+        if (skip_rad > 0.0 && light_owns(skip_lp, skip_rad, mn, mx)) continue;
         float hit = ray_aabb(o, d, mn, mx, reach);
         if (hit > 0.001) return true;
       }
+    } else if (cx < -1 || cy < -1 || cx > int(cols + 1.5) || cy > int(rows + 1.5)) {
+      break;
     }
     float nx = origin_xy.x + float(cx + (step_x > 0 ? 1 : 0)) * cell;
     float ny = origin_xy.y + float(cy + (step_y > 0 ? 1 : 0)) * cell;
@@ -594,6 +592,23 @@ bool occ_hidden(vec3 origin, int li) {
     else { t = ty; cy += step_y; }
   }
   return false;
+}
+
+bool occ_hidden(vec3 origin, int li) {
+  if (li < 0) return false;
+  vec3 lp = light_pos(li).xyz;
+  float rad = max(light_rad(li).x, 0.2);
+  vec3 delta = lp - origin;
+  float max_t = length(delta);
+  if (max_t < 0.08) return false;
+  vec3 d = delta / max_t;
+  return occ_hit(origin + d * 0.10, d, max(max_t - 0.16, 0.02), lp, rad);
+}
+
+bool sun_hidden(vec3 origin) {
+  if (frame_sun.w < 0.5) return false;
+  vec3 d = normalize(frame_sun.xyz);
+  return occ_hit(origin + d * 0.12, d, 96.0, vec3(0.0), 0.0);
 }
 
 void restir_add(inout vec4 res, int y, float phat, float w, float u) {
@@ -640,7 +655,7 @@ void main() {
   vec3 sun_col = vec3(1.02, 0.84, 0.60);
   float sun_n = wrap_n(dot(n, sun_dir), wrap_k);
   float sun_on = frame_sun.w;
-  float sun_vis = sun_on > 0.5 ? pcf_sun(world, sun_n) : 0.0;
+  float sun_vis = sun_on > 0.5 && !sun_hidden(world) ? 1.0 : 0.0;
   vec3 ambient = mix(ground, sky, hemi) * 0.20 + vec3(0.075, 0.068, 0.058);
   vec3 lit = albedo * (ambient + sun_col * sun_n * 0.86 * sun_vis);
   vec3 fill_dir = normalize(-sun_dir + vec3(0.0, 0.0, 0.42));

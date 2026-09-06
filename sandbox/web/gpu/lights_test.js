@@ -1,5 +1,7 @@
-import { collectLights, isPoleLike } from "./world.js";
+import { collectLights, isPoleLike, mergeLights } from "./world.js";
 import { instantiatePlace } from "../engine/props.js";
+import { coneCos, instantiateLightFixtures, placeLight, parseLight } from "../engine/lights.js";
+import { packLights } from "./restir.js";
 
 function fail(msg) {
   console.error(msg);
@@ -60,5 +62,41 @@ const pole = { x0: -0.07, x1: 0.07, y0: -0.07, y1: 0.07, z0: 0, z1: 3.45 };
 const hull = { x0: 0, x1: 4, y0: 0, y1: 2, z0: 0, z1: 1.2 };
 if (!isPoleLike(pole)) fail("lamp pole should skip lamp-shadow casters");
 if (isPoleLike(hull)) fail("wide hull should still cast lamp shadows");
+
+const search = parseLight({
+  id: "search", kind: "spot", color: "#fff6d8", intensity: 2.8, range: 24, z: 3.8,
+  dir: [1, 0, -0.18], angle: 14, penumbra: 6,
+});
+if (search.kind !== "spot") fail("search should be a spot");
+const placed = placeLight(search, { id: "s1", pos: [10, 4], yaw: Math.PI / 2 });
+if (Math.abs(placed.dy - 1) > 0.12 || Math.abs(placed.dx) > 0.12) {
+  fail(`search yaw should swing the beam, dir=${placed.dx.toFixed(2)},${placed.dy.toFixed(2)}`);
+}
+const cone = coneCos(14, 6);
+if (placed.outerCos >= placed.innerCos) fail("outer cone should be wider (smaller cosine)");
+if (Math.abs(placed.outerCos - cone.outerCos) > 1e-6) fail("placed cone should keep the spec");
+
+const packed = packLights([placed]);
+if (packed.data[11] !== 1) fail("catalog spot should pack as a spot");
+if (Math.abs(packed.data[13] - placed.outerCos) > 1e-5) fail("outer cosine should ride in the light texel");
+
+const merged = mergeLights([], [placed]);
+if (merged.length !== 1 || merged[0].light !== "search") fail("merge should keep catalog lights");
+
+const withParts = parseLight({
+  id: "street", kind: "omni", color: "#e8c86a",
+  parts: [
+    { id: "pole", role: "pole", min: [-0.07, -0.07], max: [0.07, 0.07], z0: 0, z1: 3.2, color: "#333", cover: false },
+    { id: "head", min: [-0.2, -0.2], max: [0.2, 0.2], z0: 3.0, z1: 3.4, color: "#e8c86a", mat: "emit", cover: false },
+  ],
+});
+if (withParts.parts.length !== 2) fail("light spec should keep fixture parts");
+const fixtures = instantiateLightFixtures(
+  [{ light: "street", id: "s", pos: [4, 6] }, { light: "street", id: "t", pos: [8, 6], pole: false }],
+  { street: withParts },
+  instantiatePlace,
+);
+if (fixtures.length !== 3) fail(`fixtures should drop the second pole, got ${fixtures.length}`);
+if (!fixtures.some((b) => b.id === "s-head")) fail("fixture head should keep a stable id");
 
 console.log("lights_test ok");

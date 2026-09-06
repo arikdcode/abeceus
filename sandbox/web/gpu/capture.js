@@ -60,6 +60,22 @@ export const PRESETS = {
     hideRoofs: true,
     cam: { target: { x: 34.6, y: 22.2, z: 0.4 }, yaw: 2.9, pitch: 0.42, dist: 9.4 },
   },
+  "light-yard": { scenario: "light_yard", hideRoofs: true, cam: null },
+  "light-search": {
+    scenario: "light_yard",
+    hideRoofs: true,
+    cam: { target: { x: 32, y: 32, z: 0.3 }, yaw: -Math.PI / 2, pitch: 0.34, dist: 15 },
+  },
+  "light-hangar": {
+    scenario: "light_yard",
+    hideRoofs: true,
+    cam: { target: { x: 56, y: 16.6, z: 0.7 }, yaw: Math.PI / 2, pitch: 0.3, dist: 13 },
+  },
+  "light-street": {
+    scenario: "light_yard",
+    hideRoofs: true,
+    cam: { target: { x: 18, y: 23.2, z: 0.4 }, yaw: 2.7, pitch: 0.4, dist: 10 },
+  },
 };
 
 function isRoof(c) {
@@ -134,6 +150,7 @@ export function buildFrame(eng, opts = {}) {
   return {
     cam: opts.cam,
     sun: opts.sun !== false,
+    lights: map.lights || [],
     map,
     solids: [...visible, ...bodies],
     casters: [...casters, ...bodies],

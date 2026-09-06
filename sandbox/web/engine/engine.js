@@ -1240,6 +1240,17 @@ export class Engine {
           durability: c.durability, durability_max: c.durability_max,
           roof: !!c.roof,
         })),
+        lights: (w.map.lights || []).map((item) => ({
+          id: item.id || null,
+          light: item.light || null,
+          kind: item.kind || "omni",
+          x: item.x, y: item.y, z: item.z,
+          range: item.range,
+          r: item.r, g: item.g, b: item.b,
+          intensity: item.intensity,
+          dx: item.dx || 0, dy: item.dy || 0, dz: item.dz || 0,
+          outerCos: item.outerCos, innerCos: item.innerCos,
+        })),
         decor: (w.map.decor || []).map((c) => ({
           id: c.id || null,
           min: [c.min.x, c.min.y], max: [c.max.x, c.max.y],

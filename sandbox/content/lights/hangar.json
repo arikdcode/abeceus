@@ -1,0 +1,17 @@
+{
+  "id": "hangar",
+  "name": "Hangar bay",
+  "kind": "spot",
+  "color": "#d7e8ff",
+  "intensity": 2.4,
+  "range": 20,
+  "z": 5.2,
+  "dir": [0, 0, -1],
+  "angle": 62,
+  "penumbra": 16,
+  "parts": [
+    { "id": "stem", "min": [-0.06, -0.06], "max": [0.06, 0.06], "z0": 4.85, "z1": 5.22, "color": "#3a3e42", "mat": "metal", "cover": false },
+    { "id": "can", "min": [-0.42, -0.42], "max": [0.42, 0.42], "z0": 4.92, "z1": 5.22, "color": "#2e3236", "mat": "metal", "cover": false },
+    { "id": "head", "min": [-0.34, -0.34], "max": [0.34, 0.34], "z0": 4.86, "z1": 4.98, "color": "#d7e8ff", "mat": "emit", "cover": false }
+  ]
+}

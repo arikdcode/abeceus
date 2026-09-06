@@ -145,10 +145,24 @@ export function collectLights(boxes) {
       g: color[1],
       b: color[2],
       intensity: 0.7 + c.emit * 1.15,
+      kind: dir.spot ? "spot" : "omni",
       dx: dir.x,
       dy: dir.y,
       dz: dir.z,
+      outerCos: dir.spot ? 0.42 : 0,
+      innerCos: dir.spot ? 0.78 : 0,
     });
+    if (lights.length >= MAX_SCENE_LIGHTS) break;
+  }
+  return lights;
+}
+
+export function mergeLights(boxes, placed) {
+  const lights = [...(placed || [])];
+  if (lights.length >= MAX_SCENE_LIGHTS) return lights.slice(0, MAX_SCENE_LIGHTS);
+  const extra = collectLights(boxes);
+  for (const L of extra) {
+    lights.push(L);
     if (lights.length >= MAX_SCENE_LIGHTS) break;
   }
   return lights;
@@ -207,6 +221,7 @@ export function pushLampCasters(out, solids) {
   for (const part of solids || []) {
     if (part.ghost) continue;
     if ((part.emit || 0) > 0) continue;
+    if (part.mat === "emit") continue;
     if (isPoleLike(part)) continue;
     pushBox(out, part.corners, [0, 0, 0], 1, matOf(part.mat), 0, 0);
   }
