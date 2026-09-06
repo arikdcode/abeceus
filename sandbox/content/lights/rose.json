@@ -1,0 +1,16 @@
+{
+  "id": "rose",
+  "name": "Rose",
+  "kind": "spot",
+  "color": "#ff5ac8",
+  "intensity": 1.85,
+  "range": 14,
+  "z": 4.2,
+  "dir": [0.4, 0.55, -0.74],
+  "angle": 30,
+  "penumbra": 11,
+  "parts": [
+    { "id": "pole", "role": "pole", "min": [-0.09, -0.09], "max": [0.09, 0.09], "z0": 0, "z1": 4.1, "color": "#40343c", "mat": "metal", "cover": false },
+    { "id": "head", "min": [-0.26, -0.22], "max": [0.26, 0.22], "z0": 3.92, "z1": 4.38, "color": "#ff5ac8", "mat": "emit", "cover": false }
+  ]
+}

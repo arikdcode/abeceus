@@ -1,0 +1,16 @@
+{
+  "id": "ice",
+  "name": "Ice",
+  "kind": "spot",
+  "color": "#7ef6ff",
+  "intensity": 2.0,
+  "range": 16,
+  "z": 4.6,
+  "dir": [0.55, 0.15, -0.82],
+  "angle": 26,
+  "penumbra": 10,
+  "parts": [
+    { "id": "pole", "role": "pole", "min": [-0.09, -0.09], "max": [0.09, 0.09], "z0": 0, "z1": 4.5, "color": "#3a4246", "mat": "metal", "cover": false },
+    { "id": "head", "min": [-0.26, -0.22], "max": [0.26, 0.22], "z0": 4.28, "z1": 4.72, "color": "#7ef6ff", "mat": "emit", "cover": false }
+  ]
+}

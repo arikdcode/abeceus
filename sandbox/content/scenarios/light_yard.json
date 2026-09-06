@@ -4,14 +4,7 @@
   "map": "light_yard",
   "seed": 3,
   "skip_contact": true,
-  "units": [
-    {
-      "character": "alpha-1",
-      "pos": [
-        16.8,
-        22.4
-      ],
-      "facing": 3.14
-    }
-  ]
+  "look": true,
+  "sun": false,
+  "units": []
 }

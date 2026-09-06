@@ -1,13 +1,18 @@
-export const SUN = (() => {
-  const v = { x: -0.58, y: -0.34, z: 0.74 };
-  const l = Math.hypot(v.x, v.y, v.z);
+export function sunDir(azDeg = 210, elDeg = 48) {
+  const az = (azDeg * Math.PI) / 180;
+  const el = (elDeg * Math.PI) / 180;
+  const c = Math.cos(el);
+  const v = { x: c * Math.cos(az), y: c * Math.sin(az), z: Math.sin(el) };
+  const l = Math.hypot(v.x, v.y, v.z) || 1;
   return { x: v.x / l, y: v.y / l, z: v.z / l };
-})();
+}
+
+export const SUN = sunDir();
 
 export const FOG = { r: 92 / 255, g: 78 / 255, b: 62 / 255 };
 
 export const MAX_LIGHTS = 16;
-export const MAX_SCENE_LIGHTS = 256;
+export const MAX_SCENE_LIGHTS = 384;
 export const MAX_OCCLUDERS = 512;
 export const RESTIR_CANDIDATES = 8;
 export const RESTIR_EXACT = 8;
@@ -23,9 +28,37 @@ export const WARM_LIGHT = [1, 0.74, 0.42];
 
 export const GROUND = {
   dirt: "#4a3d30",
+  dirt_dry: "#6a5340",
+  dirt_red: "#6a3a28",
+  mud: "#2a2218",
+  clay: "#7a4a32",
+  cracked: "#7a5a3c",
+  sand: "#c4a06a",
+  ash: "#6a6a68",
   grass: "#35462a",
+  grass_dry: "#6a5a32",
+  moss: "#2a3e28",
+  leaf: "#4a3820",
   gravel: "#5a5648",
+  pebbles: "#5c564c",
+  rock: "#4a4c4e",
+  snow: "#d8e2ea",
   concrete: "#6e706a",
+  concrete_worn: "#5c5a52",
+  asphalt: "#2a2b30",
+  tarmac: "#1e2228",
+  brick: "#6a3a2c",
+  cobble: "#5a564c",
+  wood: "#6a4a2c",
+  wood_worn: "#5a4834",
+  metal: "#4a5460",
+  rust: "#6a3a22",
+  tread: "#3a4248",
+  hex: "#243040",
+  polymer: "#3a4450",
+  carbon: "#1a1c20",
+  grate: "#2a3238",
+  hazard: "#4a3a10",
   road: "#2a2b30",
   tracks: "#3a3228",
 };

@@ -203,7 +203,8 @@ export class Engine {
   }
 
   loadWorld(world) {
-    if (!world.units.length) return false;
+    const look = !!(world.look || world.skip_contact) || world.units.length === 0;
+    if (!world.units.length && !look) return false;
     for (const u of world.units) finalizeUnit(u, turnSeconds(world));
     this.world = world;
     this.initial = structuredClone(world);
@@ -220,6 +221,13 @@ export class Engine {
     world.pending_react = { active: false, reactor: 0, trigger: 0 };
     world.pending_ow = { active: false, watcher: 0, mover: 0 };
     this.queue = [];
+    if (!world.units.length) {
+      world.look = true;
+      world.phase = Phase.Play;
+      world.active = 0;
+      world.turn_order = [];
+      return true;
+    }
     this.startContact();
     if (world.skip_contact) this.skipContact();
     return true;
@@ -1198,6 +1206,10 @@ export class Engine {
       combat_over: w.combat_over,
       winner_team: w.winner_team,
       fog,
+      look: !!w.look,
+      sun: w.sun,
+      sun_az: w.sun_az,
+      sun_el: w.sun_el,
       viewer: viewer?.id || 0,
       turn_order: [...w.turn_order],
       pending_react: { ...w.pending_react },
@@ -1227,6 +1239,7 @@ export class Engine {
         ground: w.map.ground || "dirt",
         surfaces: (w.map.surfaces || []).map((s) => ({
           kind: s.kind, min: s.min, max: s.max, color: s.color || null,
+          tile: s.tile ?? null, label: s.label || null,
         })),
         cover: w.map.cover.map((c) => ({
           id: c.id || null,
@@ -1280,12 +1293,12 @@ export class Engine {
       })),
       last_shot: lastShotView(w, viewer, fog, visibleTo),
       turn_seconds: turnSeconds(w),
-      quotes: buildQuotes(w, quoteU, findUnit(w, w.pending_react.reactor), {
+      quotes: buildQuotes(w, quoteU, findUnit(w, w.pending_react.reactor), quoteU ? {
         gait: this.plannedGait(quoteU),
         pos: this.plannedPos(quoteU),
         cover_use: this.plannedCover(quoteU),
         posture: this.plannedPosture(quoteU),
-      }),
+      } : {}),
       move: moveInfo(w, quoteU),
     };
   }

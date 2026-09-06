@@ -77,14 +77,21 @@ function toPlay(eng) {
   if (!op.map.decor.some((c) => c.roof && (c.id || "").includes("office"))) fail("office roof should stay in the map as hidden-by-default decor");
 
   const lightYard = worldFromCatalog(catalog, "light_yard");
-  if ((lightYard.map.lights || []).length < 20) fail(`light yard should place catalog lights, got ${lightYard.map.lights?.length}`);
+  if ((lightYard.map.max.x - lightYard.map.min.x) < 120) fail("light yard should be the large stress map");
+  if ((lightYard.map.lights || []).length < 80) fail(`light yard should be crowded, got ${lightYard.map.lights?.length}`);
   const lightKinds = new Set(lightYard.map.lights.map((L) => L.light));
-  for (const id of ["street", "sodium", "mercury", "flood", "search", "work", "headlamp", "beacon", "chem", "hangar"]) {
+  for (const id of ["street", "sodium", "mercury", "flood", "search", "work", "headlamp", "beacon", "chem", "hangar", "ruby", "azure", "violet", "ice", "rose", "rake"]) {
     if (!lightKinds.has(id)) fail(`light yard missing ${id}`);
   }
   const search = lightYard.map.lights.find((L) => L.id === "search-b");
   if (!search || search.kind !== "spot") fail("searchlights should stay cones");
   if (search.dy >= -0.55) fail(`searchlights should rake the yard, dy=${search.dy}`);
+  const rake = lightYard.map.lights.find((L) => L.light === "rake");
+  if (!rake || Math.abs(rake.dz) < 0.35 || Math.hypot(rake.dx, rake.dy) < 0.35) {
+    fail("rake floods should hit the ground at an angle");
+  }
+  const ruby = lightYard.map.lights.find((L) => L.light === "ruby");
+  if (!ruby || ruby.r < 0.7 || ruby.b > 0.45) fail("ruby should stay a saturated red");
   if (lightYard.map.cover.some((c) => (c.id || "").startsWith("search-box"))) fail("search housings should not float as bare cubes");
   if (lightYard.map.cover.some((c) => (c.id || "").startsWith("pole-") || (c.id || "").startsWith("mpole-"))) {
     fail("catalog lights should bring their own poles, not leftover sticks");
@@ -94,6 +101,19 @@ function toPlay(eng) {
     fail("street lamps should spawn a glowing head");
   }
   if (!fixtures.some((c) => (c.id || "").includes("chem-0"))) fail("chem lights should be visible sticks");
+  if (lightYard.units.length) fail("light yard should have no characters");
+  const range = worldFromCatalog(catalog, "night_range");
+  if (range.units.length) fail("night range should have no characters");
+
+  const ground = worldFromCatalog(catalog, "ground_yard");
+  if (ground.units.length) fail("ground yard should have no characters");
+  if (!ground.look) fail("ground yard should be a look-at map");
+  if (ground.sun !== true) fail("ground yard should default the sun on");
+  if ((ground.map.surfaces || []).length < 24) fail("ground yard should show a wide ground catalog");
+  if (!ground.map.surfaces.every((s) => s.label)) fail("ground yard patches should be labeled");
+  const groundEng = new Engine();
+  if (!groundEng.loadWorld(ground)) fail("ground yard load");
+  if (groundEng.view({ fog: false }).units.length) fail("ground yard view should stay empty");
 
   const yard = worldFromCatalog(catalog, "posted_courtyard");
   const around = pathFind(yard.map, { x: 6.4, y: 4.6 }, { x: 10.6, y: 4.6 });

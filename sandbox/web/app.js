@@ -4,6 +4,7 @@ import { rotate } from "./engine/vec.js";
 import { makeCam3, frameCam3, frameOverview3, screenRay, hitGround, orbitCam, zoomCam, eyeOf } from "./gpu/camera.js";
 import { initRenderer, resizeCanvas, drawFrame, rendererReady, initError } from "./gpu/renderer.js";
 import { stepHeldCam, stepOrbitKey } from "./engine/camstep.js";
+import { sunDir } from "./gpu/theme.js";
 
 const canvas = document.getElementById("view");
 const keys = new Set();
@@ -30,6 +31,8 @@ let owAim = false;
 let hideRoofs = localStorage.getItem("sandbox.hideRoofs") !== "show";
 let hideGrid = localStorage.getItem("sandbox.hideGrid") === "hide";
 let sunOn = localStorage.getItem("sandbox.sun") !== "off";
+let sunAz = Number(localStorage.getItem("sandbox.sunAz") || 210);
+let sunEl = Number(localStorage.getItem("sandbox.sunEl") || 48);
 let exactLights = localStorage.getItem("sandbox.exact") !== "off";
 const cam3 = makeCam3();
 let camKind = "overview";
@@ -511,6 +514,23 @@ function syncModePairs() {
   setPair("gridPair", hideGrid ? "hide" : "show");
   setPair("sunPair", sunOn ? "on" : "off");
   setPair("samplePair", exactLights ? "exact" : "sampled");
+  syncSunAngles();
+}
+
+function syncSunAngles() {
+  const az = document.getElementById("sunAz");
+  const el = document.getElementById("sunEl");
+  if (az && document.activeElement !== az) az.value = String(Math.round(sunAz));
+  if (el && document.activeElement !== el) el.value = String(Math.round(sunEl));
+}
+
+function setSunAngle(az, el, draw = true) {
+  if (Number.isFinite(az)) sunAz = ((az % 360) + 360) % 360;
+  if (Number.isFinite(el)) sunEl = Math.min(85, Math.max(6, el));
+  localStorage.setItem("sandbox.sunAz", String(Math.round(sunAz)));
+  localStorage.setItem("sandbox.sunEl", String(Math.round(sunEl)));
+  syncSunAngles();
+  if (draw) render();
 }
 
 function setCamKind(next) {
@@ -704,10 +724,24 @@ function collectFrame() {
     const box = hu && cachedHitboxes(hu).find((b) => b.name === hoverPart);
     if (box) marks.edges.push({ corners: box.corners, color: "#f2d78a" });
   }
+  for (const s of map.surfaces || []) {
+    if (!s.label || !s.min || !s.max) continue;
+    const x0 = Array.isArray(s.min) ? s.min[0] : s.min.x;
+    const y0 = Array.isArray(s.min) ? s.min[1] : s.min.y;
+    const x1 = Array.isArray(s.max) ? s.max[0] : s.max.x;
+    const y1 = Array.isArray(s.max) ? s.max[1] : s.max.y;
+    marks.labels.push({
+      pos: { x: (x0 + x1) * 0.5, y: (y0 + y1) * 0.5, z: 0.22 },
+      text: s.label,
+      color: "#f4ecd4",
+      scale: 1.4,
+    });
+  }
   return {
     cam: cam3,
     map,
     sun: sunOn,
+    sunDir: sunDir(sunAz, sunEl),
     exact: exactLights,
     lights: map.lights || [],
     solids: [...worldParts, ...bodyParts],
@@ -1558,6 +1592,14 @@ bindPair("sunPair", (v) => {
   syncModePairs();
   render();
 });
+const sunAzEl = document.getElementById("sunAz");
+const sunElEl = document.getElementById("sunEl");
+if (sunAzEl) {
+  sunAzEl.onchange = sunAzEl.oninput = () => setSunAngle(+sunAzEl.value, sunEl);
+}
+if (sunElEl) {
+  sunElEl.onchange = sunElEl.oninput = () => setSunAngle(sunAz, +sunElEl.value);
+}
 bindPair("samplePair", (v) => {
   exactLights = v !== "sampled";
   localStorage.setItem("sandbox.exact", exactLights ? "on" : "off");
@@ -1701,9 +1743,18 @@ function loadScenario(id) {
   shotPreview = null;
   inspected = 0;
   aimOffset = null;
+  const src = catalog.scenarios[id];
+  if (src.sun != null) {
+    sunOn = !!src.sun;
+    localStorage.setItem("sandbox.sun", sunOn ? "on" : "off");
+  }
+  if (src.sun_az != null || src.sun_el != null) {
+    setSunAngle(src.sun_az ?? sunAz, src.sun_el ?? sunEl, false);
+  }
   const world = worldFromCatalog(catalog, id);
   if (!eng.loadWorld(world)) return false;
   document.getElementById("scenarioSelect").value = id;
+  syncModePairs();
   refresh();
   if (view?.map) {
     frameCameras(view.map);

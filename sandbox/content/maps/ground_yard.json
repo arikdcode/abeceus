@@ -1,0 +1,432 @@
+{
+  "id": "ground_yard",
+  "name": "Ground yard",
+  "min": [
+    0,
+    0
+  ],
+  "max": [
+    83.6,
+    44.4
+  ],
+  "grid": 1,
+  "ground": "dirt",
+  "surfaces": [
+    {
+      "kind": "dirt",
+      "tile": 0,
+      "label": "Packed dirt",
+      "min": [
+        3.5,
+        32.9
+      ],
+      "max": [
+        11.5,
+        40.9
+      ]
+    },
+    {
+      "kind": "dirt_dry",
+      "tile": 1,
+      "label": "Dry dirt",
+      "min": [
+        13.3,
+        32.9
+      ],
+      "max": [
+        21.3,
+        40.9
+      ]
+    },
+    {
+      "kind": "dirt_red",
+      "tile": 2,
+      "label": "Red earth",
+      "min": [
+        23.1,
+        32.9
+      ],
+      "max": [
+        31.1,
+        40.9
+      ]
+    },
+    {
+      "kind": "mud",
+      "tile": 3,
+      "label": "Wet mud",
+      "min": [
+        32.9,
+        32.9
+      ],
+      "max": [
+        40.9,
+        40.9
+      ]
+    },
+    {
+      "kind": "clay",
+      "tile": 4,
+      "label": "Clay",
+      "min": [
+        42.7,
+        32.9
+      ],
+      "max": [
+        50.7,
+        40.9
+      ]
+    },
+    {
+      "kind": "cracked",
+      "tile": 5,
+      "label": "Cracked earth",
+      "min": [
+        52.5,
+        32.9
+      ],
+      "max": [
+        60.5,
+        40.9
+      ]
+    },
+    {
+      "kind": "sand",
+      "tile": 6,
+      "label": "Sand",
+      "min": [
+        62.3,
+        32.9
+      ],
+      "max": [
+        70.3,
+        40.9
+      ]
+    },
+    {
+      "kind": "ash",
+      "tile": 7,
+      "label": "Ash",
+      "min": [
+        72.1,
+        32.9
+      ],
+      "max": [
+        80.1,
+        40.9
+      ]
+    },
+    {
+      "kind": "grass",
+      "tile": 8,
+      "label": "Grass",
+      "min": [
+        3.5,
+        23.1
+      ],
+      "max": [
+        11.5,
+        31.1
+      ]
+    },
+    {
+      "kind": "grass_dry",
+      "tile": 9,
+      "label": "Dry grass",
+      "min": [
+        13.3,
+        23.1
+      ],
+      "max": [
+        21.3,
+        31.1
+      ]
+    },
+    {
+      "kind": "moss",
+      "tile": 10,
+      "label": "Moss",
+      "min": [
+        23.1,
+        23.1
+      ],
+      "max": [
+        31.1,
+        31.1
+      ]
+    },
+    {
+      "kind": "leaf",
+      "tile": 11,
+      "label": "Leaf litter",
+      "min": [
+        32.9,
+        23.1
+      ],
+      "max": [
+        40.9,
+        31.1
+      ]
+    },
+    {
+      "kind": "gravel",
+      "tile": 12,
+      "label": "Gravel",
+      "min": [
+        42.7,
+        23.1
+      ],
+      "max": [
+        50.7,
+        31.1
+      ]
+    },
+    {
+      "kind": "pebbles",
+      "tile": 13,
+      "label": "Pebbles",
+      "min": [
+        52.5,
+        23.1
+      ],
+      "max": [
+        60.5,
+        31.1
+      ]
+    },
+    {
+      "kind": "rock",
+      "tile": 14,
+      "label": "Bedrock",
+      "min": [
+        62.3,
+        23.1
+      ],
+      "max": [
+        70.3,
+        31.1
+      ]
+    },
+    {
+      "kind": "snow",
+      "tile": 15,
+      "label": "Packed snow",
+      "min": [
+        72.1,
+        23.1
+      ],
+      "max": [
+        80.1,
+        31.1
+      ]
+    },
+    {
+      "kind": "concrete",
+      "tile": 16,
+      "label": "Concrete",
+      "min": [
+        3.5,
+        13.3
+      ],
+      "max": [
+        11.5,
+        21.3
+      ]
+    },
+    {
+      "kind": "concrete_worn",
+      "tile": 17,
+      "label": "Worn concrete",
+      "min": [
+        13.3,
+        13.3
+      ],
+      "max": [
+        21.3,
+        21.3
+      ]
+    },
+    {
+      "kind": "asphalt",
+      "tile": 18,
+      "label": "Asphalt",
+      "min": [
+        23.1,
+        13.3
+      ],
+      "max": [
+        31.1,
+        21.3
+      ]
+    },
+    {
+      "kind": "tarmac",
+      "tile": 19,
+      "label": "Tarmac",
+      "min": [
+        32.9,
+        13.3
+      ],
+      "max": [
+        40.9,
+        21.3
+      ]
+    },
+    {
+      "kind": "brick",
+      "tile": 20,
+      "label": "Brick pavers",
+      "min": [
+        42.7,
+        13.3
+      ],
+      "max": [
+        50.7,
+        21.3
+      ]
+    },
+    {
+      "kind": "cobble",
+      "tile": 21,
+      "label": "Cobblestone",
+      "min": [
+        52.5,
+        13.3
+      ],
+      "max": [
+        60.5,
+        21.3
+      ]
+    },
+    {
+      "kind": "wood",
+      "tile": 22,
+      "label": "Wood deck",
+      "min": [
+        62.3,
+        13.3
+      ],
+      "max": [
+        70.3,
+        21.3
+      ]
+    },
+    {
+      "kind": "wood_worn",
+      "tile": 23,
+      "label": "Worn wood",
+      "min": [
+        72.1,
+        13.3
+      ],
+      "max": [
+        80.1,
+        21.3
+      ]
+    },
+    {
+      "kind": "metal",
+      "tile": 24,
+      "label": "Deck plate",
+      "min": [
+        3.5,
+        3.5
+      ],
+      "max": [
+        11.5,
+        11.5
+      ]
+    },
+    {
+      "kind": "rust",
+      "tile": 25,
+      "label": "Rusted plate",
+      "min": [
+        13.3,
+        3.5
+      ],
+      "max": [
+        21.3,
+        11.5
+      ]
+    },
+    {
+      "kind": "tread",
+      "tile": 26,
+      "label": "Tread plate",
+      "min": [
+        23.1,
+        3.5
+      ],
+      "max": [
+        31.1,
+        11.5
+      ]
+    },
+    {
+      "kind": "hex",
+      "tile": 27,
+      "label": "Hex tile",
+      "min": [
+        32.9,
+        3.5
+      ],
+      "max": [
+        40.9,
+        11.5
+      ]
+    },
+    {
+      "kind": "polymer",
+      "tile": 28,
+      "label": "Polymer floor",
+      "min": [
+        42.7,
+        3.5
+      ],
+      "max": [
+        50.7,
+        11.5
+      ]
+    },
+    {
+      "kind": "carbon",
+      "tile": 29,
+      "label": "Carbon weave",
+      "min": [
+        52.5,
+        3.5
+      ],
+      "max": [
+        60.5,
+        11.5
+      ]
+    },
+    {
+      "kind": "grate",
+      "tile": 30,
+      "label": "Metal grate",
+      "min": [
+        62.3,
+        3.5
+      ],
+      "max": [
+        70.3,
+        11.5
+      ]
+    },
+    {
+      "kind": "hazard",
+      "tile": 31,
+      "label": "Hazard deck",
+      "min": [
+        72.1,
+        3.5
+      ],
+      "max": [
+        80.1,
+        11.5
+      ]
+    }
+  ]
+}

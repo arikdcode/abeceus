@@ -1,0 +1,17 @@
+{
+  "id": "rake",
+  "name": "Rake flood",
+  "kind": "spot",
+  "color": "#fff1c2",
+  "intensity": 2.35,
+  "range": 22,
+  "z": 6.2,
+  "dir": [0.72, 0.08, -0.69],
+  "angle": 32,
+  "penumbra": 12,
+  "parts": [
+    { "id": "pole", "role": "pole", "min": [-0.1, -0.1], "max": [0.1, 0.1], "z0": 0, "z1": 6.05, "color": "#3a3e42", "mat": "metal", "cover": false },
+    { "id": "yoke", "min": [-0.32, -0.1], "max": [0.32, 0.1], "z0": 5.85, "z1": 6.15, "color": "#2e3236", "mat": "metal", "cover": false },
+    { "id": "head", "min": [-0.4, -0.28], "max": [0.4, 0.28], "z0": 5.7, "z1": 6.28, "color": "#fff1c2", "mat": "emit", "cover": false }
+  ]
+}

@@ -78,6 +78,8 @@ export function parseSurface(s) {
     min: s.min ? (Array.isArray(s.min) ? s.min : [s.min.x, s.min.y]) : null,
     max: s.max ? (Array.isArray(s.max) ? s.max : [s.max.x, s.max.y]) : null,
     color: s.color || null,
+    tile: s.tile ?? null,
+    label: s.label || s.name || null,
   };
 }
 

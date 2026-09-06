@@ -116,18 +116,17 @@ export function instantiateLightFixtures(places, catalog, instantiatePlace) {
     if (!parts?.length) continue;
     const skipPole = place.pole === false;
     const zOff = place.z_off || 0;
+    const glow = place.color || spec.color;
     const shifted = [];
     for (const part of parts) {
       if (skipPole && isPolePart(part)) continue;
-      if (!zOff) {
-        shifted.push(part);
-        continue;
+      const next = { ...part };
+      if (zOff) {
+        next.z0 = (part.z0 ?? 0) + zOff;
+        next.z1 = (part.z1 ?? part.height ?? 1) + zOff;
       }
-      shifted.push({
-        ...part,
-        z0: (part.z0 ?? 0) + zOff,
-        z1: (part.z1 ?? part.height ?? 1) + zOff,
-      });
+      if (part.mat === "emit" && glow) next.color = glow;
+      shifted.push(next);
     }
     if (!shifted.length) continue;
     const placed = instantiatePlace({ parts: shifted }, {

@@ -6,8 +6,8 @@
     0
   ],
   "max": [
-    72,
-    48
+    144,
+    96
   ],
   "grid": 1,
   "ground": "dirt",
@@ -21,63 +21,107 @@
         0
       ],
       "max": [
-        72,
-        20
+        144,
+        22
       ]
     },
     {
       "kind": "grass",
       "min": [
         0,
-        32
+        34
       ],
       "max": [
-        72,
-        48
+        144,
+        62
+      ]
+    },
+    {
+      "kind": "grass",
+      "min": [
+        0,
+        74
+      ],
+      "max": [
+        144,
+        96
       ]
     },
     {
       "kind": "road",
       "min": [
         0,
-        20
+        22
       ],
       "max": [
-        72,
-        32
+        144,
+        34
+      ]
+    },
+    {
+      "kind": "road",
+      "min": [
+        0,
+        62
+      ],
+      "max": [
+        144,
+        74
+      ]
+    },
+    {
+      "kind": "road",
+      "min": [
+        70,
+        10
+      ],
+      "max": [
+        80,
+        86
       ]
     },
     {
       "kind": "concrete",
       "min": [
-        47,
+        16,
         10
       ],
       "max": [
-        66,
-        22
+        40,
+        24
       ]
     },
     {
       "kind": "gravel",
       "min": [
-        20,
-        33
+        36,
+        34
       ],
       "max": [
-        50,
-        42
+        72,
+        44
       ]
     },
     {
       "kind": "concrete",
       "min": [
-        52,
-        36
+        82,
+        8
       ],
       "max": [
-        66,
-        44
+        136,
+        32
+      ]
+    },
+    {
+      "kind": "gravel",
+      "min": [
+        12,
+        70
+      ],
+      "max": [
+        72,
+        90
       ]
     }
   ],
@@ -147,34 +191,346 @@
       ]
     },
     {
-      "light": "mercury",
-      "id": "m1",
+      "light": "sodium",
+      "id": "road-80",
       "pos": [
-        10,
-        10
+        80,
+        28
       ]
     },
     {
-      "light": "mercury",
-      "id": "m2",
+      "light": "street",
+      "id": "road-88",
       "pos": [
-        18,
-        8
+        88,
+        28
       ]
     },
     {
-      "light": "mercury",
-      "id": "m3",
+      "light": "sodium",
+      "id": "road-96",
+      "pos": [
+        96,
+        28
+      ]
+    },
+    {
+      "light": "street",
+      "id": "road-104",
+      "pos": [
+        104,
+        28
+      ]
+    },
+    {
+      "light": "sodium",
+      "id": "road-112",
+      "pos": [
+        112,
+        28
+      ]
+    },
+    {
+      "light": "street",
+      "id": "road-120",
+      "pos": [
+        120,
+        28
+      ]
+    },
+    {
+      "light": "sodium",
+      "id": "road-128",
+      "pos": [
+        128,
+        28
+      ]
+    },
+    {
+      "light": "street",
+      "id": "road-136",
+      "pos": [
+        136,
+        28
+      ]
+    },
+    {
+      "light": "sodium",
+      "id": "curb-12",
       "pos": [
         12,
-        16
+        22
+      ]
+    },
+    {
+      "light": "street",
+      "id": "curb-20",
+      "pos": [
+        20,
+        22
+      ]
+    },
+    {
+      "light": "sodium",
+      "id": "curb-28",
+      "pos": [
+        28,
+        22
+      ]
+    },
+    {
+      "light": "street",
+      "id": "curb-36",
+      "pos": [
+        36,
+        22
+      ]
+    },
+    {
+      "light": "sodium",
+      "id": "curb-44",
+      "pos": [
+        44,
+        22
+      ]
+    },
+    {
+      "light": "street",
+      "id": "curb-52",
+      "pos": [
+        52,
+        22
+      ]
+    },
+    {
+      "light": "sodium",
+      "id": "curb-60",
+      "pos": [
+        60,
+        22
+      ]
+    },
+    {
+      "light": "street",
+      "id": "curb-84",
+      "pos": [
+        84,
+        22
+      ]
+    },
+    {
+      "light": "sodium",
+      "id": "curb-92",
+      "pos": [
+        92,
+        22
+      ]
+    },
+    {
+      "light": "street",
+      "id": "curb-100",
+      "pos": [
+        100,
+        22
+      ]
+    },
+    {
+      "light": "sodium",
+      "id": "curb-108",
+      "pos": [
+        108,
+        22
+      ]
+    },
+    {
+      "light": "street",
+      "id": "curb-116",
+      "pos": [
+        116,
+        22
+      ]
+    },
+    {
+      "light": "sodium",
+      "id": "curb-124",
+      "pos": [
+        124,
+        22
+      ]
+    },
+    {
+      "light": "street",
+      "id": "curb-132",
+      "pos": [
+        132,
+        22
+      ]
+    },
+    {
+      "light": "mercury",
+      "id": "north-road-8",
+      "pos": [
+        8,
+        68
+      ]
+    },
+    {
+      "light": "mercury",
+      "id": "north-road-16",
+      "pos": [
+        16,
+        68
+      ]
+    },
+    {
+      "light": "mercury",
+      "id": "north-road-24",
+      "pos": [
+        24,
+        68
+      ]
+    },
+    {
+      "light": "mercury",
+      "id": "north-road-32",
+      "pos": [
+        32,
+        68
+      ]
+    },
+    {
+      "light": "mercury",
+      "id": "north-road-40",
+      "pos": [
+        40,
+        68
+      ]
+    },
+    {
+      "light": "mercury",
+      "id": "north-road-48",
+      "pos": [
+        48,
+        68
+      ]
+    },
+    {
+      "light": "mercury",
+      "id": "north-road-56",
+      "pos": [
+        56,
+        68
+      ]
+    },
+    {
+      "light": "mercury",
+      "id": "north-road-68",
+      "pos": [
+        68,
+        68
+      ]
+    },
+    {
+      "light": "mercury",
+      "id": "north-road-88",
+      "pos": [
+        88,
+        68
+      ]
+    },
+    {
+      "light": "mercury",
+      "id": "north-road-96",
+      "pos": [
+        96,
+        68
+      ]
+    },
+    {
+      "light": "mercury",
+      "id": "north-road-104",
+      "pos": [
+        104,
+        68
+      ]
+    },
+    {
+      "light": "mercury",
+      "id": "north-road-112",
+      "pos": [
+        112,
+        68
+      ]
+    },
+    {
+      "light": "mercury",
+      "id": "north-road-120",
+      "pos": [
+        120,
+        68
+      ]
+    },
+    {
+      "light": "mercury",
+      "id": "north-road-128",
+      "pos": [
+        128,
+        68
+      ]
+    },
+    {
+      "light": "mercury",
+      "id": "north-road-136",
+      "pos": [
+        136,
+        68
+      ]
+    },
+    {
+      "light": "sodium",
+      "id": "cross-12",
+      "pos": [
+        75,
+        12
+      ]
+    },
+    {
+      "light": "sodium",
+      "id": "cross-20",
+      "pos": [
+        75,
+        20
+      ]
+    },
+    {
+      "light": "sodium",
+      "id": "cross-44",
+      "pos": [
+        75,
+        44
+      ]
+    },
+    {
+      "light": "sodium",
+      "id": "cross-52",
+      "pos": [
+        75,
+        52
+      ]
+    },
+    {
+      "light": "sodium",
+      "id": "cross-80",
+      "pos": [
+        75,
+        80
       ]
     },
     {
       "light": "hangar",
       "id": "hangar-1",
       "pos": [
-        52,
+        22,
         16
       ]
     },
@@ -182,74 +538,92 @@
       "light": "hangar",
       "id": "hangar-2",
       "pos": [
-        60,
+        28,
         16
       ]
     },
     {
-      "light": "flood",
-      "id": "flood-yard",
+      "light": "hangar",
+      "id": "hangar-3",
       "pos": [
-        36,
-        18
+        34,
+        16
       ]
     },
     {
       "light": "work",
       "id": "work-l",
       "pos": [
-        48.4,
-        18.2
+        18.6,
+        18.4
       ],
-      "yaw": 0.15
+      "yaw": 0.2
     },
     {
       "light": "work",
       "id": "work-r",
       "pos": [
-        63.6,
-        18.2
+        37.4,
+        18.4
       ],
-      "yaw": 3.041592653589793
+      "yaw": 2.991592653589793
+    },
+    {
+      "light": "flood",
+      "id": "flood-yard",
+      "pos": [
+        46,
+        16
+      ]
     },
     {
       "light": "search",
       "id": "search-a",
       "pos": [
-        22,
+        40,
         39.7
       ],
-      "yaw": -1.2907963267948965,
+      "yaw": -1.2507963267948965,
       "pole": false
     },
     {
       "light": "search",
       "id": "search-b",
       "pos": [
-        30,
+        50,
         39.7
       ],
-      "yaw": -1.6907963267948967,
+      "yaw": -1.6707963267948966,
       "pole": false
     },
     {
       "light": "search",
       "id": "search-c",
       "pos": [
-        40,
+        60,
         39.7
       ],
-      "yaw": -1.1507963267948966,
+      "yaw": -1.1707963267948966,
+      "pole": false
+    },
+    {
+      "light": "search",
+      "id": "search-d",
+      "pos": [
+        68,
+        39.7
+      ],
+      "yaw": -1.8507963267948966,
       "pole": false
     },
     {
       "light": "search",
       "id": "search-tower",
       "pos": [
-        5.4,
-        42.4
+        7.2,
+        88
       ],
-      "yaw": -0.55,
+      "yaw": -0.7,
       "pole": false,
       "z": 5.5,
       "z_off": 1.7
@@ -258,107 +632,706 @@
       "light": "headlamp",
       "id": "hl-jersey",
       "pos": [
-        42.4,
+        70.4,
         14.15
       ],
-      "yaw": 0.2
+      "yaw": 0.15
     },
     {
       "light": "beacon",
       "id": "bek-a",
       "pos": [
         20,
-        44
+        90
       ]
     },
     {
       "light": "beacon",
       "id": "bek-b",
       "pos": [
-        68,
-        18
+        136,
+        8
+      ]
+    },
+    {
+      "light": "beacon",
+      "id": "bek-c",
+      "pos": [
+        136,
+        88
       ]
     },
     {
       "light": "chem",
       "id": "chem-0",
       "pos": [
-        8,
-        34.2
+        10,
+        36
       ],
-      "yaw": 0
+      "yaw": 0,
+      "color": "#6dff7a"
     },
     {
       "light": "chem",
       "id": "chem-1",
       "pos": [
-        9.4,
-        34.2
+        11.5,
+        36
       ],
-      "yaw": 0.4
+      "yaw": 0.35,
+      "color": "#6dff7a"
     },
     {
       "light": "chem",
       "id": "chem-2",
       "pos": [
-        10.8,
-        34.2
+        13,
+        36
       ],
-      "yaw": 0.8
+      "yaw": 0.7,
+      "color": "#6dff7a"
     },
     {
       "light": "chem",
       "id": "chem-3",
       "pos": [
-        12.2,
-        34.2
+        14.5,
+        36
       ],
-      "yaw": 1.2000000000000002
+      "yaw": 1.0499999999999998,
+      "color": "#6dff7a"
     },
     {
       "light": "chem",
       "id": "chem-4",
       "pos": [
-        13.6,
-        34.2
+        16,
+        36
       ],
-      "yaw": 1.6
+      "yaw": 1.4,
+      "color": "#ffee55"
     },
     {
       "light": "chem",
       "id": "chem-5",
       "pos": [
-        15,
-        34.2
+        17.5,
+        36
       ],
-      "yaw": 2
+      "yaw": 1.75,
+      "color": "#ffee55"
     },
     {
       "light": "chem",
       "id": "chem-6",
       "pos": [
-        16.4,
-        34.2
+        19,
+        36
       ],
-      "yaw": 2.4000000000000004
+      "yaw": 2.0999999999999996,
+      "color": "#2a8cff"
     },
     {
       "light": "chem",
       "id": "chem-7",
       "pos": [
-        17.799999999999997,
-        34.2
+        20.5,
+        36
       ],
-      "yaw": 2.8000000000000003
+      "yaw": 2.4499999999999997,
+      "color": "#ff2a4a"
+    },
+    {
+      "light": "chem",
+      "id": "chem-8",
+      "pos": [
+        22,
+        36
+      ],
+      "yaw": 2.8,
+      "color": "#b44cff"
+    },
+    {
+      "light": "chem",
+      "id": "chem-9",
+      "pos": [
+        23.5,
+        36
+      ],
+      "yaw": 3.15,
+      "color": "#ff5ac8"
+    },
+    {
+      "light": "chem",
+      "id": "chem-10",
+      "pos": [
+        25,
+        36
+      ],
+      "yaw": 3.5,
+      "color": "#7ef6ff"
+    },
+    {
+      "light": "chem",
+      "id": "chem-11",
+      "pos": [
+        26.5,
+        36
+      ],
+      "yaw": 3.8499999999999996,
+      "color": "#ff9a3c"
+    },
+    {
+      "light": "ruby",
+      "id": "ruby-10-0",
+      "pos": [
+        86,
+        10
+      ]
+    },
+    {
+      "light": "azure",
+      "id": "azure-10-1",
+      "pos": [
+        93,
+        10
+      ]
+    },
+    {
+      "light": "violet",
+      "id": "violet-10-2",
+      "pos": [
+        100,
+        10
+      ]
+    },
+    {
+      "light": "ice",
+      "id": "ice-10-0",
+      "pos": [
+        114,
+        10
+      ]
+    },
+    {
+      "light": "rose",
+      "id": "rose-10-1",
+      "pos": [
+        122,
+        10
+      ]
+    },
+    {
+      "light": "ice",
+      "id": "ice-10-2",
+      "pos": [
+        130,
+        10
+      ]
+    },
+    {
+      "light": "ruby",
+      "id": "ruby-16-0",
+      "pos": [
+        86,
+        16
+      ]
+    },
+    {
+      "light": "azure",
+      "id": "azure-16-1",
+      "pos": [
+        93,
+        16
+      ]
+    },
+    {
+      "light": "violet",
+      "id": "violet-16-2",
+      "pos": [
+        100,
+        16
+      ]
+    },
+    {
+      "light": "ice",
+      "id": "ice-16-0",
+      "pos": [
+        114,
+        16
+      ]
+    },
+    {
+      "light": "rose",
+      "id": "rose-16-1",
+      "pos": [
+        122,
+        16
+      ]
+    },
+    {
+      "light": "ice",
+      "id": "ice-16-2",
+      "pos": [
+        130,
+        16
+      ]
+    },
+    {
+      "light": "ruby",
+      "id": "ruby-22-0",
+      "pos": [
+        86,
+        22
+      ]
+    },
+    {
+      "light": "azure",
+      "id": "azure-22-1",
+      "pos": [
+        93,
+        22
+      ]
+    },
+    {
+      "light": "violet",
+      "id": "violet-22-2",
+      "pos": [
+        100,
+        22
+      ]
+    },
+    {
+      "light": "ice",
+      "id": "ice-22-0",
+      "pos": [
+        114,
+        22
+      ]
+    },
+    {
+      "light": "rose",
+      "id": "rose-22-1",
+      "pos": [
+        122,
+        22
+      ]
+    },
+    {
+      "light": "ice",
+      "id": "ice-22-2",
+      "pos": [
+        130,
+        22
+      ]
+    },
+    {
+      "light": "ruby",
+      "id": "ruby-28-0",
+      "pos": [
+        86,
+        28
+      ]
+    },
+    {
+      "light": "azure",
+      "id": "azure-28-1",
+      "pos": [
+        93,
+        28
+      ]
+    },
+    {
+      "light": "violet",
+      "id": "violet-28-2",
+      "pos": [
+        100,
+        28
+      ]
+    },
+    {
+      "light": "ice",
+      "id": "ice-28-0",
+      "pos": [
+        114,
+        28
+      ]
+    },
+    {
+      "light": "rose",
+      "id": "rose-28-1",
+      "pos": [
+        122,
+        28
+      ]
+    },
+    {
+      "light": "ice",
+      "id": "ice-28-2",
+      "pos": [
+        130,
+        28
+      ]
+    },
+    {
+      "light": "ruby",
+      "id": "ruby-mix",
+      "pos": [
+        108,
+        34
+      ],
+      "color": "#ff6a2a"
+    },
+    {
+      "light": "azure",
+      "id": "azure-mix",
+      "pos": [
+        116,
+        34
+      ],
+      "color": "#3cffc2"
+    },
+    {
+      "light": "violet",
+      "id": "violet-mix",
+      "pos": [
+        124,
+        34
+      ],
+      "color": "#6a4cff"
+    },
+    {
+      "light": "rake",
+      "id": "rake-0",
+      "pos": [
+        16,
+        84
+      ],
+      "yaw": -1.4207963267948966
+    },
+    {
+      "light": "rake",
+      "id": "rake-1",
+      "pos": [
+        28,
+        84
+      ],
+      "yaw": -1.9207963267948966
+    },
+    {
+      "light": "rake",
+      "id": "rake-2",
+      "pos": [
+        40,
+        84
+      ],
+      "yaw": -1.0207963267948965
+    },
+    {
+      "light": "rake",
+      "id": "rake-3",
+      "pos": [
+        20,
+        72
+      ],
+      "dir": [
+        0.78,
+        0.12,
+        -0.61
+      ],
+      "color": "#ffd080"
+    },
+    {
+      "light": "rake",
+      "id": "rake-4",
+      "pos": [
+        32,
+        72
+      ],
+      "dir": [
+        0.5,
+        0.55,
+        -0.67
+      ],
+      "color": "#ff7a3c"
+    },
+    {
+      "light": "rake",
+      "id": "rake-5",
+      "pos": [
+        44,
+        72
+      ],
+      "dir": [
+        -0.7,
+        0.2,
+        -0.68
+      ],
+      "color": "#ffe6a0"
+    },
+    {
+      "light": "rake",
+      "id": "rake-6",
+      "pos": [
+        18,
+        60
+      ],
+      "dir": [
+        0.15,
+        0.75,
+        -0.64
+      ],
+      "color": "#f4f1e6"
+    },
+    {
+      "light": "rake",
+      "id": "rake-7",
+      "pos": [
+        36,
+        60
+      ],
+      "dir": [
+        -0.35,
+        0.7,
+        -0.62
+      ],
+      "color": "#c8e4ff"
+    },
+    {
+      "light": "flood",
+      "id": "tilt-0",
+      "pos": [
+        52,
+        84
+      ],
+      "dir": [
+        0.62,
+        -0.2,
+        -0.76
+      ],
+      "color": "#ff4a6a",
+      "angle": 34
+    },
+    {
+      "light": "flood",
+      "id": "tilt-1",
+      "pos": [
+        60,
+        84
+      ],
+      "dir": [
+        0.2,
+        -0.7,
+        -0.68
+      ],
+      "color": "#4ad0ff",
+      "angle": 28
+    },
+    {
+      "light": "flood",
+      "id": "tilt-2",
+      "pos": [
+        68,
+        84
+      ],
+      "dir": [
+        -0.55,
+        -0.35,
+        -0.76
+      ],
+      "color": "#c24aff",
+      "angle": 36
+    },
+    {
+      "light": "flood",
+      "id": "tilt-3",
+      "pos": [
+        52,
+        72
+      ],
+      "dir": [
+        0.75,
+        0.05,
+        -0.66
+      ],
+      "color": "#7eff8a",
+      "angle": 24
+    },
+    {
+      "light": "flood",
+      "id": "tilt-4",
+      "pos": [
+        64,
+        72
+      ],
+      "dir": [
+        0.4,
+        0.6,
+        -0.69
+      ],
+      "color": "#ffee66",
+      "angle": 40
+    },
+    {
+      "light": "rake",
+      "id": "rake-high-0",
+      "pos": [
+        12,
+        90
+      ],
+      "dir": [
+        0.15,
+        -0.72,
+        -0.62
+      ],
+      "color": "#fff1c2"
+    },
+    {
+      "light": "rake",
+      "id": "rake-high-1",
+      "pos": [
+        24,
+        90
+      ],
+      "dir": [
+        0.27,
+        -0.72,
+        -0.62
+      ],
+      "color": "#ff8a4a"
+    },
+    {
+      "light": "rake",
+      "id": "rake-high-2",
+      "pos": [
+        36,
+        90
+      ],
+      "dir": [
+        0.39,
+        -0.72,
+        -0.62
+      ],
+      "color": "#7ef6ff"
+    },
+    {
+      "light": "rake",
+      "id": "rake-high-3",
+      "pos": [
+        48,
+        90
+      ],
+      "dir": [
+        0.51,
+        -0.72,
+        -0.62
+      ],
+      "color": "#ff5ac8"
+    },
+    {
+      "light": "rake",
+      "id": "rake-high-4",
+      "pos": [
+        56,
+        90
+      ],
+      "dir": [
+        0.63,
+        -0.72,
+        -0.62
+      ],
+      "color": "#b44cff"
+    },
+    {
+      "light": "search",
+      "id": "search-n-0",
+      "pos": [
+        80,
+        90
+      ],
+      "yaw": -2.0207963267948967
+    },
+    {
+      "light": "search",
+      "id": "search-n-1",
+      "pos": [
+        90,
+        90
+      ],
+      "yaw": -1.8407963267948966
+    },
+    {
+      "light": "search",
+      "id": "search-n-2",
+      "pos": [
+        100,
+        90
+      ],
+      "yaw": -1.6607963267948966
+    },
+    {
+      "light": "search",
+      "id": "search-n-3",
+      "pos": [
+        110,
+        90
+      ],
+      "yaw": -1.4807963267948965
+    },
+    {
+      "light": "search",
+      "id": "search-n-4",
+      "pos": [
+        120,
+        90
+      ],
+      "yaw": -1.3007963267948965
+    },
+    {
+      "light": "search",
+      "id": "search-n-5",
+      "pos": [
+        130,
+        90
+      ],
+      "yaw": -1.1207963267948966
     },
     {
       "light": "work",
       "id": "work-office",
       "pos": [
-        54.2,
-        38.2
+        122,
+        50
       ],
-      "yaw": 0.46
+      "yaw": 0.4
+    },
+    {
+      "light": "work",
+      "id": "work-color",
+      "pos": [
+        100,
+        40
+      ],
+      "yaw": -0.8,
+      "color": "#7aa8ff"
+    },
+    {
+      "light": "headlamp",
+      "id": "hl-crate",
+      "pos": [
+        78,
+        44
+      ],
+      "yaw": 1.1
+    },
+    {
+      "light": "flood",
+      "id": "flood-plaza",
+      "pos": [
+        108,
+        44
+      ],
+      "color": "#e8d0ff"
     }
   ],
   "places": [
@@ -366,11 +1339,11 @@
       "prop": "slab",
       "id": "fence-s",
       "pos": [
-        36,
+        72,
         2
       ],
       "size": [
-        68,
+        140,
         0.14
       ],
       "z1": 1.9,
@@ -382,11 +1355,11 @@
       "prop": "slab",
       "id": "fence-n",
       "pos": [
-        36,
-        46
+        72,
+        94
       ],
       "size": [
-        68,
+        140,
         0.14
       ],
       "z1": 1.9,
@@ -399,11 +1372,11 @@
       "id": "fence-w",
       "pos": [
         2,
-        24
+        48
       ],
       "size": [
         0.14,
-        44
+        92
       ],
       "z1": 1.9,
       "color": "#5c666c",
@@ -414,12 +1387,12 @@
       "prop": "slab",
       "id": "fence-e",
       "pos": [
-        70,
-        24
+        142,
+        48
       ],
       "size": [
         0.14,
-        44
+        92
       ],
       "z1": 1.9,
       "color": "#5c666c",
@@ -428,29 +1401,13 @@
     },
     {
       "prop": "slab",
-      "id": "search-wall",
-      "pos": [
-        36,
-        40
-      ],
-      "size": [
-        28,
-        0.22
-      ],
-      "z1": 3.4,
-      "color": "#6a6558",
-      "mat": "concrete",
-      "tex": "siding"
-    },
-    {
-      "prop": "slab",
       "id": "hangar-back",
       "pos": [
-        56,
-        12
+        28,
+        10
       ],
       "size": [
-        18,
+        22,
         0.22
       ],
       "z1": 4.6,
@@ -462,12 +1419,12 @@
       "prop": "slab",
       "id": "hangar-w",
       "pos": [
-        47.2,
+        17.2,
         16
       ],
       "size": [
         0.22,
-        8
+        12
       ],
       "z1": 4.6,
       "color": "#4a5048",
@@ -478,12 +1435,12 @@
       "prop": "slab",
       "id": "hangar-e",
       "pos": [
-        64.8,
+        38.8,
         16
       ],
       "size": [
         0.22,
-        8
+        12
       ],
       "z1": 4.6,
       "color": "#4a5048",
@@ -494,11 +1451,11 @@
       "prop": "slab",
       "id": "hangar-beam",
       "pos": [
-        56,
+        28,
         16
       ],
       "size": [
-        17.6,
+        21.4,
         0.2
       ],
       "z0": 4.55,
@@ -508,10 +1465,58 @@
     },
     {
       "prop": "slab",
+      "id": "search-wall",
+      "pos": [
+        54,
+        40
+      ],
+      "size": [
+        36,
+        0.22
+      ],
+      "z1": 3.4,
+      "color": "#6a6558",
+      "mat": "concrete",
+      "tex": "siding"
+    },
+    {
+      "prop": "slab",
+      "id": "rake-wall",
+      "pos": [
+        28,
+        78
+      ],
+      "size": [
+        40,
+        0.22
+      ],
+      "z1": 2.4,
+      "color": "#6a6558",
+      "mat": "concrete",
+      "tex": "siding"
+    },
+    {
+      "prop": "slab",
+      "id": "color-wall",
+      "pos": [
+        108,
+        18
+      ],
+      "size": [
+        0.22,
+        22
+      ],
+      "z1": 2.8,
+      "color": "#5a4a58",
+      "mat": "concrete",
+      "tex": "siding"
+    },
+    {
+      "prop": "slab",
       "id": "alley-a",
       "pos": [
-        22,
-        18
+        48,
+        16
       ],
       "size": [
         0.2,
@@ -526,8 +1531,8 @@
       "prop": "slab",
       "id": "alley-b",
       "pos": [
-        28,
-        22
+        54,
+        20
       ],
       "size": [
         8,
@@ -542,8 +1547,8 @@
       "prop": "humvee",
       "id": "hv-1",
       "pos": [
-        11.6,
-        22.6
+        14,
+        24
       ],
       "yaw": 0
     },
@@ -551,42 +1556,59 @@
       "prop": "humvee",
       "id": "hv-2",
       "pos": [
-        29.8,
+        62,
         12
       ],
-      "yaw": 1.2
+      "yaw": 1.15
+    },
+    {
+      "prop": "humvee",
+      "id": "hv-3",
+      "pos": [
+        92,
+        66
+      ],
+      "yaw": 3.141592653589793
     },
     {
       "prop": "jersey",
       "id": "jersey-lamp",
       "pos": [
-        42,
+        70,
         14
       ],
-      "yaw": 0.2
+      "yaw": 0.15
     },
     {
       "prop": "tower",
       "id": "tower-nw",
       "pos": [
-        5,
-        43
+        7,
+        89
       ]
     },
     {
       "prop": "tower",
       "id": "tower-se",
       "pos": [
-        67,
-        5
+        137,
+        7
+      ]
+    },
+    {
+      "prop": "tower",
+      "id": "tower-ne",
+      "pos": [
+        137,
+        89
       ]
     },
     {
       "prop": "sandbag",
       "id": "bags-chem",
       "pos": [
-        12.5,
-        34.8
+        16,
+        36.7
       ],
       "yaw": 0
     },
@@ -594,8 +1616,8 @@
       "prop": "sandbag",
       "id": "bags-chem-2",
       "pos": [
-        16.8,
-        34.8
+        22,
+        36.7
       ],
       "yaw": 0
     },
@@ -603,10 +1625,19 @@
       "prop": "office",
       "id": "office-1",
       "pos": [
-        58,
-        40
+        126,
+        54
       ],
       "yaw": 3.141592653589793
+    },
+    {
+      "prop": "office",
+      "id": "office-2",
+      "pos": [
+        88,
+        86
+      ],
+      "yaw": 0
     },
     {
       "prop": "tent",
@@ -617,10 +1648,18 @@
       ]
     },
     {
+      "prop": "tent",
+      "id": "tent-2",
+      "pos": [
+        80,
+        50
+      ]
+    },
+    {
       "prop": "conex",
       "id": "cx-1",
       "pos": [
-        24,
+        50,
         10
       ],
       "yaw": 1.5708
@@ -629,16 +1668,25 @@
       "prop": "conex",
       "id": "cx-2",
       "pos": [
-        24,
+        50,
         14
       ],
       "yaw": 1.5708
     },
     {
+      "prop": "conex",
+      "id": "cx-3",
+      "pos": [
+        100,
+        80
+      ],
+      "yaw": 0.4
+    },
+    {
       "prop": "crate",
       "id": "cr-1",
       "pos": [
-        34,
+        56,
         14
       ],
       "yaw": 0.4
@@ -647,18 +1695,44 @@
       "prop": "crate",
       "id": "cr-2",
       "pos": [
-        36,
+        58,
         15.2
       ],
       "yaw": -0.2
     },
     {
+      "prop": "crate",
+      "id": "cr-3",
+      "pos": [
+        78,
+        43.2
+      ],
+      "yaw": 0.2
+    },
+    {
       "prop": "booth",
       "id": "booth-1",
       "pos": [
-        42,
-        24
+        74,
+        26
       ]
+    },
+    {
+      "prop": "booth",
+      "id": "booth-2",
+      "pos": [
+        108,
+        68
+      ]
+    },
+    {
+      "prop": "jersey",
+      "id": "jersey-n",
+      "pos": [
+        96,
+        62
+      ],
+      "yaw": 0
     }
   ]
 }

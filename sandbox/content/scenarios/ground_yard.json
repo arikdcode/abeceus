@@ -1,0 +1,12 @@
+{
+  "id": "ground_yard",
+  "name": "Ground yard",
+  "map": "ground_yard",
+  "seed": 4,
+  "skip_contact": true,
+  "look": true,
+  "sun": true,
+  "sun_az": 210,
+  "sun_el": 48,
+  "units": []
+}

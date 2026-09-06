@@ -142,7 +142,7 @@ export function orbitCam(cam, dYaw, dPitch) {
 }
 
 export function zoomCam(cam, factor) {
-  cam.dist = Math.min(120, Math.max(3.2, cam.dist * factor));
+  cam.dist = Math.min(280, Math.max(3.2, cam.dist * factor));
 }
 
 export { camBasis as basis };

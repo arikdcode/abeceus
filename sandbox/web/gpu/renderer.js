@@ -12,6 +12,7 @@
  */
 import { camBasis, fovOf } from "./camera.js";
 import { FOG, SUN, SUN_SHADOW_SIZE } from "./theme.js";
+import { groundAtlas, loadGroundAtlas } from "./grounds.js";
 import { FS_BLIT, FS_DEPTH, FS_GBUF, FS_GHOST, FS_OVERLAY, FS_RESTIR, FS_SKY, FS_TEXT, VS_DEPTH, VS_LIT, VS_OVERLAY, VS_SKY, VS_TEXT } from "./shaders.js";
 import { LIT_STRIDE, MeshWriter, OVERLAY_STRIDE, TEXT_STRIDE } from "./mesh.js";
 import { rasterFontAtlas } from "./font.js";
@@ -325,6 +326,8 @@ function surfaceOf(canvas) {
     lgridTex: gl.createTexture(),
     lindexTex: gl.createTexture(),
     exactLoc: gl.getUniformLocation(restir, "u_exact"),
+    atlasTex: gl.createTexture(),
+    atlasReady: false,
     prevCam: null,
     sceneKey: "",
     sceneGrid: null,
@@ -344,14 +347,15 @@ function lookDepth(cam, eye) {
   return Math.max(4, Math.hypot(look.x - eye.x, look.y - eye.y, (look.z || 0) - eye.z));
 }
 
-function writeFrame(gl, ubo, cam, w, h, sunOn, prev, restir) {
+function writeFrame(gl, ubo, cam, w, h, sunOn, prev, restir, frameSun) {
   const { eye, f, r, u } = camBasis(cam);
   const p = prev || { r, u, f, eye };
   frameData.set([r.x, r.y, r.z, 0], 0);
   frameData.set([u.x, u.y, u.z, 0], 4);
   frameData.set([f.x, f.y, f.z, 0], 8);
   frameData.set([eye.x, eye.y, eye.z, 0], 12);
-  frameData.set([SUN.x, SUN.y, SUN.z, sunOn ? 1 : 0], 16);
+  const sun = frameSun || SUN;
+  frameData.set([sun.x, sun.y, sun.z, sunOn ? 1 : 0], 16);
   frameData.set([FOG.r, FOG.g, FOG.b, lookDepth(cam, eye)], 20);
   frameData.set([w, h, fovOf(cam), 0.04], 24);
   frameData.set([p.r.x, p.r.y, p.r.z, 0], 28);
@@ -374,6 +378,28 @@ function writeFrame(gl, ubo, cam, w, h, sunOn, prev, restir) {
   gl.bufferSubData(gl.UNIFORM_BUFFER, 0, frameData);
   gl.bindBufferBase(gl.UNIFORM_BUFFER, 0, ubo);
   return { r, u, f, eye };
+}
+
+function writeAtlas(gl, s, prog) {
+  const info = groundAtlas();
+  gl.useProgram(prog);
+  gl.activeTexture(gl.TEXTURE13);
+  gl.bindTexture(gl.TEXTURE_2D, s.atlasTex);
+  if (info?.image && !s.atlasReady) {
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 0);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, info.image);
+    gl.generateMipmap(gl.TEXTURE_2D);
+    s.atlasReady = true;
+  }
+  gl.uniform1i(gl.getUniformLocation(prog, "u_atlas"), 13);
+  const loc = gl.getUniformLocation(prog, "u_atlas_info");
+  if (!loc) return;
+  if (info && s.atlasReady) gl.uniform4f(loc, info.cols, info.rows, info.repeat ?? 0.45, 1);
+  else gl.uniform4f(loc, 1, 1, 0.45, 0);
 }
 
 function writeShadow(gl, ubo, sunCam) {
@@ -456,6 +482,22 @@ export async function initRenderer() {
       return false;
     }
     fontCanvas = rasterFontAtlas();
+    try {
+      await loadGroundAtlas(
+        async (path) => {
+          const res = await fetch(`/content/${path}`);
+          if (!res.ok) throw new Error(`${path}: ${res.status}`);
+          return res.text();
+        },
+        async (path) => {
+          const res = await fetch(`/content/${path}`);
+          if (!res.ok) throw new Error(`${path}: ${res.status}`);
+          return res.blob();
+        },
+      );
+    } catch (err) {
+      console.warn("sandbox: ground atlas skipped", err);
+    }
     ready = true;
     console.info("sandbox: WebGL2 ReSTIR lighting");
     return true;
@@ -523,15 +565,17 @@ export function drawFrame(canvas, frame) {
     cols: grid.cols,
     rows: grid.rows,
   };
-  const camNow = writeFrame(gl, s.ubo, frame.cam, w, h, sunOn, s.prevCam, restir);
+  const camNow = writeFrame(gl, s.ubo, frame.cam, w, h, sunOn, s.prevCam, restir, frame.sunDir);
 
   overlayMesh.reset();
   textMesh.reset();
   const meshKey = [
     (frame.solids || []).length,
     frame.map?.ground || "",
+    frame.map?.surfaces?.length || 0,
     frame.solids?.[0]?.corners?.[0]?.x ?? 0,
     frame.solids?.[frame.solids.length - 1]?.z1 ?? 0,
+    groundAtlas() ? "atlas" : "flat",
   ].join(":");
   if (s.meshKey !== meshKey) {
     litMesh.reset();
@@ -565,6 +609,7 @@ export function drawFrame(canvas, frame) {
   gl.clearDepth(1);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   if (litN) {
+    writeAtlas(gl, s, s.gbuf);
     gl.bindBuffer(gl.ARRAY_BUFFER, s.litVbo.buf);
     bindLit(gl, s.gbuf, LIT_STRIDE);
     gl.drawArrays(gl.TRIANGLES, 0, litVerts);

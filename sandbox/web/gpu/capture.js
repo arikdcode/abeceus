@@ -1,6 +1,7 @@
 import { Engine, loadCatalog, worldFromCatalog, unitHitboxes, coverBox } from "../engine/engine.js";
 import { frameOverview3, makeCam3 } from "./camera.js";
 import { drawFrame, initRenderer, resizeCanvas } from "./renderer.js";
+import { sunDir } from "./theme.js";
 
 export const PRESETS = {
   overview: { scenario: "outpost", hideRoofs: true, cam: null },
@@ -64,17 +65,33 @@ export const PRESETS = {
   "light-search": {
     scenario: "light_yard",
     hideRoofs: true,
-    cam: { target: { x: 32, y: 32, z: 0.3 }, yaw: -Math.PI / 2, pitch: 0.34, dist: 15 },
+    cam: { target: { x: 54, y: 32, z: 0.3 }, yaw: -Math.PI / 2, pitch: 0.34, dist: 16 },
   },
   "light-hangar": {
     scenario: "light_yard",
     hideRoofs: true,
-    cam: { target: { x: 56, y: 16.6, z: 0.7 }, yaw: Math.PI / 2, pitch: 0.3, dist: 13 },
+    cam: { target: { x: 28, y: 16.6, z: 0.7 }, yaw: Math.PI / 2, pitch: 0.3, dist: 13 },
   },
   "light-street": {
     scenario: "light_yard",
     hideRoofs: true,
-    cam: { target: { x: 18, y: 23.2, z: 0.4 }, yaw: 2.7, pitch: 0.4, dist: 10 },
+    cam: { target: { x: 18, y: 25.2, z: 0.4 }, yaw: 2.7, pitch: 0.4, dist: 10 },
+  },
+  "light-color": {
+    scenario: "light_yard",
+    hideRoofs: true,
+    cam: { target: { x: 108, y: 18, z: 0.4 }, yaw: 2.6, pitch: 0.38, dist: 16 },
+  },
+  "light-rake": {
+    scenario: "light_yard",
+    hideRoofs: true,
+    cam: { target: { x: 32, y: 74, z: 0.3 }, yaw: 0.2, pitch: 0.36, dist: 16 },
+  },
+  "ground-yard": { scenario: "ground_yard", hideRoofs: true, cam: null },
+  "ground-close": {
+    scenario: "ground_yard",
+    hideRoofs: true,
+    cam: { target: { x: 7.5, y: 36.9, z: 0 }, yaw: -Math.PI / 2, pitch: 0.52, dist: 11 },
   },
 };
 
@@ -147,9 +164,25 @@ export function buildFrame(eng, opts = {}) {
       bodies.push({ ...b, color: partHex(b.name, vu.team), mat: null });
     }
   }
+  const labels = [];
+  for (const s of map.surfaces || []) {
+    if (!s.label || !s.min || !s.max) continue;
+    const x0 = Array.isArray(s.min) ? s.min[0] : s.min.x;
+    const y0 = Array.isArray(s.min) ? s.min[1] : s.min.y;
+    const x1 = Array.isArray(s.max) ? s.max[0] : s.max.x;
+    const y1 = Array.isArray(s.max) ? s.max[1] : s.max.y;
+    labels.push({
+      pos: { x: (x0 + x1) * 0.5, y: (y0 + y1) * 0.5, z: 0.22 },
+      text: s.label,
+      color: "#f4ecd4",
+      scale: 1.4,
+    });
+  }
+  const w = eng.world;
   return {
     cam: opts.cam,
-    sun: opts.sun !== false,
+    sun: opts.sun ?? w.sun !== false,
+    sunDir: sunDir(w.sun_az ?? 210, w.sun_el ?? 48),
     lights: map.lights || [],
     map,
     solids: [...visible, ...bodies],
@@ -161,7 +194,7 @@ export function buildFrame(eng, opts = {}) {
       rings: [],
       lines: [],
       rects: [],
-      labels: [],
+      labels,
       edges: [],
     },
   };
@@ -181,10 +214,11 @@ export async function renderShot(canvas, opts = {}) {
   const w = opts.width || canvas.width || 1280;
   const h = opts.height || canvas.height || 720;
   resizeCanvas(canvas, w, h);
-  const frame = buildFrame(eng, { cam, hideRoofs, grid: !!opts.grid, sun: opts.sun !== false });
+  const sun = opts.sun ?? eng.world.sun !== false;
+  const frame = buildFrame(eng, { cam, hideRoofs, grid: !!opts.grid, sun });
   const warm = opts.warm || 4;
   for (let i = 0; i < warm; i++) {
     if (!drawFrame(canvas, frame)) throw new Error("drawFrame failed");
   }
-  return { name: opts.name || opts.preset || "shot", cam, scenario, hideRoofs, sun: opts.sun !== false };
+  return { name: opts.name || opts.preset || "shot", cam, scenario, hideRoofs, sun };
 }

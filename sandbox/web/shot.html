@@ -36,7 +36,7 @@
         name,
         scenario: q.get("scenario") || undefined,
         hideRoofs: q.get("roofs") !== "show",
-        sun: q.get("sun") === "1",
+        sun: q.has("sun") ? q.get("sun") === "1" : undefined,
         cam: camFromQuery(),
         width: +(q.get("w") || 1280),
         height: +(q.get("h") || 720),

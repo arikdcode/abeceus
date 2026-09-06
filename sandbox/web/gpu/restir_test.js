@@ -91,7 +91,7 @@ if (rangeLights.length < 60) fail(`night range should be crowded, lights=${range
 const yardEng = new Engine();
 if (!yardEng.loadWorld(worldFromCatalog(catalog, "light_yard"))) fail("light_yard load");
 const yardView = yardEng.view({ fog: false });
-if ((yardView.map.lights || []).length < 20) fail(`light yard view should keep catalog lights, got ${yardView.map.lights?.length}`);
+if ((yardView.map.lights || []).length < 80) fail(`light yard view should keep catalog lights, got ${yardView.map.lights?.length}`);
 const packedYard = packLights(yardView.map.lights);
 const searchIdx = yardView.map.lights.findIndex((L) => L.light === "search");
 if (searchIdx < 0) fail("light yard should keep a searchlight");

@@ -1,5 +1,6 @@
 import { GROUND, MAX_SCENE_LIGHTS, WARM_LIGHT, hexRgb, matOf, texId } from "./theme.js";
 import { pushBox, pushQuad } from "./mesh.js";
+import { groundTexId } from "./grounds.js";
 
 function hash2(ix, iy) {
   let n = (ix * 374761393 + iy * 668265263) | 0;
@@ -42,47 +43,79 @@ function bounds(p) {
   return { x: p.x, y: p.y };
 }
 
-function surfaceAt(map, x, y) {
-  let hit = null;
-  for (const s of map.surfaces || []) {
-    if (!s.min || !s.max) continue;
-    const a = bounds(s.min);
-    const b = bounds(s.max);
-    if (x >= a.x && x < b.x && y >= a.y && y < b.y) hit = s;
-  }
-  return hit;
-}
-
 function matForGround(kind) {
-  if (kind === "grass") return matOf("foliage");
-  if (kind === "concrete") return matOf("concrete");
-  if (kind === "road") return matOf("rubber");
-  if (kind === "gravel") return matOf("stone");
+  if (kind === "grass" || kind === "grass_dry" || kind === "moss" || kind === "leaf") return matOf("foliage");
+  if (kind === "concrete" || kind === "concrete_worn" || kind === "brick" || kind === "cobble") return matOf("concrete");
+  if (kind === "road" || kind === "asphalt" || kind === "tarmac") return matOf("rubber");
+  if (kind === "gravel" || kind === "pebbles" || kind === "rock") return matOf("stone");
+  if (kind === "wood" || kind === "wood_worn") return matOf("wood");
+  if (kind === "snow") return matOf("default");
+  if (kind === "metal" || kind === "rust" || kind === "tread" || kind === "hex" || kind === "polymer" || kind === "carbon" || kind === "grate" || kind === "hazard") {
+    return matOf("metal");
+  }
   if (kind === "tracks") return matOf("dirt");
   return matOf("dirt");
+}
+
+function snapXY(v) {
+  return Math.round(v * 256) / 256;
+}
+
+function rectOf(min, max) {
+  return { x0: snapXY(min.x), y0: snapXY(min.y), x1: snapXY(max.x), y1: snapXY(max.y) };
+}
+
+function cutRect(r, c) {
+  const x0 = Math.max(r.x0, c.x0);
+  const y0 = Math.max(r.y0, c.y0);
+  const x1 = Math.min(r.x1, c.x1);
+  const y1 = Math.min(r.y1, c.y1);
+  if (x0 >= x1 || y0 >= y1) return [r];
+  const out = [];
+  if (r.y0 < y0) out.push({ x0: r.x0, y0: r.y0, x1: r.x1, y1: y0 });
+  if (y1 < r.y1) out.push({ x0: r.x0, y0: y1, x1: r.x1, y1: r.y1 });
+  if (r.x0 < x0) out.push({ x0: r.x0, y0: y0, x1: x0, y1: y1 });
+  if (x1 < r.x1) out.push({ x0: x1, y0: y0, x1: r.x1, y1: y1 });
+  return out;
+}
+
+function cutAll(rects, cut) {
+  const out = [];
+  for (const r of rects) out.push(...cutRect(r, cut));
+  return out;
+}
+
+function pushGroundQuad(out, r, kind, surface, fallback, z = 0) {
+  if (r.x1 <= r.x0 || r.y1 <= r.y0) return;
+  const hex = surface?.color || GROUND[kind] || GROUND[fallback];
+  const mat = matForGround(kind);
+  const tex = groundTexId(kind, surface?.tile);
+  const rgb = tex ? [1, 1, 1] : tintGround(kind, hex, 0, 0);
+  pushQuad(out, [
+    { x: r.x0, y: r.y0, z }, { x: r.x1, y: r.y0, z },
+    { x: r.x1, y: r.y1, z }, { x: r.x0, y: r.y1, z },
+  ], rgb, 1, mat, tex);
 }
 
 export function pushGround(out, map) {
   if (!map?.min || !map?.max) return;
   const min = bounds(map.min);
   const max = bounds(map.max);
-  const step = 2;
   const kind0 = map.ground || "dirt";
-  const dirt = matOf("dirt");
-  for (let x = min.x; x < max.x - 1e-9; x += step) {
-    const xe = Math.min(x + step, max.x);
-    const ix = Math.round(x / step);
-    for (let y = min.y; y < max.y - 1e-9; y += step) {
-      const ye = Math.min(y + step, max.y);
-      const iy = Math.round(y / step);
-      const s = surfaceAt(map, (x + xe) * 0.5, (y + ye) * 0.5);
-      const kind = s?.kind || kind0;
-      const hex = s?.color || GROUND[kind] || GROUND[kind0];
-      const mat = s ? matForGround(kind) : dirt;
-      pushQuad(out, [
-        { x, y, z: 0 }, { x: xe, y, z: 0 }, { x: xe, y: ye, z: 0 }, { x, y: ye, z: 0 },
-      ], tintGround(kind, hex, ix, iy), 1, mat);
-    }
+  const patches = [];
+  let leftover = [rectOf(min, max)];
+  for (const s of map.surfaces || []) {
+    if (!s.min || !s.max) continue;
+    const cut = rectOf(bounds(s.min), bounds(s.max));
+    if (cut.x1 <= cut.x0 || cut.y1 <= cut.y0) continue;
+    leftover = cutAll(leftover, cut);
+    for (const patch of patches) patch.rects = cutAll(patch.rects, cut);
+    patches.push({ kind: s.kind || kind0, surface: s, rects: [cut] });
+  }
+  pushGroundQuad(out, rectOf(min, max), kind0, null, kind0, -0.06);
+  for (const r of leftover) pushGroundQuad(out, r, kind0, null, kind0);
+  for (const patch of patches) {
+    for (const r of patch.rects) pushGroundQuad(out, r, patch.kind, patch.surface, kind0);
   }
   pushRoadDashes(out, map);
 }

@@ -1,0 +1,13 @@
+{
+  "id": "violet",
+  "name": "Violet",
+  "kind": "omni",
+  "color": "#b44cff",
+  "intensity": 1.5,
+  "range": 11,
+  "z": 3.0,
+  "parts": [
+    { "id": "pole", "role": "pole", "min": [-0.09, -0.09], "max": [0.09, 0.09], "z0": 0, "z1": 2.9, "color": "#383044", "mat": "metal", "cover": false },
+    { "id": "head", "min": [-0.24, -0.24], "max": [0.24, 0.24], "z0": 2.78, "z1": 3.22, "color": "#b44cff", "mat": "emit", "cover": false }
+  ]
+}

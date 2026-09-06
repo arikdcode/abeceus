@@ -123,6 +123,10 @@ export function assembleWorld(catalog, scenario) {
     if (!map) throw new Error(`unknown map: ${src.map}`);
   }
   applyMap(w, map, catalog);
+  w.look = !!(src.look || src.skip_contact);
+  if (src.sun != null) w.sun = !!src.sun;
+  if (src.sun_az != null) w.sun_az = src.sun_az;
+  if (src.sun_el != null) w.sun_el = src.sun_el;
   w.rules = mergeRules(DEFAULT_RULES, catalog.rules);
   if (src.turn_seconds != null) w.rules.turn_seconds = src.turn_seconds;
   if (src.surprise0 != null) w.map.surprise0 = src.surprise0;

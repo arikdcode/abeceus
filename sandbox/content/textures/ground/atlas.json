@@ -1,0 +1,201 @@
+{
+  "tile": 512,
+  "cols": 8,
+  "rows": 4,
+  "repeat": 0.45,
+  "base": 16,
+  "tiles": [
+    {
+      "id": "dirt",
+      "name": "Packed dirt",
+      "kind": "natural",
+      "index": 0
+    },
+    {
+      "id": "dirt_dry",
+      "name": "Dry dirt",
+      "kind": "natural",
+      "index": 1
+    },
+    {
+      "id": "dirt_red",
+      "name": "Red earth",
+      "kind": "natural",
+      "index": 2
+    },
+    {
+      "id": "mud",
+      "name": "Wet mud",
+      "kind": "natural",
+      "index": 3
+    },
+    {
+      "id": "clay",
+      "name": "Clay",
+      "kind": "natural",
+      "index": 4
+    },
+    {
+      "id": "cracked",
+      "name": "Cracked earth",
+      "kind": "natural",
+      "index": 5
+    },
+    {
+      "id": "sand",
+      "name": "Sand",
+      "kind": "natural",
+      "index": 6
+    },
+    {
+      "id": "ash",
+      "name": "Ash",
+      "kind": "natural",
+      "index": 7
+    },
+    {
+      "id": "grass",
+      "name": "Grass",
+      "kind": "natural",
+      "index": 8
+    },
+    {
+      "id": "grass_dry",
+      "name": "Dry grass",
+      "kind": "natural",
+      "index": 9
+    },
+    {
+      "id": "moss",
+      "name": "Moss",
+      "kind": "natural",
+      "index": 10
+    },
+    {
+      "id": "leaf",
+      "name": "Leaf litter",
+      "kind": "natural",
+      "index": 11
+    },
+    {
+      "id": "gravel",
+      "name": "Gravel",
+      "kind": "natural",
+      "index": 12
+    },
+    {
+      "id": "pebbles",
+      "name": "Pebbles",
+      "kind": "natural",
+      "index": 13
+    },
+    {
+      "id": "rock",
+      "name": "Bedrock",
+      "kind": "natural",
+      "index": 14
+    },
+    {
+      "id": "snow",
+      "name": "Packed snow",
+      "kind": "natural",
+      "index": 15
+    },
+    {
+      "id": "concrete",
+      "name": "Concrete",
+      "kind": "built",
+      "index": 16
+    },
+    {
+      "id": "concrete_worn",
+      "name": "Worn concrete",
+      "kind": "built",
+      "index": 17
+    },
+    {
+      "id": "asphalt",
+      "name": "Asphalt",
+      "kind": "built",
+      "index": 18
+    },
+    {
+      "id": "tarmac",
+      "name": "Tarmac",
+      "kind": "built",
+      "index": 19
+    },
+    {
+      "id": "brick",
+      "name": "Brick pavers",
+      "kind": "built",
+      "index": 20
+    },
+    {
+      "id": "cobble",
+      "name": "Cobblestone",
+      "kind": "built",
+      "index": 21
+    },
+    {
+      "id": "wood",
+      "name": "Wood deck",
+      "kind": "built",
+      "index": 22
+    },
+    {
+      "id": "wood_worn",
+      "name": "Worn wood",
+      "kind": "built",
+      "index": 23
+    },
+    {
+      "id": "metal",
+      "name": "Deck plate",
+      "kind": "sci-fi",
+      "index": 24
+    },
+    {
+      "id": "rust",
+      "name": "Rusted plate",
+      "kind": "sci-fi",
+      "index": 25
+    },
+    {
+      "id": "tread",
+      "name": "Tread plate",
+      "kind": "sci-fi",
+      "index": 26
+    },
+    {
+      "id": "hex",
+      "name": "Hex tile",
+      "kind": "sci-fi",
+      "index": 27
+    },
+    {
+      "id": "polymer",
+      "name": "Polymer floor",
+      "kind": "sci-fi",
+      "index": 28
+    },
+    {
+      "id": "carbon",
+      "name": "Carbon weave",
+      "kind": "sci-fi",
+      "index": 29
+    },
+    {
+      "id": "grate",
+      "name": "Metal grate",
+      "kind": "sci-fi",
+      "index": 30
+    },
+    {
+      "id": "hazard",
+      "name": "Hazard deck",
+      "kind": "sci-fi",
+      "index": 31
+    }
+  ]
+}

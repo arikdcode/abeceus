@@ -1,0 +1,13 @@
+{
+  "id": "azure",
+  "name": "Azure",
+  "kind": "omni",
+  "color": "#2a8cff",
+  "intensity": 1.6,
+  "range": 12,
+  "z": 3.1,
+  "parts": [
+    { "id": "pole", "role": "pole", "min": [-0.09, -0.09], "max": [0.09, 0.09], "z0": 0, "z1": 3.0, "color": "#2e3844", "mat": "metal", "cover": false },
+    { "id": "head", "min": [-0.24, -0.24], "max": [0.24, 0.24], "z0": 2.88, "z1": 3.32, "color": "#2a8cff", "mat": "emit", "cover": false }
+  ]
+}
