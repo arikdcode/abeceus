@@ -1,3 +1,5 @@
+import { surfTexId } from "./surfs.js";
+
 export function sunDir(azDeg = 210, elDeg = 48) {
   const az = (azDeg * Math.PI) / 180;
   const el = (elDeg * Math.PI) / 180;
@@ -96,6 +98,10 @@ export function matOf(name) {
 
 export function texId(name) {
   return TEX[name] || TEX.none;
+}
+
+export function partTexId(part) {
+  return surfTexId(part?.surf || part?.tex) || texId(part?.tex);
 }
 
 export function hexRgb(hex) {

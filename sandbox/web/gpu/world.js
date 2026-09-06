@@ -1,4 +1,4 @@
-import { GROUND, MAX_SCENE_LIGHTS, WARM_LIGHT, hexRgb, matOf, texId } from "./theme.js";
+import { GROUND, MAX_SCENE_LIGHTS, WARM_LIGHT, hexRgb, matOf, partTexId } from "./theme.js";
 import { pushBox, pushQuad } from "./mesh.js";
 import { groundTexId } from "./grounds.js";
 
@@ -210,7 +210,7 @@ export function pushSolids(opaque, ghost, solids) {
       hexRgb(part.color),
       part.ghost ? 0.5 : 1,
       matOf(part.mat),
-      texId(part.tex),
+      partTexId(part),
       part.emit || (part.mat === "emit" ? 1 : 0),
     );
   }

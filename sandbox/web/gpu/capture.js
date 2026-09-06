@@ -93,6 +93,12 @@ export const PRESETS = {
     hideRoofs: true,
     cam: { target: { x: 7.5, y: 36.9, z: 0 }, yaw: -Math.PI / 2, pitch: 0.52, dist: 11 },
   },
+  "materials-yard": { scenario: "materials_yard", hideRoofs: true, cam: null },
+  "materials-close": {
+    scenario: "materials_yard",
+    hideRoofs: true,
+    cam: { target: { x: 9, y: 87.45, z: 1.1 }, yaw: -Math.PI / 2, pitch: 0.18, dist: 6.8, overview: false },
+  },
 };
 
 function isRoof(c) {
@@ -149,6 +155,7 @@ export function buildFrame(eng, opts = {}) {
       roof: isRoof(c),
       mat: c.mat || null,
       tex: c.tex || null,
+      surf: c.surf || null,
       emit: c.emit || 0,
     };
     casters.push(part);
@@ -165,6 +172,19 @@ export function buildFrame(eng, opts = {}) {
     }
   }
   const labels = [];
+  for (const c of [...(map.cover || []), ...(map.decor || [])]) {
+    if (!c.label) continue;
+    const x0 = Array.isArray(c.min) ? c.min[0] : c.min.x;
+    const y0 = Array.isArray(c.min) ? c.min[1] : c.min.y;
+    const x1 = Array.isArray(c.max) ? c.max[0] : c.max.x;
+    const y1 = Array.isArray(c.max) ? c.max[1] : c.max.y;
+    labels.push({
+      pos: { x: (x0 + x1) * 0.5, y: (y0 + y1) * 0.5, z: (c.z1 ?? c.height ?? 2) + 0.18 },
+      text: c.label,
+      color: "#f4ecd4",
+      scale: 1.35,
+    });
+  }
   for (const s of map.surfaces || []) {
     if (!s.label || !s.min || !s.max) continue;
     const x0 = Array.isArray(s.min) ? s.min[0] : s.min.x;

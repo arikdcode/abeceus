@@ -580,6 +580,7 @@ function collectWorldParts() {
       roof: isRoof(c),
       mat: c.mat || null,
       tex: c.tex || null,
+      surf: c.surf || null,
       emit: c.emit || 0,
     };
     casters.push(part);
@@ -735,6 +736,19 @@ function collectFrame() {
       text: s.label,
       color: "#f4ecd4",
       scale: 1.4,
+    });
+  }
+  for (const c of [...(map.cover || []), ...(map.decor || [])]) {
+    if (!c.label) continue;
+    const x0 = Array.isArray(c.min) ? c.min[0] : c.min.x;
+    const y0 = Array.isArray(c.min) ? c.min[1] : c.min.y;
+    const x1 = Array.isArray(c.max) ? c.max[0] : c.max.x;
+    const y1 = Array.isArray(c.max) ? c.max[1] : c.max.y;
+    marks.labels.push({
+      pos: { x: (x0 + x1) * 0.5, y: (y0 + y1) * 0.5, z: (c.z1 ?? c.height ?? 2) + 0.18 },
+      text: c.label,
+      color: "#f4ecd4",
+      scale: 1.35,
     });
   }
   return {

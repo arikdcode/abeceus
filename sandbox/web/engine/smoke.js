@@ -115,6 +115,16 @@ function toPlay(eng) {
   if (!groundEng.loadWorld(ground)) fail("ground yard load");
   if (groundEng.view({ fog: false }).units.length) fail("ground yard view should stay empty");
 
+  const mats = worldFromCatalog(catalog, "materials_yard");
+  if (mats.units.length) fail("materials yard should have no characters");
+  if (!mats.look) fail("materials yard should be a look-at map");
+  if (mats.sun !== true) fail("materials yard should default the sun on");
+  const matPanels = (mats.map.cover || []).filter((c) => (c.id || "").startsWith("panel-"));
+  if (matPanels.length < 48) fail(`materials yard should show a wide surf catalog, got ${matPanels.length}`);
+  if (!matPanels.every((c) => c.label && c.surf)) fail("materials panels should be labeled surfs");
+  const matsEng = new Engine();
+  if (!matsEng.loadWorld(mats)) fail("materials yard load");
+
   const yard = worldFromCatalog(catalog, "posted_courtyard");
   const around = pathFind(yard.map, { x: 6.4, y: 4.6 }, { x: 10.6, y: 4.6 });
   if (!around.ok || around.points.length < 3) fail("path should bend around the west crate instead of stopping at it");

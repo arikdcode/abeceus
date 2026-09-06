@@ -1,0 +1,457 @@
+{
+  "tile": 512,
+  "cols": 8,
+  "rows": 8,
+  "repeat": 0.72,
+  "base": 80,
+  "tiles": [
+    {
+      "id": "steel",
+      "name": "Bare steel",
+      "kind": "metal",
+      "mat": "metal",
+      "index": 0
+    },
+    {
+      "id": "steel_worn",
+      "name": "Worn steel",
+      "kind": "metal",
+      "mat": "metal",
+      "index": 1
+    },
+    {
+      "id": "steel_od",
+      "name": "Olive drab steel",
+      "kind": "metal",
+      "mat": "paint",
+      "index": 2
+    },
+    {
+      "id": "steel_tan",
+      "name": "Tan steel",
+      "kind": "metal",
+      "mat": "paint",
+      "index": 3
+    },
+    {
+      "id": "steel_grey",
+      "name": "Grey steel",
+      "kind": "metal",
+      "mat": "paint",
+      "index": 4
+    },
+    {
+      "id": "galvanized",
+      "name": "Galvanized",
+      "kind": "metal",
+      "mat": "metal",
+      "index": 5
+    },
+    {
+      "id": "aluminum",
+      "name": "Aluminum",
+      "kind": "metal",
+      "mat": "metal",
+      "index": 6
+    },
+    {
+      "id": "gunmetal",
+      "name": "Gunmetal",
+      "kind": "metal",
+      "mat": "metal",
+      "index": 7
+    },
+    {
+      "id": "rust_heavy",
+      "name": "Heavy rust",
+      "kind": "metal",
+      "mat": "metal",
+      "index": 8
+    },
+    {
+      "id": "rust_streak",
+      "name": "Rust streaks",
+      "kind": "metal",
+      "mat": "metal",
+      "index": 9
+    },
+    {
+      "id": "brass",
+      "name": "Brass",
+      "kind": "metal",
+      "mat": "metal",
+      "index": 10
+    },
+    {
+      "id": "copper",
+      "name": "Copper",
+      "kind": "metal",
+      "mat": "metal",
+      "index": 11
+    },
+    {
+      "id": "chrome",
+      "name": "Chrome",
+      "kind": "metal",
+      "mat": "metal",
+      "index": 12
+    },
+    {
+      "id": "anodized",
+      "name": "Anodized blue",
+      "kind": "metal",
+      "mat": "metal",
+      "index": 13
+    },
+    {
+      "id": "corrugated",
+      "name": "Corrugated",
+      "kind": "metal",
+      "mat": "metal",
+      "index": 14
+    },
+    {
+      "id": "riveted",
+      "name": "Riveted plate",
+      "kind": "metal",
+      "mat": "metal",
+      "index": 15
+    },
+    {
+      "id": "paint_peel",
+      "name": "Peeling paint",
+      "kind": "paint",
+      "mat": "paint",
+      "index": 16
+    },
+    {
+      "id": "enamel_white",
+      "name": "White enamel",
+      "kind": "paint",
+      "mat": "paint",
+      "index": 17
+    },
+    {
+      "id": "enamel_black",
+      "name": "Black enamel",
+      "kind": "paint",
+      "mat": "paint",
+      "index": 18
+    },
+    {
+      "id": "hazard_yel",
+      "name": "Hazard yellow",
+      "kind": "paint",
+      "mat": "paint",
+      "index": 19
+    },
+    {
+      "id": "hazard_red",
+      "name": "Hazard red",
+      "kind": "paint",
+      "mat": "paint",
+      "index": 20
+    },
+    {
+      "id": "primer",
+      "name": "Red primer",
+      "kind": "paint",
+      "mat": "paint",
+      "index": 21
+    },
+    {
+      "id": "camo_paint",
+      "name": "Camo paint",
+      "kind": "paint",
+      "mat": "paint",
+      "index": 22
+    },
+    {
+      "id": "rubber_coat",
+      "name": "Rubber coat",
+      "kind": "paint",
+      "mat": "rubber",
+      "index": 23
+    },
+    {
+      "id": "brick_wall",
+      "name": "Brick wall",
+      "kind": "masonry",
+      "mat": "concrete",
+      "index": 24
+    },
+    {
+      "id": "brick_white",
+      "name": "White brick",
+      "kind": "masonry",
+      "mat": "concrete",
+      "index": 25
+    },
+    {
+      "id": "cinder",
+      "name": "Cinder block",
+      "kind": "masonry",
+      "mat": "concrete",
+      "index": 26
+    },
+    {
+      "id": "stucco",
+      "name": "Stucco",
+      "kind": "masonry",
+      "mat": "concrete",
+      "index": 27
+    },
+    {
+      "id": "plaster",
+      "name": "Plaster",
+      "kind": "masonry",
+      "mat": "concrete",
+      "index": 28
+    },
+    {
+      "id": "concrete_panel",
+      "name": "Concrete panel",
+      "kind": "masonry",
+      "mat": "concrete",
+      "index": 29
+    },
+    {
+      "id": "concrete_board",
+      "name": "Form board",
+      "kind": "masonry",
+      "mat": "concrete",
+      "index": 30
+    },
+    {
+      "id": "tile_white",
+      "name": "White tile",
+      "kind": "masonry",
+      "mat": "concrete",
+      "index": 31
+    },
+    {
+      "id": "tile_dirty",
+      "name": "Dirty tile",
+      "kind": "masonry",
+      "mat": "concrete",
+      "index": 32
+    },
+    {
+      "id": "stone_block",
+      "name": "Stone block",
+      "kind": "masonry",
+      "mat": "stone",
+      "index": 33
+    },
+    {
+      "id": "adobe",
+      "name": "Adobe",
+      "kind": "masonry",
+      "mat": "dirt",
+      "index": 34
+    },
+    {
+      "id": "terrazzo",
+      "name": "Terrazzo",
+      "kind": "masonry",
+      "mat": "concrete",
+      "index": 35
+    },
+    {
+      "id": "pine",
+      "name": "Pine plank",
+      "kind": "wood",
+      "mat": "wood",
+      "index": 36
+    },
+    {
+      "id": "plywood",
+      "name": "Plywood",
+      "kind": "wood",
+      "mat": "wood",
+      "index": 37
+    },
+    {
+      "id": "osb",
+      "name": "OSB",
+      "kind": "wood",
+      "mat": "wood",
+      "index": 38
+    },
+    {
+      "id": "crate_wood",
+      "name": "Crate wood",
+      "kind": "wood",
+      "mat": "wood",
+      "index": 39
+    },
+    {
+      "id": "pallet",
+      "name": "Pallet wood",
+      "kind": "wood",
+      "mat": "wood",
+      "index": 40
+    },
+    {
+      "id": "teak",
+      "name": "Teak",
+      "kind": "wood",
+      "mat": "wood",
+      "index": 41
+    },
+    {
+      "id": "charred",
+      "name": "Charred wood",
+      "kind": "wood",
+      "mat": "wood",
+      "index": 42
+    },
+    {
+      "id": "laminate",
+      "name": "Laminate",
+      "kind": "wood",
+      "mat": "paint",
+      "index": 43
+    },
+    {
+      "id": "canvas",
+      "name": "Canvas",
+      "kind": "fabric",
+      "mat": "canvas",
+      "index": 44
+    },
+    {
+      "id": "tarp_green",
+      "name": "Green tarp",
+      "kind": "fabric",
+      "mat": "canvas",
+      "index": 45
+    },
+    {
+      "id": "tarp_tan",
+      "name": "Tan tarp",
+      "kind": "fabric",
+      "mat": "canvas",
+      "index": 46
+    },
+    {
+      "id": "camo_cloth",
+      "name": "Camo cloth",
+      "kind": "fabric",
+      "mat": "canvas",
+      "index": 47
+    },
+    {
+      "id": "net",
+      "name": "Netting",
+      "kind": "fabric",
+      "mat": "canvas",
+      "index": 48
+    },
+    {
+      "id": "sandbag",
+      "name": "Sandbag cloth",
+      "kind": "fabric",
+      "mat": "canvas",
+      "index": 49
+    },
+    {
+      "id": "leather",
+      "name": "Leather",
+      "kind": "fabric",
+      "mat": "rubber",
+      "index": 50
+    },
+    {
+      "id": "felt",
+      "name": "Felt",
+      "kind": "fabric",
+      "mat": "canvas",
+      "index": 51
+    },
+    {
+      "id": "hull_white",
+      "name": "White hull",
+      "kind": "sci-fi",
+      "mat": "paint",
+      "index": 52
+    },
+    {
+      "id": "hull_dark",
+      "name": "Dark hull",
+      "kind": "sci-fi",
+      "mat": "metal",
+      "index": 53
+    },
+    {
+      "id": "polymer_panel",
+      "name": "Polymer panel",
+      "kind": "sci-fi",
+      "mat": "paint",
+      "index": 54
+    },
+    {
+      "id": "carbon_panel",
+      "name": "Carbon panel",
+      "kind": "sci-fi",
+      "mat": "metal",
+      "index": 55
+    },
+    {
+      "id": "hex_panel",
+      "name": "Hex panel",
+      "kind": "sci-fi",
+      "mat": "metal",
+      "index": 56
+    },
+    {
+      "id": "insulation",
+      "name": "Foam insulation",
+      "kind": "sci-fi",
+      "mat": "default",
+      "index": 57
+    },
+    {
+      "id": "ceramic_heat",
+      "name": "Heat shield",
+      "kind": "sci-fi",
+      "mat": "stone",
+      "index": 58
+    },
+    {
+      "id": "server",
+      "name": "Server face",
+      "kind": "sci-fi",
+      "mat": "metal",
+      "index": 59
+    },
+    {
+      "id": "plastic",
+      "name": "Hard plastic",
+      "kind": "sci-fi",
+      "mat": "paint",
+      "index": 60
+    },
+    {
+      "id": "pvc",
+      "name": "PVC",
+      "kind": "sci-fi",
+      "mat": "paint",
+      "index": 61
+    },
+    {
+      "id": "grate_wall",
+      "name": "Wall grate",
+      "kind": "sci-fi",
+      "mat": "metal",
+      "index": 62
+    },
+    {
+      "id": "stripe_panel",
+      "name": "Stripe panel",
+      "kind": "sci-fi",
+      "mat": "paint",
+      "index": 63
+    }
+  ]
+}

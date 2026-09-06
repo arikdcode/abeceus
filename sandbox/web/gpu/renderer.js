@@ -13,6 +13,7 @@
 import { camBasis, fovOf } from "./camera.js";
 import { FOG, SUN, SUN_SHADOW_SIZE } from "./theme.js";
 import { groundAtlas, loadGroundAtlas } from "./grounds.js";
+import { loadSurfAtlas, surfAtlas } from "./surfs.js";
 import { FS_BLIT, FS_DEPTH, FS_GBUF, FS_GHOST, FS_OVERLAY, FS_RESTIR, FS_SKY, FS_TEXT, VS_DEPTH, VS_LIT, VS_OVERLAY, VS_SKY, VS_TEXT } from "./shaders.js";
 import { LIT_STRIDE, MeshWriter, OVERLAY_STRIDE, TEXT_STRIDE } from "./mesh.js";
 import { rasterFontAtlas } from "./font.js";
@@ -328,6 +329,8 @@ function surfaceOf(canvas) {
     exactLoc: gl.getUniformLocation(restir, "u_exact"),
     atlasTex: gl.createTexture(),
     atlasReady: false,
+    surfTex: gl.createTexture(),
+    surfReady: false,
     prevCam: null,
     sceneKey: "",
     sceneGrid: null,
@@ -380,26 +383,39 @@ function writeFrame(gl, ubo, cam, w, h, sunOn, prev, restir, frameSun) {
   return { r, u, f, eye };
 }
 
+function uploadSheet(gl, tex, image, readyKey, s) {
+  if (!image || s[readyKey]) return;
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 0);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+  gl.generateMipmap(gl.TEXTURE_2D);
+  s[readyKey] = true;
+}
+
+function writeSheet(gl, prog, name, infoName, unit, tex, info, ready) {
+  gl.uniform1i(gl.getUniformLocation(prog, name), unit);
+  const loc = gl.getUniformLocation(prog, infoName);
+  if (!loc) return;
+  if (info && ready) gl.uniform4f(loc, info.cols, info.rows, info.repeat ?? 0.45, 1);
+  else gl.uniform4f(loc, 1, 1, 0.45, 0);
+}
+
 function writeAtlas(gl, s, prog) {
-  const info = groundAtlas();
+  const ground = groundAtlas();
+  const surf = surfAtlas();
   gl.useProgram(prog);
   gl.activeTexture(gl.TEXTURE13);
+  uploadSheet(gl, s.atlasTex, ground?.image, "atlasReady", s);
   gl.bindTexture(gl.TEXTURE_2D, s.atlasTex);
-  if (info?.image && !s.atlasReady) {
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 0);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, info.image);
-    gl.generateMipmap(gl.TEXTURE_2D);
-    s.atlasReady = true;
-  }
-  gl.uniform1i(gl.getUniformLocation(prog, "u_atlas"), 13);
-  const loc = gl.getUniformLocation(prog, "u_atlas_info");
-  if (!loc) return;
-  if (info && s.atlasReady) gl.uniform4f(loc, info.cols, info.rows, info.repeat ?? 0.45, 1);
-  else gl.uniform4f(loc, 1, 1, 0.45, 0);
+  writeSheet(gl, prog, "u_atlas", "u_atlas_info", 13, s.atlasTex, ground, s.atlasReady);
+  gl.activeTexture(gl.TEXTURE14);
+  uploadSheet(gl, s.surfTex, surf?.image, "surfReady", s);
+  gl.bindTexture(gl.TEXTURE_2D, s.surfTex);
+  writeSheet(gl, prog, "u_surf", "u_surf_info", 14, s.surfTex, surf, s.surfReady);
 }
 
 function writeShadow(gl, ubo, sunCam) {
@@ -482,21 +498,21 @@ export async function initRenderer() {
       return false;
     }
     fontCanvas = rasterFontAtlas();
-    try {
-      await loadGroundAtlas(
-        async (path) => {
-          const res = await fetch(`/content/${path}`);
-          if (!res.ok) throw new Error(`${path}: ${res.status}`);
-          return res.text();
-        },
-        async (path) => {
-          const res = await fetch(`/content/${path}`);
-          if (!res.ok) throw new Error(`${path}: ${res.status}`);
-          return res.blob();
-        },
-      );
-    } catch (err) {
+    const fetchText = async (path) => {
+      const res = await fetch(`/content/${path}`);
+      if (!res.ok) throw new Error(`${path}: ${res.status}`);
+      return res.text();
+    };
+    const fetchBlob = async (path) => {
+      const res = await fetch(`/content/${path}`);
+      if (!res.ok) throw new Error(`${path}: ${res.status}`);
+      return res.blob();
+    };
+    try { await loadGroundAtlas(fetchText, fetchBlob); } catch (err) {
       console.warn("sandbox: ground atlas skipped", err);
+    }
+    try { await loadSurfAtlas(fetchText, fetchBlob); } catch (err) {
+      console.warn("sandbox: surf atlas skipped", err);
     }
     ready = true;
     console.info("sandbox: WebGL2 ReSTIR lighting");
@@ -576,6 +592,7 @@ export function drawFrame(canvas, frame) {
     frame.solids?.[0]?.corners?.[0]?.x ?? 0,
     frame.solids?.[frame.solids.length - 1]?.z1 ?? 0,
     groundAtlas() ? "atlas" : "flat",
+    surfAtlas() ? "surf" : "nosurf",
   ].join(":");
   if (s.meshKey !== meshKey) {
     litMesh.reset();

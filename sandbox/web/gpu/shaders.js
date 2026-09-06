@@ -1,13 +1,16 @@
 const ATLAS_SAMPLE = /* glsl */ `
-vec3 sample_atlas(vec3 base, vec3 p, vec3 n, int tile) {
-  float cols = max(u_atlas_info.x, 1.0);
-  float rows = max(u_atlas_info.y, 1.0);
-  float rep = max(u_atlas_info.z, 0.2);
+vec3 sample_sheet(sampler2D sheet, vec4 info, vec3 base, vec3 p, vec3 n, int tile) {
+  float cols = max(info.x, 1.0);
+  float rows = max(info.y, 1.0);
+  float rep = max(info.z, 0.2);
   vec2 raw = face_uv(p, n) * rep;
   vec2 local = fract(raw);
   local = mix(vec2(0.003), vec2(0.997), local);
   vec2 uv = vec2((mod(float(tile), cols) + local.x) / cols, (floor(float(tile) / cols) + local.y) / rows);
-  return base * textureGrad(u_atlas, uv, dFdx(raw) / vec2(cols, rows), dFdy(raw) / vec2(cols, rows)).rgb;
+  return base * textureGrad(sheet, uv, dFdx(raw) / vec2(cols, rows), dFdy(raw) / vec2(cols, rows)).rgb;
+}
+vec3 sample_atlas(vec3 base, vec3 p, vec3 n, int tile) {
+  return sample_sheet(u_atlas, u_atlas_info, base, p, n, tile);
 }
 `;
 
@@ -111,6 +114,8 @@ uniform highp sampler2DArrayShadow u_lamp_shadow;
 uniform highp sampler2DArrayShadow u_spot_shadow;
 uniform sampler2D u_atlas;
 uniform vec4 u_atlas_info;
+uniform sampler2D u_surf;
+uniform vec4 u_surf_info;
 in vec3 v_world;
 in vec3 v_normal;
 in vec4 v_color;
@@ -131,6 +136,7 @@ vec2 face_uv(vec3 p, vec3 n) {
 ${ATLAS_SAMPLE}
 vec3 apply_tex(vec3 base, vec3 p, vec3 n, float tex) {
   int id = int(tex + 0.5);
+  if (id >= 80 && u_surf_info.w > 0.5) return sample_sheet(u_surf, u_surf_info, base, p, n, id - 80);
   if (id >= 16 && u_atlas_info.w > 0.5) return sample_atlas(base, p, n, id - 16);
   if (id == 0) return base;
   vec2 uv = face_uv(p, n);
@@ -336,6 +342,8 @@ in vec4 v_shade;
 in vec4 v_extra;
 uniform sampler2D u_atlas;
 uniform vec4 u_atlas_info;
+uniform sampler2D u_surf;
+uniform vec4 u_surf_info;
 layout(location = 0) out vec4 out_albedo;
 layout(location = 1) out vec4 out_normal;
 layout(location = 2) out vec4 out_world;
@@ -352,6 +360,7 @@ vec2 face_uv(vec3 p, vec3 n) {
 ${ATLAS_SAMPLE}
 vec3 apply_tex(vec3 base, vec3 p, vec3 n, float tex) {
   int id = int(tex + 0.5);
+  if (id >= 80 && u_surf_info.w > 0.5) return sample_sheet(u_surf, u_surf_info, base, p, n, id - 80);
   if (id >= 16 && u_atlas_info.w > 0.5) return sample_atlas(base, p, n, id - 16);
   if (id == 0) return base;
   vec2 uv = face_uv(p, n);

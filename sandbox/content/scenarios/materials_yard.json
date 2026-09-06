@@ -1,0 +1,12 @@
+{
+  "id": "materials_yard",
+  "name": "Materials yard",
+  "map": "materials_yard",
+  "seed": 5,
+  "skip_contact": true,
+  "look": true,
+  "sun": true,
+  "sun_az": 210,
+  "sun_el": 48,
+  "units": []
+}

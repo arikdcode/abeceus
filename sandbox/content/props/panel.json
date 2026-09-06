@@ -1,0 +1,22 @@
+{
+  "id": "panel",
+  "parts": [
+    {
+      "min": [
+        -1.25,
+        -0.09
+      ],
+      "max": [
+        1.25,
+        0.09
+      ],
+      "z0": 0,
+      "z1": 2.25,
+      "color": "#f3f1ec",
+      "mat": "default",
+      "cover": true,
+      "protection": 14,
+      "durability": 8
+    }
+  ]
+}

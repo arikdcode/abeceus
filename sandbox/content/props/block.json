@@ -1,0 +1,22 @@
+{
+  "id": "block",
+  "parts": [
+    {
+      "min": [
+        -0.5,
+        -0.5
+      ],
+      "max": [
+        0.5,
+        0.5
+      ],
+      "z0": 0,
+      "z1": 1.05,
+      "color": "#f3f1ec",
+      "mat": "default",
+      "cover": true,
+      "protection": 12,
+      "durability": 6
+    }
+  ]
+}
