@@ -2,7 +2,7 @@
   "rules": "rules",
   "weapons": ["rifle"],
   "characters": ["alpha-1", "alpha-2", "alpha-3", "alpha-4", "bravo-1", "bravo-2", "bravo-3", "bravo-4", "bravo-5"],
-  "props": ["slab", "crate", "jersey", "sandbag", "lamp", "tree", "rock", "booth", "office", "mess", "tent", "tower", "humvee", "conex", "fence_post", "panel", "block"],
+  "props": ["slab", "crate", "jersey", "sandbag", "lamp", "tree", "boulder", "booth", "office", "mess", "tent", "tower", "humvee", "conex", "fence_post", "panel", "block"],
   "lights": ["street", "sodium", "mercury", "flood", "search", "work", "headlamp", "beacon", "chem", "hangar", "ruby", "azure", "violet", "ice", "rose", "rake"],
   "maps": ["outpost", "checkpoint", "courtyard", "night_range", "light_yard", "ground_yard", "materials_yard"],
   "scenarios": [

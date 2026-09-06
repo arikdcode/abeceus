@@ -29,14 +29,15 @@ def wait_server():
 
 def shoot(name, query=""):
     dest = os.path.join(SHOTS, name + ".png")
+    os.makedirs(os.path.dirname(dest), exist_ok=True)
     if os.path.isfile(dest):
         os.remove(dest)
     url = f"{BASE}/web/photo.html?{query}t={int(time.time() * 1000)}"
-    tmp = f"/tmp/chrome-photo-{name}"
+    tmp = f"/tmp/chrome-photo-{name.replace('/', '-')}"
     cmd = [
         CHROME, "--headless=new", "--no-first-run", "--disable-extensions",
         f"--user-data-dir={tmp}",
-        "--virtual-time-budget=45000",
+        "--virtual-time-budget=60000",
         url,
     ]
     subprocess.run(cmd, check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -49,10 +50,10 @@ def shoot(name, query=""):
 
 
 if __name__ == "__main__":
-    os.makedirs(SHOTS, exist_ok=True)
+    os.makedirs(os.path.join(SHOTS, "objects"), exist_ok=True)
     wait_server()
     prop = sys.argv[1] if len(sys.argv) > 1 else ""
     if prop:
-        shoot(f"object-{prop}", f"prop={prop}&")
+        shoot(f"objects/{prop}", f"prop={prop}&sheet=1&")
     else:
         shoot("object-mosaic")

@@ -1,7 +1,7 @@
 {
   "tile": 512,
   "cols": 8,
-  "rows": 8,
+  "rows": 9,
   "repeat": 0.72,
   "base": 80,
   "tiles": [
@@ -244,214 +244,221 @@
       "index": 33
     },
     {
+      "id": "boulder",
+      "name": "Boulder granite",
+      "kind": "masonry",
+      "mat": "stone",
+      "index": 34
+    },
+    {
       "id": "adobe",
       "name": "Adobe",
       "kind": "masonry",
       "mat": "dirt",
-      "index": 34
+      "index": 35
     },
     {
       "id": "terrazzo",
       "name": "Terrazzo",
       "kind": "masonry",
       "mat": "concrete",
-      "index": 35
+      "index": 36
     },
     {
       "id": "pine",
       "name": "Pine plank",
       "kind": "wood",
       "mat": "wood",
-      "index": 36
+      "index": 37
     },
     {
       "id": "plywood",
       "name": "Plywood",
       "kind": "wood",
       "mat": "wood",
-      "index": 37
+      "index": 38
     },
     {
       "id": "osb",
       "name": "OSB",
       "kind": "wood",
       "mat": "wood",
-      "index": 38
+      "index": 39
     },
     {
       "id": "crate_wood",
       "name": "Crate wood",
       "kind": "wood",
       "mat": "wood",
-      "index": 39
+      "index": 40
     },
     {
       "id": "pallet",
       "name": "Pallet wood",
       "kind": "wood",
       "mat": "wood",
-      "index": 40
+      "index": 41
     },
     {
       "id": "teak",
       "name": "Teak",
       "kind": "wood",
       "mat": "wood",
-      "index": 41
+      "index": 42
     },
     {
       "id": "charred",
       "name": "Charred wood",
       "kind": "wood",
       "mat": "wood",
-      "index": 42
+      "index": 43
     },
     {
       "id": "laminate",
       "name": "Laminate",
       "kind": "wood",
       "mat": "paint",
-      "index": 43
+      "index": 44
     },
     {
       "id": "canvas",
       "name": "Canvas",
       "kind": "fabric",
       "mat": "canvas",
-      "index": 44
+      "index": 45
     },
     {
       "id": "tarp_green",
       "name": "Green tarp",
       "kind": "fabric",
       "mat": "canvas",
-      "index": 45
+      "index": 46
     },
     {
       "id": "tarp_tan",
       "name": "Tan tarp",
       "kind": "fabric",
       "mat": "canvas",
-      "index": 46
+      "index": 47
     },
     {
       "id": "camo_cloth",
       "name": "Camo cloth",
       "kind": "fabric",
       "mat": "canvas",
-      "index": 47
+      "index": 48
     },
     {
       "id": "net",
       "name": "Netting",
       "kind": "fabric",
       "mat": "canvas",
-      "index": 48
+      "index": 49
     },
     {
       "id": "sandbag",
       "name": "Sandbag cloth",
       "kind": "fabric",
       "mat": "canvas",
-      "index": 49
+      "index": 50
     },
     {
       "id": "leather",
       "name": "Leather",
       "kind": "fabric",
       "mat": "rubber",
-      "index": 50
+      "index": 51
     },
     {
       "id": "felt",
       "name": "Felt",
       "kind": "fabric",
       "mat": "canvas",
-      "index": 51
+      "index": 52
     },
     {
       "id": "hull_white",
       "name": "White hull",
       "kind": "sci-fi",
       "mat": "paint",
-      "index": 52
+      "index": 53
     },
     {
       "id": "hull_dark",
       "name": "Dark hull",
       "kind": "sci-fi",
       "mat": "metal",
-      "index": 53
+      "index": 54
     },
     {
       "id": "polymer_panel",
       "name": "Polymer panel",
       "kind": "sci-fi",
       "mat": "paint",
-      "index": 54
+      "index": 55
     },
     {
       "id": "carbon_panel",
       "name": "Carbon panel",
       "kind": "sci-fi",
       "mat": "metal",
-      "index": 55
+      "index": 56
     },
     {
       "id": "hex_panel",
       "name": "Hex panel",
       "kind": "sci-fi",
       "mat": "metal",
-      "index": 56
+      "index": 57
     },
     {
       "id": "insulation",
       "name": "Foam insulation",
       "kind": "sci-fi",
       "mat": "default",
-      "index": 57
+      "index": 58
     },
     {
       "id": "ceramic_heat",
       "name": "Heat shield",
       "kind": "sci-fi",
       "mat": "stone",
-      "index": 58
+      "index": 59
     },
     {
       "id": "server",
       "name": "Server face",
       "kind": "sci-fi",
       "mat": "metal",
-      "index": 59
+      "index": 60
     },
     {
       "id": "plastic",
       "name": "Hard plastic",
       "kind": "sci-fi",
       "mat": "paint",
-      "index": 60
+      "index": 61
     },
     {
       "id": "pvc",
       "name": "PVC",
       "kind": "sci-fi",
       "mat": "paint",
-      "index": 61
+      "index": 62
     },
     {
       "id": "grate_wall",
       "name": "Wall grate",
       "kind": "sci-fi",
       "mat": "metal",
-      "index": 62
+      "index": 63
     },
     {
       "id": "stripe_panel",
       "name": "Stripe panel",
       "kind": "sci-fi",
       "mat": "paint",
-      "index": 63
+      "index": 64
     }
   ]
 }

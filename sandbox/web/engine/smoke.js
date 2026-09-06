@@ -135,6 +135,7 @@ function toPlay(eng) {
   const matPanels = (mats.map.cover || []).filter((c) => (c.id || "").startsWith("panel-"));
   if (matPanels.length < 48) fail(`materials yard should show a wide surf catalog, got ${matPanels.length}`);
   if (!matPanels.every((c) => c.label && c.surf)) fail("materials panels should be labeled surfs");
+  if (!matPanels.some((c) => c.surf === "boulder")) fail("materials yard should include the boulder surf");
   const matsEng = new Engine();
   if (!matsEng.loadWorld(mats)) fail("materials yard load");
 

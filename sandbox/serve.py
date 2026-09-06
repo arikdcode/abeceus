@@ -81,7 +81,11 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             return
         if path == "/debug/shot":
-            name = re.sub(r"[^a-zA-Z0-9._-]+", "_", str(payload.get("name") or "shot"))
+            raw = str(payload.get("name") or "shot").replace("\\", "/")
+            raw = re.sub(r"[^a-zA-Z0-9._/-]+", "_", raw).strip("/")
+            if ".." in raw.split("/"):
+                self.send_error(400, "bad name")
+                return
             png = payload.get("png") or ""
             if "," in png:
                 png = png.split(",", 1)[1]
@@ -90,9 +94,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             except Exception:
                 self.send_error(400, "bad png")
                 return
-            dest_dir = os.path.join(AGENT, "shots")
+            dest_dir = os.path.join(AGENT, "shots", os.path.dirname(raw))
             os.makedirs(dest_dir, exist_ok=True)
-            dest = os.path.join(dest_dir, name + ".png")
+            dest = os.path.join(AGENT, "shots", raw + ".png")
             with open(dest, "wb") as f:
                 f.write(data)
             self.send_response(204)

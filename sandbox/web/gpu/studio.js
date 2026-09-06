@@ -12,6 +12,24 @@ export const PHOTO_ANGLES = [
   { id: "high", name: "high", yaw: -2.55, pitch: 0.88 },
 ];
 
+/** 4×4 orbit for a single object. Every cell is pitched; none sit on a cardinal. */
+export const PHOTO_SHEET_ANGLES = (() => {
+  const pitches = [0.22, 0.42, 0.68, 0.98];
+  const yaws = [-2.48, -1.82, -0.72, 0.58];
+  const out = [];
+  for (let r = 0; r < 4; r++) {
+    for (let c = 0; c < 4; c++) {
+      out.push({
+        id: `r${r}c${c}`,
+        name: `${r},${c}`,
+        yaw: yaws[c] + (r - 1.5) * 0.12,
+        pitch: pitches[r] + (c - 1.5) * 0.028,
+      });
+    }
+  }
+  return out;
+})();
+
 export function objectParts(def) {
   if (!def?.parts) throw new Error("studio needs a prop with parts");
   return instantiatePlace(def, { prop: def.id, id: def.id, pos: [0, 0] });

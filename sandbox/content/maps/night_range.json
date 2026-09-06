@@ -1295,8 +1295,8 @@
       ]
     },
     {
-      "prop": "rock",
-      "id": "rock-19",
+      "prop": "boulder",
+      "id": "boulder-19",
       "pos": [
         19,
         8
@@ -1304,8 +1304,8 @@
       "yaw": 0.4
     },
     {
-      "prop": "rock",
-      "id": "rock-46",
+      "prop": "boulder",
+      "id": "boulder-46",
       "pos": [
         46,
         8
@@ -1313,8 +1313,8 @@
       "yaw": -0.6
     },
     {
-      "prop": "rock",
-      "id": "rock-7",
+      "prop": "boulder",
+      "id": "boulder-7",
       "pos": [
         7,
         46
@@ -1322,8 +1322,8 @@
       "yaw": 1.1
     },
     {
-      "prop": "rock",
-      "id": "rock-74",
+      "prop": "boulder",
+      "id": "boulder-74",
       "pos": [
         74,
         46

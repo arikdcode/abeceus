@@ -16,10 +16,11 @@
   <script type="module">
     import { loadCatalog } from "./engine/engine.js";
     import { drawFrame, initRenderer } from "./gpu/renderer.js";
-    import { PHOTO_ANGLES, buildStudioFrame, photoObjects } from "./gpu/studio.js";
+    import { PHOTO_ANGLES, PHOTO_SHEET_ANGLES, buildStudioFrame, photoObjects } from "./gpu/studio.js";
 
     const q = new URLSearchParams(location.search);
     const only = q.get("prop") || "";
+    const sheet = only && q.get("sheet") !== "0";
     const out = document.getElementById("out");
     const tile = document.getElementById("tile");
     const mosaic = document.getElementById("mosaic");
@@ -45,28 +46,37 @@
       if (!defs.length) throw new Error(only ? `unknown prop ${only}` : "no props");
       if (!await initRenderer()) throw new Error("WebGL2 init failed");
 
+      const angles = sheet ? PHOTO_SHEET_ANGLES : PHOTO_ANGLES;
+      if (sheet) {
+        tile.width = 320;
+        tile.height = 320;
+      }
       const tw = tile.width;
       const th = tile.height;
-      const labelW = 148;
-      mosaic.width = labelW + PHOTO_ANGLES.length * tw;
-      mosaic.height = defs.length * th;
+      const labelW = sheet ? 0 : 148;
+      mosaic.width = sheet ? 4 * tw : labelW + angles.length * tw;
+      mosaic.height = sheet ? 4 * th : defs.length * th;
       const ctx = mosaic.getContext("2d");
       ctx.fillStyle = "#121418";
       ctx.fillRect(0, 0, mosaic.width, mosaic.height);
 
       for (let row = 0; row < defs.length; row++) {
         const def = defs[row];
-        drawLabel(ctx, def.id, 0, row * th, th);
-        for (let col = 0; col < PHOTO_ANGLES.length; col++) {
-          const frame = buildStudioFrame(def, { angle: PHOTO_ANGLES[col] });
+        if (!sheet) drawLabel(ctx, def.id, 0, row * th, th);
+        for (let col = 0; col < angles.length; col++) {
+          const frame = buildStudioFrame(def, { angle: angles[col] });
           for (let i = 0; i < 3; i++) {
-            if (!drawFrame(tile, frame)) throw new Error(`draw ${def.id} ${PHOTO_ANGLES[col].id}`);
+            if (!drawFrame(tile, frame)) throw new Error(`draw ${def.id} ${angles[col].id}`);
           }
-          ctx.drawImage(tile, labelW + col * tw, row * th);
+          if (sheet) {
+            ctx.drawImage(tile, (col % 4) * tw, Math.floor(col / 4) * th);
+          } else {
+            ctx.drawImage(tile, labelW + col * tw, row * th);
+          }
         }
       }
 
-      const name = only ? `object-${only}` : "object-mosaic";
+      const name = sheet ? `objects/${only}` : only ? `object-${only}` : "object-mosaic";
       const png = mosaic.toDataURL("image/png");
       const res = await fetch("/debug/shot", {
         method: "POST",
@@ -74,7 +84,7 @@
         body: JSON.stringify({ name, png }),
       });
       if (!res.ok) throw new Error(`save ${res.status}`);
-      out.textContent = `saved ${name} (${defs.length} objects × ${PHOTO_ANGLES.length} angles)`;
+      out.textContent = `saved ${name} (${defs.length} objects × ${angles.length} angles)`;
       document.title = "SHOT OK";
       window.__shot = { ok: true, name, count: defs.length };
     } catch (err) {

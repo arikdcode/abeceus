@@ -1,39 +1,8 @@
-export const GROUND_TEX_BASE = 16;
+import { GROUND_TILES } from "./ground-tiles.js";
 
-export const GROUND_TILES = [
-  { id: "dirt", name: "Packed dirt" },
-  { id: "dirt_dry", name: "Dry dirt" },
-  { id: "dirt_red", name: "Red earth" },
-  { id: "mud", name: "Wet mud" },
-  { id: "clay", name: "Clay" },
-  { id: "cracked", name: "Cracked earth" },
-  { id: "sand", name: "Sand" },
-  { id: "ash", name: "Ash" },
-  { id: "grass", name: "Grass" },
-  { id: "grass_dry", name: "Dry grass" },
-  { id: "moss", name: "Moss" },
-  { id: "leaf", name: "Leaf litter" },
-  { id: "gravel", name: "Gravel" },
-  { id: "pebbles", name: "Pebbles" },
-  { id: "rock", name: "Bedrock" },
-  { id: "snow", name: "Packed snow" },
-  { id: "concrete", name: "Concrete" },
-  { id: "concrete_worn", name: "Worn concrete" },
-  { id: "asphalt", name: "Asphalt" },
-  { id: "tarmac", name: "Tarmac" },
-  { id: "brick", name: "Brick pavers" },
-  { id: "cobble", name: "Cobblestone" },
-  { id: "wood", name: "Wood deck" },
-  { id: "wood_worn", name: "Worn wood" },
-  { id: "metal", name: "Deck plate" },
-  { id: "rust", name: "Rusted plate" },
-  { id: "tread", name: "Tread plate" },
-  { id: "hex", name: "Hex tile" },
-  { id: "polymer", name: "Polymer floor" },
-  { id: "carbon", name: "Carbon weave" },
-  { id: "grate", name: "Metal grate" },
-  { id: "hazard", name: "Hazard deck" },
-];
+export { GROUND_TILES };
+
+export const GROUND_TEX_BASE = 16;
 
 export const GROUND_KIND_TILE = Object.fromEntries(GROUND_TILES.map((t, i) => [t.id, i]));
 GROUND_KIND_TILE.road = GROUND_KIND_TILE.asphalt;
@@ -69,5 +38,10 @@ export async function loadGroundAtlas(fetchText, fetchBlob) {
   });
   URL.revokeObjectURL(url);
   atlasInfo = { ...meta, image: img };
+  if (meta.tiles?.length) {
+    meta.tiles.forEach((t, i) => { GROUND_KIND_TILE[t.id] = i; });
+    GROUND_KIND_TILE.road = GROUND_KIND_TILE.asphalt;
+    GROUND_KIND_TILE.tracks = GROUND_KIND_TILE.dirt_dry;
+  }
   return atlasInfo;
 }
