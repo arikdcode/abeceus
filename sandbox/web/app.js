@@ -1,12 +1,11 @@
 import { Engine, loadCatalog, worldFromCatalog, unitHitboxes, coverBox, muzzleWorld, rayLocalBox, rayCover, nearestUse, useBounds, resolveCoverUse, CoverMode, partFamily, prettyPart } from "./engine/engine.js";
 import { ActionType, Gait, ShotMode, AimRegion, Phase } from "./engine/model.js";
 import { rotate } from "./engine/vec.js";
-import { makeCam3, frameCam3, frameOverview3, drawScene3, drawFloor3, drawSky3, drawContactShadows3, drawEmitPools3, drawPolyline3, drawLabel3, screenRay, hitGround, orbitCam, zoomCam, project3, eyeOf, GROUND, sliceBox3 } from "./view3d.js";
+import { makeCam3, frameCam3, frameOverview3, screenRay, hitGround, orbitCam, zoomCam, eyeOf } from "./gpu/camera.js";
+import { initRenderer, resizeCanvas, drawFrame, rendererReady, initError } from "./gpu/renderer.js";
 import { stepHeldCam, stepOrbitKey } from "./engine/camstep.js";
 
-const canvas = document.getElementById("map");
-const ctx = canvas.getContext("2d");
-const camera = { x: 10, y: 8, zoom: 34 };
+const canvas = document.getElementById("view");
 const keys = new Set();
 const eng = new Engine();
 const eventLog = [];
@@ -28,7 +27,6 @@ let shotPreview = null;
 let shotPreviewKey = "";
 let fog = false;
 let owAim = false;
-let mapMode = "3d";
 let hideRoofs = localStorage.getItem("sandbox.hideRoofs") !== "show";
 let hideGrid = localStorage.getItem("sandbox.hideGrid") === "hide";
 const cam3 = makeCam3();
@@ -60,6 +58,36 @@ function worldUnit(id) {
   return eng.world.units.find((u) => u.id === id) || null;
 }
 
+function visibleUnits() {
+  const units = view?.units || [];
+  if (!fog) return units;
+  return units.filter((u) => u.visible !== false);
+}
+
+function unitAt(p) {
+  if (!p || !view) return null;
+  const xy = asXY(p);
+  let best = null;
+  let bestD = 0.55;
+  for (const vu of visibleUnits()) {
+    const u = worldUnit(vu.id);
+    if (!u || vu.downed || vu.dead) continue;
+    const d = Math.hypot(u.pos.x - xy.x, u.pos.y - xy.y);
+    if (d < bestD) {
+      bestD = d;
+      best = vu;
+    }
+  }
+  return best;
+}
+
+function shotTargetDowned(shot) {
+  const id = shot?.target || shot?.intended || shot?.struck;
+  if (!id) return false;
+  const u = worldUnit(id) || view?.units.find((x) => x.id === id);
+  return !!(u && (u.downed || u.dead));
+}
+
 function refresh() {
   view = eng.view({ fog });
   tapePreview = null;
@@ -72,7 +100,7 @@ function refresh() {
 }
 
 function previewKeepsScan(el) {
-  return !!(el && el.closest && el.closest("#map, #actionBtns, #inspect .act-table"));
+  return !!(el && el.closest && el.closest("#view, #actionBtns, #inspect .act-table"));
 }
 
 function dropScanPreview() {
@@ -200,7 +228,9 @@ function syncCanvasSize() {
   const rect = canvas.getBoundingClientRect();
   const w = Math.max(1, Math.round(rect.width));
   const h = Math.max(1, Math.round(rect.height));
-  if (canvas.width !== w || canvas.height !== h) {
+  if (rendererReady() && (canvas.width !== w || canvas.height !== h)) {
+    resizeCanvas(canvas, w, h);
+  } else if (canvas.width !== w || canvas.height !== h) {
     canvas.width = w;
     canvas.height = h;
   }
@@ -215,13 +245,6 @@ function canvasXY(ev) {
   };
 }
 
-function worldFromEvent(ev) {
-  const { sx, sy } = canvasXY(ev);
-  return {
-    x: camera.x + (sx - canvas.width / 2) / camera.zoom,
-    y: camera.y - (sy - canvas.height / 2) / camera.zoom,
-  };
-}
 
 function aimRegionForPart(part) {
   const fam = partFamily(part);
@@ -268,31 +291,27 @@ function keepDrawnPart(b, far) {
 }
 
 function pickFromEvent(ev) {
-  if (mapMode === "3d") {
-    const { sx, sy } = canvasXY(ev);
-    const ray = screenRay(cam3, canvas.width, canvas.height, sx, sy);
-    let unit = null;
-    let part = null;
-    let best = 1e9;
-    const far = cam3.dist > 30;
-    for (const vu of visibleUnits()) {
-      const u = worldUnit(vu.id);
-      if (!u) continue;
-      for (const b of cachedHitboxes(u)) {
-        if (!b.flesh && !b.armor) continue;
-        if (!keepDrawnPart(b, far)) continue;
-        const t = rayLocalBox(ray.origin, ray.dir, b, u.pos, u.facing || 0, 80);
-        if (t != null && t < best) {
-          best = t;
-          unit = vu;
-          part = b.name;
-        }
+  const { sx, sy } = canvasXY(ev);
+  const ray = screenRay(cam3, canvas.width, canvas.height, sx, sy);
+  let unit = null;
+  let part = null;
+  let best = 1e9;
+  const far = cam3.dist > 30;
+  for (const vu of visibleUnits()) {
+    const u = worldUnit(vu.id);
+    if (!u) continue;
+    for (const b of cachedHitboxes(u)) {
+      if (!b.flesh && !b.armor) continue;
+      if (!keepDrawnPart(b, far)) continue;
+      const t = rayLocalBox(ray.origin, ray.dir, b, u.pos, u.facing || 0, 80);
+      if (t != null && t < best) {
+        best = t;
+        unit = vu;
+        part = b.name;
       }
     }
-    return { unit, part, ground: hitGround(ray) };
   }
-  const w = worldFromEvent(ev);
-  return { unit: unitAt(w), part: null, ground: w };
+  return { unit, part, ground: hitGround(ray) };
 }
 
 function placeHoverHud(ev) {
@@ -302,69 +321,6 @@ function placeHoverHud(ev) {
   hud.style.top = `${ev.clientY - stage.top + 14}px`;
 }
 
-function toScreen(p) {
-  const x = Array.isArray(p) ? p[0] : p.x;
-  const y = Array.isArray(p) ? p[1] : p.y;
-  return {
-    x: canvas.width / 2 + (x - camera.x) * camera.zoom,
-    y: canvas.height / 2 - (y - camera.y) * camera.zoom,
-  };
-}
-
-function visibleUnits() {
-  return (view?.units || []).filter((u) => u.visible !== false);
-}
-
-function unitAt(w) {
-  for (const u of visibleUnits()) {
-    const dx = w.x - u.pos[0];
-    const dy = w.y - u.pos[1];
-    if (dx * dx + dy * dy < 0.45 * 0.45) return u;
-  }
-  return null;
-}
-
-function fillWorldRect(min, max, hex) {
-  const a = toScreen([min[0], max[1]]);
-  const b = toScreen([max[0], min[1]]);
-  ctx.fillStyle = hex;
-  ctx.fillRect(a.x, a.y, b.x - a.x, b.y - a.y);
-}
-
-function drawGrid() {
-  const map = view.map;
-  const step = 1;
-  const majorEvery = 5;
-  fillWorldRect(map.min, map.max, GROUND[map.ground] || GROUND.dirt);
-  for (const s of map.surfaces || []) {
-    if (!s.min || !s.max) continue;
-    fillWorldRect(s.min, s.max, s.color || GROUND[s.kind] || GROUND.dirt);
-    if (s.kind === "road") {
-      const y = (s.min[1] + s.max[1]) * 0.5;
-      ctx.strokeStyle = "rgba(210, 190, 70, 0.55)";
-      ctx.lineWidth = 2;
-      ctx.setLineDash([14, 16]);
-      const a = toScreen([s.min[0] + 1, y]);
-      const b = toScreen([s.max[0] - 1, y]);
-      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
-      ctx.setLineDash([]);
-    }
-  }
-  if (hideGrid) return;
-  ctx.lineWidth = 1;
-  for (let x = map.min[0]; x <= map.max[0] + 1e-6; x += step) {
-    const a = toScreen([x, map.min[1]]);
-    const b = toScreen([x, map.max[1]]);
-    ctx.strokeStyle = Math.abs(x - map.min[0]) % majorEvery < 1e-6 ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.05)";
-    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
-  }
-  for (let y = map.min[1]; y <= map.max[1] + 1e-6; y += step) {
-    const a = toScreen([map.min[0], y]);
-    const b = toScreen([map.max[0], y]);
-    ctx.strokeStyle = Math.abs(y - map.min[1]) % majorEvery < 1e-6 ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.05)";
-    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
-  }
-}
 
 function hotCoverIndex() {
   const pts = [];
@@ -380,16 +336,6 @@ function hotCoverIndex() {
   return -1;
 }
 
-function drawBox2d(c, fill, stroke) {
-  const a = toScreen([c.min[0], c.max[1]]);
-  const b = toScreen([c.max[0], c.min[1]]);
-  ctx.fillStyle = fill;
-  ctx.fillRect(a.x, a.y, b.x - a.x, b.y - a.y);
-  if (stroke) {
-    ctx.strokeStyle = stroke;
-    ctx.strokeRect(a.x, a.y, b.x - a.x, b.y - a.y);
-  }
-}
 
 function isRoof(c) {
   if (!c) return false;
@@ -398,33 +344,6 @@ function isRoof(c) {
   return id === "roof" || id.endsWith("-roof");
 }
 
-function drawCover() {
-  const hot = hotCoverIndex();
-  for (const c of view.map.decor || []) {
-    if (hideRoofs && isRoof(c)) continue;
-    ctx.globalAlpha = 0.55;
-    drawBox2d(c, c.color || "#6a7b66", "rgba(40,32,24,0.35)");
-    ctx.globalAlpha = 1;
-  }
-  view.map.cover.forEach((c, i) => {
-    if (hideRoofs && isRoof(c)) return;
-    const frac = c.durability_max ? c.durability / c.durability_max : 1;
-    ctx.globalAlpha = frac < 0.05 ? 1 : 0.45 + 0.5 * frac;
-    drawBox2d(c, frac < 0.05 ? "#2a2a2a" : (c.color || "#6a7b66"), i === hot ? "#d7b15a" : "#6d7c64");
-    ctx.globalAlpha = 1;
-    if (i === hot || coverPreview) {
-      const raw = eng.world.map.cover[i];
-      if (!raw) return;
-      const zone = useBounds(raw);
-      const za = toScreen([zone.min.x, zone.max.y]);
-      const zb = toScreen([zone.max.x, zone.min.y]);
-      ctx.strokeStyle = "rgba(215,177,90,0.7)";
-      ctx.setLineDash([6, 4]);
-      ctx.strokeRect(za.x, za.y, zb.x - za.x, zb.y - za.y);
-      ctx.setLineDash([]);
-    }
-  });
-}
 
 function asXY(p) {
   if (!p) return { x: 0, y: 0 };
@@ -459,79 +378,6 @@ function add3(a, d, t) {
   return { x: a.x + d.x * t, y: a.y + d.y * t, z: (a.z || 0) + (d.z || 0) * t };
 }
 
-function drawCone(origin, aimPoint, half) {
-  const o = asXY(origin);
-  const a = asXY(aimPoint);
-  const delta = { x: a.x - o.x, y: a.y - o.y };
-  const dist = Math.max(0.4, Math.hypot(delta.x, delta.y));
-  const ang = Math.atan2(delta.y, delta.x);
-  const dir = { x: Math.cos(ang), y: Math.sin(ang), z: 0 };
-  const z = origin?.z ?? 1.1;
-  const len = coverClipT({ x: o.x, y: o.y, z }, dir, dist + 0.4);
-  const os = toScreen(o);
-  const l = toScreen([o.x + Math.cos(ang + half) * len, o.y + Math.sin(ang + half) * len]);
-  const r = toScreen([o.x + Math.cos(ang - half) * len, o.y + Math.sin(ang - half) * len]);
-  ctx.beginPath();
-  ctx.moveTo(os.x, os.y); ctx.lineTo(l.x, l.y); ctx.lineTo(r.x, r.y); ctx.closePath();
-  ctx.fillStyle = "rgba(232,168,72,0.16)";
-  ctx.fill();
-  ctx.strokeStyle = "rgba(232,168,72,0.55)";
-  ctx.stroke();
-}
-
-function drawShotLine2(origin, dest) {
-  const o = { ...asXY(origin), z: origin.z ?? 1.2 };
-  const dxy = asXY(dest);
-  const end = { x: dxy.x, y: dxy.y, z: dest.z ?? 1.2 };
-  const raw = { x: end.x - o.x, y: end.y - o.y, z: (end.z || 0) - (o.z || 0) };
-  const len = Math.max(1e-6, Math.hypot(raw.x, raw.y, raw.z));
-  const dir = { x: raw.x / len, y: raw.y / len, z: raw.z / len };
-  const tHit = coverClipT(o, dir, len);
-  const s = toScreen(o);
-  const mid = toScreen(add3(o, dir, Math.min(tHit, len)));
-  const e = toScreen(end);
-  ctx.setLineDash([]);
-  ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(mid.x, mid.y);
-  ctx.strokeStyle = SHOT_CLEAR; ctx.stroke();
-  if (tHit < len - 0.04) {
-    ctx.beginPath(); ctx.moveTo(mid.x, mid.y); ctx.lineTo(e.x, e.y);
-    ctx.strokeStyle = SHOT_BLOCKED; ctx.stroke();
-  }
-}
-
-function shotTargetDowned(shot) {
-  const id = shot?.target || shot?.intended || shot?.struck;
-  if (!id) return false;
-  const u = worldUnit(id) || view?.units.find((x) => x.id === id);
-  return !!(u && (u.downed || u.dead));
-}
-
-function drawShotGeom(prev) {
-  if (!prev?.ok || shotTargetDowned(prev)) return;
-  const origin = prev.origin;
-  const aim = prev.aim_world || {
-    x: asXY(origin).x + asXY(prev.aim_dir).x * (prev.distance || 8),
-    y: asXY(origin).y + asXY(prev.aim_dir).y * (prev.distance || 8),
-  };
-  drawCone(origin, aim, prev.cone_half_rad || 0);
-  drawShotLine2(origin, { ...asXY(aim), z: prev.aim_offset?.z ?? 1.2 });
-  const dir = asXY(prev.aim_dir);
-  const perp = rotate(dir, 1.5707963);
-  const rad = prev.radius || prev.sigma || 0;
-  if (rad > 0.02) {
-    const a = { x: aim.x + perp.x * rad, y: aim.y + perp.y * rad };
-    const b = { x: aim.x - perp.x * rad, y: aim.y - perp.y * rad };
-    const sa = toScreen(a);
-    const sb = toScreen(b);
-    ctx.beginPath(); ctx.moveTo(sa.x, sa.y); ctx.lineTo(sb.x, sb.y);
-    ctx.strokeStyle = "#d7b15a";
-    ctx.setLineDash([3, 3]);
-    ctx.stroke(); ctx.setLineDash([]);
-    const c = toScreen(aim);
-    ctx.beginPath(); ctx.arc(c.x, c.y, 3, 0, Math.PI * 2);
-    ctx.fillStyle = "#d7b15a"; ctx.fill();
-  }
-}
 
 function selectedGait() {
   return view?.phase === Phase.Contact ? Gait.Walk : toggleVal("gait");
@@ -551,111 +397,6 @@ function reachRingColor() {
   return selectedGait() === Gait.Walk ? "rgba(110,168,255,0.5)" : "rgba(215,177,90,0.6)";
 }
 
-function drawMovePath3(ctx, cam, w, h, pts, color) {
-  if (!pts || pts.length < 2) return;
-  for (let i = 0; i < pts.length - 1; i++) {
-    drawPolyline3(ctx, cam, w, h, [pts[i], pts[i + 1]], color, [5, 4]);
-  }
-}
-
-function drawMovePath2(pts, color) {
-  if (!pts || pts.length < 2) return;
-  ctx.beginPath();
-  const a = toScreen(pts[0]);
-  ctx.moveTo(a.x, a.y);
-  for (let i = 1; i < pts.length; i++) {
-    const p = toScreen(pts[i]);
-    ctx.lineTo(p.x, p.y);
-  }
-  ctx.strokeStyle = color;
-  ctx.setLineDash([5, 4]);
-  ctx.stroke();
-  ctx.setLineDash([]);
-  const e = toScreen(pts[pts.length - 1]);
-  ctx.beginPath(); ctx.arc(e.x, e.y, 5, 0, Math.PI * 2);
-  ctx.fillStyle = color; ctx.fill();
-}
-
-function drawGroundRect3(min, max, color) {
-  const z = 0.03;
-  drawPolyline3(ctx, cam3, canvas.width, canvas.height, [
-    { x: min.x, y: min.y, z }, { x: max.x, y: min.y, z },
-    { x: max.x, y: max.y, z }, { x: min.x, y: max.y, z },
-    { x: min.x, y: min.y, z },
-  ], color, [6, 4]);
-}
-
-function drawCoverUseRings3() {
-  const hot = hotCoverIndex();
-  view.map.cover.forEach((c, i) => {
-    if (i !== hot && !coverPreview) return;
-    const raw = eng.world.map.cover[i];
-    if (!raw) return;
-    const zone = useBounds(raw);
-    drawGroundRect3(zone.min, zone.max, "rgba(215,177,90,0.75)");
-    drawGroundRect3(raw.min, raw.max, i === hot ? "#d7b15a" : "#8a9a7a");
-  });
-}
-
-function drawReachRing3(origin, radius) {
-  if (!radius || radius < 0.05) return;
-  const ring = [];
-  for (let i = 0; i <= 28; i++) {
-    const a = (i / 28) * Math.PI * 2;
-    ring.push({ x: origin.x + Math.cos(a) * radius, y: origin.y + Math.sin(a) * radius, z: 0.04 });
-  }
-  drawPolyline3(ctx, cam3, canvas.width, canvas.height, ring, reachRingColor());
-}
-
-function drawCircle(origin, radius, color) {
-  if (!radius || radius <= 0.05) return;
-  const p = toScreen(origin);
-  ctx.beginPath();
-  ctx.arc(p.x, p.y, radius * camera.zoom, 0, Math.PI * 2);
-  ctx.strokeStyle = color;
-  ctx.setLineDash([5, 4]);
-  ctx.stroke();
-  ctx.setLineDash([]);
-}
-
-function drawUnit2(u, opts = {}) {
-  const p = toScreen(u.pos);
-  const r = (u.posture === "prone" ? 0.22 : u.posture === "crouch" ? 0.28 : 0.32) * camera.zoom;
-  ctx.globalAlpha = opts.ghost ? 0.45 : 1;
-  ctx.beginPath();
-  ctx.ellipse(p.x, p.y, r * (u.posture === "prone" ? 1.4 : 1), r, 0, 0, Math.PI * 2);
-  ctx.fillStyle = u.downed || u.dead ? "#444" : teamColor(u.team);
-  ctx.fill();
-  ctx.lineWidth = opts.ghost ? 2 : (u.active || u.id === inspected ? 3 : 1.5);
-  ctx.strokeStyle = opts.ghost ? "#d7b15a" : (u.overwatch ? "#8b7cc4" : (u.active ? "#d7b15a" : "#0d1014"));
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(p.x, p.y);
-  ctx.lineTo(p.x + Math.cos(u.facing) * r * 1.5, p.y - Math.sin(u.facing) * r * 1.5);
-  ctx.strokeStyle = "#f4f7fb";
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  ctx.globalAlpha = 1;
-  ctx.fillStyle = opts.ghost ? "#d7b15a" : "#e8edf4";
-  ctx.font = "11px sans-serif";
-  ctx.textAlign = "center";
-  ctx.fillText(`${u.name}${opts.ghost ? " …" : (u.contact_ready ? " ✓" : "")}`, p.x, p.y - r - 7);
-}
-
-function drawUnits() {
-  const ghost = ghostActor();
-  const real = worldUnit(actorId());
-  const moved = ghost && real && Math.hypot(ghost.pos.x - real.pos.x, ghost.pos.y - real.pos.y) > 0.08;
-  for (const u of visibleUnits()) {
-    if (u.id === actorId() && ghost && !moved) {
-      drawUnit2({ ...u, pos: ghost.pos, posture: ghost.posture, facing: ghost.facing });
-    } else {
-      drawUnit2(u);
-    }
-  }
-  if (moved && ghost) drawUnit2({ ...visibleUnits().find((x) => x.id === actorId()), ...ghost, pos: ghost.pos }, { ghost: true });
-}
-
 function partHex(name, team, down, hot) {
   if (name === "gun" || name.startsWith("gun_")) return name === "gun" ? "#3a4048" : "#2c3238";
   const fam = partFamily(name);
@@ -669,22 +410,18 @@ function partHex(name, team, down, hot) {
   return `#${h(r, 240)}${h(g, 215)}${h(b, 138)}`;
 }
 
-function drawBoxEdges3(box, color) {
-  const c = box.corners;
-  if (!c || c.length < 8) return;
-  const edges = [[0, 1], [2, 3], [4, 5], [6, 7], [0, 2], [1, 3], [4, 6], [5, 7], [0, 4], [1, 5], [2, 6], [3, 7]];
-  for (const [a, b] of edges) drawPolyline3(ctx, cam3, canvas.width, canvas.height, [c[a], c[b]], color);
-}
 
 function render() {
   syncCanvasSize();
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  if (!view) return;
-  if (mapMode === "3d") {
-    render3();
-    return;
+  if (!view || !rendererReady()) return;
+  try {
+    drawFrame(canvas, collectFrame());
+  } catch (err) {
+    const why = err?.message || String(err);
+    document.getElementById("phaseLabel").textContent = `draw failed: ${why}`;
+    console.error("sandbox draw:", err);
+    throw err;
   }
-  render2d();
 }
 
 function applyFpvCam() {
@@ -728,15 +465,7 @@ function applyOverviewCam() {
 
 function frameCameras(map) {
   if (!map) return;
-  const min = Array.isArray(map.min) ? map.min : [map.min.x, map.min.y];
-  const max = Array.isArray(map.max) ? map.max : [map.max.x, map.max.y];
-  const sx = max[0] - min[0];
-  const sy = max[1] - min[1];
-  camera.x = (min[0] + max[0]) * 0.5;
-  camera.y = (min[1] + max[1]) * 0.5;
-  const fit = Math.min(canvas.width / (sx + 6), canvas.height / (sy + 6));
-  camera.zoom = Math.max(10, Math.min(36, fit || 22));
-  frameCam3(cam3, { min, max });
+  frameCam3(cam3, map);
   camKind = "strategy";
   savedStrategy = snapshotStrategyCam();
   syncModePairs();
@@ -774,7 +503,6 @@ function setPair(id, value) {
 
 function syncModePairs() {
   setPair("fogPair", fog ? "player" : "dev");
-  setPair("projPair", mapMode);
   setPair("camPair", camKind);
   setPair("roofPair", hideRoofs ? "hide" : "show");
   setPair("gridPair", hideGrid ? "hide" : "show");
@@ -783,12 +511,10 @@ function syncModePairs() {
 function setCamKind(next) {
   if (next === camKind) return;
   if (next === "fpv") {
-    if (mapMode !== "3d") return;
     if (camKind === "strategy") savedStrategy = snapshotStrategyCam();
     if (!applyFpvCam()) return;
     camKind = "fpv";
   } else if (next === "overview") {
-    if (mapMode !== "3d") return;
     if (camKind === "strategy") savedStrategy = snapshotStrategyCam();
     applyOverviewCam();
     camKind = "overview";
@@ -806,103 +532,77 @@ function toggleCamKind() {
   setCamKind(order[(i + 1) % order.length]);
 }
 
-function asCoverRay(c) {
-  return {
-    min: { x: c.min[0], y: c.min[1] },
-    max: { x: c.max[0], y: c.max[1] },
-    z0: c.z0 ?? 0,
-    z1: c.z1 ?? c.height ?? 1,
-  };
+
+function slabOf(c) {
+  const x0 = Array.isArray(c.min) ? c.min[0] : c.min.x;
+  const y0 = Array.isArray(c.min) ? c.min[1] : c.min.y;
+  const x1 = Array.isArray(c.max) ? c.max[0] : c.max.x;
+  const y1 = Array.isArray(c.max) ? c.max[1] : c.max.y;
+  const z0 = c.z0 ?? 0;
+  const z1 = c.z1 ?? c.height ?? 1;
+  return { min: { x: x0, y: y0 }, max: { x: x1, y: y1 }, z0, z1, height: z1 };
 }
 
-function occludersOf(map) {
-  const list = [];
-  for (const c of map.cover || []) {
-    if (hideRoofs && isRoof(c)) continue;
-    list.push(asCoverRay(c));
-  }
-  if (!hideRoofs) {
-    for (const c of map.decor || []) {
-      if (isRoof(c)) list.push(asCoverRay(c));
-    }
-  }
-  return list;
-}
-
-function partCenter3(b) {
-  const cs = b.corners;
-  if (!cs?.length) return { x: 0, y: 0, z: 0 };
-  let x = 0, y = 0, z = 0;
-  for (const p of cs) {
-    x += p.x; y += p.y; z += p.z;
-  }
-  const n = cs.length;
-  return { x: x / n, y: y / n, z: z / n };
-}
-
-function hiddenByCover(eye, p, occluders) {
-  const raw = { x: p.x - eye.x, y: p.y - eye.y, z: (p.z || 0) - (eye.z || 0) };
-  const len = Math.hypot(raw.x, raw.y, raw.z);
-  if (len < 0.08) return false;
-  const dir = { x: raw.x / len, y: raw.y / len, z: raw.z / len };
-  const maxT = len - 0.05;
-  for (const c of occluders) {
-    const t = rayCover(eye, dir, c, maxT);
-    if (t != null && t > 0.15) return true;
-  }
-  return false;
-}
-
-function render3() {
-  if (camKind === "fpv") applyFpvCam();
+function collectWorldParts() {
   const map = view.map;
-  const w = canvas.width;
-  const h = canvas.height;
-  drawSky3(ctx, w, h, cam3);
-  drawFloor3(ctx, cam3, w, h, map, { grid: !hideGrid });
-  const groundFx = [...(map.decor || []), ...(map.cover || [])];
-  drawContactShadows3(ctx, cam3, w, h, groundFx);
-  drawEmitPools3(ctx, cam3, w, h, groundFx);
-  if (camKind !== "fpv") drawCoverUseRings3();
   const worldParts = [];
   const pushBox = (c, color) => {
     if (hideRoofs && isRoof(c)) return;
-    for (const slab of sliceBox3(c)) {
-      const box = coverBox(slab);
-      worldParts.push({
-        ...box,
-        color,
-        facing: 0,
-        roof: isRoof(c),
-        mat: c.mat || null,
-        tex: c.tex || null,
-        emit: c.emit || 0,
-      });
-    }
+    const box = coverBox(slabOf(c));
+    worldParts.push({
+      ...box,
+      color,
+      roof: isRoof(c),
+      mat: c.mat || null,
+      tex: c.tex || null,
+      emit: c.emit || 0,
+    });
   };
   for (const c of map.decor || []) pushBox(c, c.color || "#6a7b66");
   for (const c of map.cover) {
     const frac = c.durability_max ? c.durability / c.durability_max : 1;
     pushBox(c, frac < 0.05 ? "#3a3a3a" : (c.color || "#6a7b66"));
   }
-  drawScene3(ctx, cam3, w, h, worldParts);
-  const eye = eyeOf(cam3);
-  const occluders = occludersOf(map);
+  return worldParts;
+}
+
+function collectBodyParts() {
   const bodyParts = [];
   const pushUnitParts = (drawn, team, down, ghost, vu) => {
     const far = cam3.dist > 30;
     for (const b of cachedHitboxes(drawn)) {
       if (!keepDrawnPart(b, far)) continue;
-      if (hiddenByCover(eye, partCenter3(b), occluders)) continue;
       const hot = vu && hoverUnit && hoverUnit.id === vu.id && hoverPart === b.name;
+      const n = b.name || "";
+      const mat = n.includes("plate") || n.includes("helmet") || n.includes("armor") ? "paint"
+        : n.includes("eye") ? "glass"
+        : n.includes("boot") ? "rubber" : null;
       bodyParts.push({
         ...b,
         color: partHex(b.name, team, down, hot),
-        facing: drawn.facing || 0,
         ghost,
+        mat,
       });
     }
   };
+  return { bodyParts, pushUnitParts };
+}
+
+function shotMarks(marks, origin, dest) {
+  const raw = { x: dest.x - origin.x, y: dest.y - origin.y, z: dest.z - origin.z };
+  const len = Math.max(0.2, Math.hypot(raw.x, raw.y, raw.z));
+  const dir = { x: raw.x / len, y: raw.y / len, z: raw.z / len };
+  const tHit = coverClipT(origin, dir, len);
+  const hit = add3(origin, dir, Math.min(tHit, len));
+  marks.lines.push({ points: [origin, hit], color: SHOT_CLEAR, width: 0.045 });
+  if (tHit < len - 0.04) marks.lines.push({ points: [hit, dest], color: SHOT_BLOCKED, width: 0.045 });
+}
+
+function collectFrame() {
+  if (camKind === "fpv") applyFpvCam();
+  const map = view.map;
+  const worldParts = collectWorldParts();
+  const { bodyParts, pushUnitParts } = collectBodyParts();
   const ghost = ghostActor();
   const realActor = worldUnit(actorId());
   const ghostMoved = ghost && realActor
@@ -919,50 +619,61 @@ function render3() {
     const vu = view.units.find((x) => x.id === ghost.id);
     pushUnitParts(ghost, vu?.team ?? 0, false, true, vu);
   }
-  drawScene3(ctx, cam3, w, h, bodyParts);
+  const marks = {
+    grid: !hideGrid,
+    shadows: [...(map.decor || []), ...(map.cover || [])],
+    paths: [],
+    rings: [],
+    lines: [],
+    rects: [],
+    labels: [],
+    edges: [],
+  };
+  if (camKind !== "fpv") {
+    const hot = hotCoverIndex();
+    view.map.cover.forEach((c, i) => {
+      if (i !== hot && !coverPreview) return;
+      const raw = eng.world.map.cover[i];
+      if (!raw) return;
+      const zone = useBounds(raw);
+      marks.rects.push({ min: zone.min, max: zone.max, color: "rgba(215,177,90,0.75)" });
+      marks.rects.push({ min: raw.min, max: raw.max, color: i === hot ? "#d7b15a" : "#8a9a7a" });
+    });
+  }
   const actor = view.units.find((x) => x.id === actorId());
   const wu = actor ? worldUnit(actor.id) : null;
   const ringAt = reachOrigin() || wu;
-  if (ringAt && camKind !== "fpv") drawReachRing3(ringAt, gaitReach());
+  if (ringAt && camKind !== "fpv") {
+    marks.rings.push({ origin: ringAt, radius: gaitReach(), color: reachRingColor() });
+  }
   if (actor) {
     let from = asXY(actor.pos);
     for (const q of view.queue || []) {
       if (q.type !== "move" || !q.dest) continue;
       const to = asXY(q.dest);
-      const path = (q.path || [from, to]).map((p) => ({ ...asXY(p), z: 0.06 }));
-      drawMovePath3(ctx, cam3, w, h, path, MOVE_LINE);
+      marks.paths.push({ points: q.path || [from, to], color: MOVE_LINE, dashed: true, z: 0.06 });
       from = to;
     }
   }
   if (movePreview?.ok) {
-    const path = (movePreview.path || [movePreview.from, movePreview.dest])
-      .map((p) => ({ ...asXY(p), z: 0.07 }));
-    drawMovePath3(ctx, cam3, w, h, path, MOVE_LINE);
+    marks.paths.push({
+      points: movePreview.path || [movePreview.from, movePreview.dest],
+      color: MOVE_LINE,
+      dashed: true,
+      z: 0.07,
+    });
   }
   if (shotPreview?.ok && wu && !shotTargetDowned(shotPreview)) {
     const o = shotPreview.origin3 || muzzleWorld(ghost || wu);
     const aim = shotPreview.aim_world || {};
     const z = shotPreview.aim_offset?.z ?? 1.2;
-    const dest = { x: aim.x ?? o.x, y: aim.y ?? o.y, z };
-    const raw = { x: dest.x - o.x, y: dest.y - o.y, z: dest.z - o.z };
-    const len = Math.max(0.4, Math.hypot(raw.x, raw.y, raw.z));
-    const dir = { x: raw.x / len, y: raw.y / len, z: raw.z / len };
-    const tHit = coverClipT(o, dir, len);
-    const hit = add3(o, dir, Math.min(tHit, len));
-    drawPolyline3(ctx, cam3, w, h, [o, hit], SHOT_CLEAR);
-    if (tHit < len - 0.04) drawPolyline3(ctx, cam3, w, h, [hit, dest], SHOT_BLOCKED);
+    shotMarks(marks, o, { x: aim.x ?? o.x, y: aim.y ?? o.y, z });
   }
   if (view.last_shot?.valid && !shotPreview?.ok && !shotTargetDowned(view.last_shot)) {
     const ls = view.last_shot;
     const a = ls.origin3 || { ...asXY(ls.origin), z: 1.2 };
     const b = ls.end3 || { ...asXY(ls.end), z: 1.0 };
-    const raw = { x: b.x - a.x, y: b.y - a.y, z: (b.z || 0) - (a.z || 0) };
-    const len = Math.max(0.2, Math.hypot(raw.x, raw.y, raw.z));
-    const dir = { x: raw.x / len, y: raw.y / len, z: raw.z / len };
-    const tHit = coverClipT(a, dir, len);
-    const hit = add3(a, dir, Math.min(tHit, len));
-    drawPolyline3(ctx, cam3, w, h, [a, hit], SHOT_CLEAR);
-    if (tHit < len - 0.04) drawPolyline3(ctx, cam3, w, h, [hit, b], SHOT_BLOCKED);
+    shotMarks(marks, a, b);
   }
   for (const vu of visibleUnits()) {
     const u = worldUnit(vu.id);
@@ -970,55 +681,25 @@ function render3() {
     if (camKind === "fpv" && u.id === actorId()) continue;
     const shown = (vu.id === actorId() && ghost && !ghostMoved) ? ghost : u;
     const z = shown.posture === "prone" ? 0.45 : shown.posture === "crouch" ? 1.35 : 1.95;
-    drawLabel3(ctx, cam3, w, h, { x: shown.pos.x, y: shown.pos.y, z }, `${vu.name}${vu.contact_ready ? " ✓" : ""}`, vu.active ? "#d7b15a" : "#e8edf4");
+    marks.labels.push({
+      pos: { x: shown.pos.x, y: shown.pos.y, z },
+      text: `${vu.name}${vu.contact_ready ? " ✓" : ""}`,
+      color: vu.active ? "#d7b15a" : "#e8edf4",
+    });
   }
   if (ghostMoved && ghost && camKind !== "fpv") {
     const z = ghost.posture === "prone" ? 0.45 : ghost.posture === "crouch" ? 1.35 : 1.95;
-    drawLabel3(ctx, cam3, w, h, { x: ghost.pos.x, y: ghost.pos.y, z }, `${ghost.name} …`, "#d7b15a");
-    for (const b of cachedHitboxes(ghost)) drawBoxEdges3(b, "rgba(215,177,90,0.7)");
+    marks.labels.push({ pos: { x: ghost.pos.x, y: ghost.pos.y, z }, text: `${ghost.name} …`, color: "#d7b15a" });
+    for (const b of cachedHitboxes(ghost)) marks.edges.push({ corners: b.corners, color: "rgba(215,177,90,0.7)" });
   }
   if (hoverUnit && hoverPart) {
     const hu = worldUnit(hoverUnit.id);
     const box = hu && cachedHitboxes(hu).find((b) => b.name === hoverPart);
-    if (box) drawBoxEdges3(box, "#f2d78a");
+    if (box) marks.edges.push({ corners: box.corners, color: "#f2d78a" });
   }
+  return { cam: cam3, map, solids: [...worldParts, ...bodyParts], marks };
 }
 
-function render2d() {
-  const a = toScreen(view.map.min);
-  const b = toScreen(view.map.max);
-  ctx.fillStyle = "#161b22";
-  ctx.fillRect(a.x, b.y, b.x - a.x, a.y - b.y);
-  ctx.strokeStyle = "#4b5a6c";
-  ctx.strokeRect(a.x, b.y, b.x - a.x, a.y - b.y);
-  drawGrid();
-  drawCover();
-  const actor = view.units.find((x) => x.id === actorId());
-  if (actor) {
-    const ringAt = reachOrigin() || actor;
-    drawCircle(ringAt, gaitReach(), reachRingColor());
-  }
-  if (actor) {
-    let from = asXY(actor.pos);
-    for (const q of view.queue || []) {
-      if (q.type !== "move" || !q.dest) continue;
-      const to = asXY(q.dest);
-      drawMovePath2(q.path || [from, to], "rgba(110,207,154,0.7)");
-      from = to;
-    }
-  }
-  if (movePreview?.ok) {
-    drawMovePath2(movePreview.path || [movePreview.from, movePreview.dest], MOVE_LINE);
-  }
-  if (shotPreview?.ok) drawShotGeom(shotPreview);
-  if (view.last_shot?.valid && !shotTargetDowned(view.last_shot)) {
-    const ls = view.last_shot;
-    const aimPt = ls.aim_world || ls.end;
-    drawCone(ls.origin, aimPt, ls.cone_half_rad);
-    drawShotLine2(ls.origin3 || ls.origin, ls.end3 || ls.end);
-  }
-  drawUnits();
-}
 
 function unitStatTable(u) {
   const wounds = (u.wounds || []).map((w) =>
@@ -1391,54 +1072,6 @@ function subjectCam(actor, target, boxes) {
   return cam;
 }
 
-function fillProjected(ctx, pts, fill, stroke, dash) {
-  if (pts.length < 3 || pts.some((p) => !p)) return;
-  ctx.beginPath();
-  ctx.moveTo(pts[0].x, pts[0].y);
-  for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
-  ctx.closePath();
-  if (fill) {
-    ctx.fillStyle = fill;
-    ctx.fill();
-  }
-  if (stroke) {
-    ctx.strokeStyle = stroke;
-    ctx.lineWidth = 1.6;
-    ctx.setLineDash(dash || []);
-    ctx.stroke();
-    ctx.setLineDash([]);
-  }
-}
-
-function drawCoverOverlay(ctx, cam, w, h, target, perp, profile) {
-  if (!profile?.some((p) => p.z > 0.02)) return;
-  const bottom = [];
-  const top = [];
-  for (const p of profile) {
-    const a = project3(cam, w, h, shotWorld(target, perp, p.x, 0));
-    const b = project3(cam, w, h, shotWorld(target, perp, p.x, p.z));
-    if (!a || !b) continue;
-    bottom.push(a);
-    top.push(b);
-  }
-  if (bottom.length < 2) return;
-  fillProjected(ctx, [...bottom, ...top.reverse()], "rgba(36, 48, 22, 0.46)", "#c4c47a", [4, 3]);
-}
-
-function drawAimDisk(ctx, cam, w, h, target, perp, off, radius) {
-  const steps = 48;
-  const pts = [];
-  for (let i = 0; i <= steps; i++) {
-    const th = (i / steps) * Math.PI * 2;
-    pts.push(project3(cam, w, h, shotWorld(
-      target, perp,
-      off.x + Math.cos(th) * radius,
-      off.z + Math.sin(th) * radius,
-    )));
-  }
-  fillProjected(ctx, pts, "rgba(215, 177, 90, 0.20)", "#d7b15a");
-}
-
 function aimFromSilPixel(sx, sy) {
   if (!silView) return null;
   const { cam, w, h, target, along, perp } = silView;
@@ -1457,38 +1090,57 @@ function aimFromSilPixel(sx, sy) {
 }
 
 function drawSilhouette(sil, target, preview) {
-  if (!sil) return;
+  if (!sil || !rendererReady()) return;
   syncSilSize(sil);
-  const sctx = sil.getContext("2d");
+  resizeCanvas(sil, sil.width, sil.height);
   const w = sil.width;
   const h = sil.height;
-  sctx.clearRect(0, 0, w, h);
-  sctx.fillStyle = "#0d1014";
-  sctx.fillRect(0, 0, w, h);
   const actor = (preview?.actor ? worldUnit(preview.actor) : null) || worldUnit(actorId());
   const vu = view?.units.find((x) => x.id === target.id);
   const boxes = unitHitboxes(target).map((b) => ({
     ...b,
     color: partHex(b.name, vu?.team ?? target.team ?? 1, !!(vu?.downed || vu?.dead), false),
-    facing: target.facing || 0,
   }));
   const cam = subjectCam(actor, target, boxes);
   const { along, perp } = shotAlongPerp(actor, target);
   silView = { cam, w, h, target, actor, along, perp };
   const pad = 1.15;
-  drawPolyline3(sctx, cam, w, h, [
-    { x: target.pos.x - pad, y: target.pos.y - pad, z: 0.01 },
-    { x: target.pos.x + pad, y: target.pos.y - pad, z: 0.01 },
-    { x: target.pos.x + pad, y: target.pos.y + pad, z: 0.01 },
-    { x: target.pos.x - pad, y: target.pos.y + pad, z: 0.01 },
-    { x: target.pos.x - pad, y: target.pos.y - pad, z: 0.01 },
-  ], "rgba(210, 220, 230, 0.16)");
-  drawScene3(sctx, cam, w, h, boxes);
-  if (preview?.ok) {
-    drawCoverOverlay(sctx, cam, w, h, target, perp, preview.cover_profile);
-    const off = preview.aim_offset || aimOffset || { x: 0, z: 1.15 };
-    drawAimDisk(sctx, cam, w, h, target, perp, off, preview.radius || preview.sigma || 0.15);
+  const marks = {
+    lines: [{
+      points: [
+        { x: target.pos.x - pad, y: target.pos.y - pad, z: 0.01 },
+        { x: target.pos.x + pad, y: target.pos.y - pad, z: 0.01 },
+        { x: target.pos.x + pad, y: target.pos.y + pad, z: 0.01 },
+        { x: target.pos.x - pad, y: target.pos.y + pad, z: 0.01 },
+        { x: target.pos.x - pad, y: target.pos.y - pad, z: 0.01 },
+      ],
+      color: "rgba(210, 220, 230, 0.35)",
+      width: 0.03,
+      ground: true,
+    }],
+    disks: [],
+    polys: [],
+  };
+  if (preview?.ok && preview.cover_profile?.some((p) => p.z > 0.02)) {
+    const pts = [];
+    for (const p of preview.cover_profile) pts.push(shotWorld(target, perp, p.x, 0));
+    for (let i = preview.cover_profile.length - 1; i >= 0; i--) {
+      const p = preview.cover_profile[i];
+      pts.push(shotWorld(target, perp, p.x, p.z));
+    }
+    marks.polys.push({ points: pts, color: "rgba(36, 48, 22, 0.46)" });
   }
+  if (preview?.ok) {
+    const off = preview.aim_offset || aimOffset || { x: 0, z: 1.15 };
+    const rad = preview.radius || preview.sigma || 0.15;
+    const ring = [];
+    for (let i = 0; i <= 32; i++) {
+      const th = (i / 32) * Math.PI * 2;
+      ring.push(shotWorld(target, perp, off.x + Math.cos(th) * rad, off.z + Math.sin(th) * rad));
+    }
+    marks.lines.push({ points: ring, color: "#d7b15a", width: 0.02 });
+  }
+  drawFrame(sil, { cam, map: null, solids: boxes, marks });
 }
 
 function bindSilhouette(sil) {
@@ -1638,7 +1290,7 @@ canvas.addEventListener("contextmenu", (ev) => ev.preventDefault());
 
 canvas.addEventListener("mousedown", (ev) => {
   if (ev.shiftKey || ev.ctrlKey || ev.metaKey) ev.preventDefault();
-  if (mapMode === "3d" && ev.button === 2) {
+  if (ev.button === 2) {
     orbiting = true;
     didOrbit = false;
     ev.preventDefault();
@@ -1804,8 +1456,7 @@ window.addEventListener("pointerover", (ev) => {
 
 canvas.addEventListener("wheel", (ev) => {
   ev.preventDefault();
-  if (mapMode === "3d") zoomCam(cam3, ev.deltaY > 0 ? 1.08 : 0.92);
-  else camera.zoom = Math.max(16, Math.min(80, camera.zoom * (ev.deltaY > 0 ? 0.92 : 1.08)));
+  zoomCam(cam3, ev.deltaY > 0 ? 1.08 : 0.92);
   render();
 }, { passive: false });
 
@@ -1824,7 +1475,7 @@ window.addEventListener("keydown", (ev) => {
   }
   if (orbitName(ev)) {
     ev.preventDefault();
-    if (mapMode === "3d" && !ev.repeat) tickCamOnce();
+    if (!ev.repeat) tickCamOnce();
   }
   if (ev.key === "v" || ev.key === "V") {
     ev.preventDefault();
@@ -1871,15 +1522,6 @@ function bindPair(id, onPick) {
 bindPair("fogPair", (v) => {
   fog = v === "player";
   refresh();
-});
-bindPair("projPair", (v) => {
-  mapMode = v;
-  if (mapMode === "2d" && camKind !== "strategy") {
-    camKind = "strategy";
-    restoreStrategyCam();
-  }
-  syncModePairs();
-  render();
 });
 bindPair("camPair", (v) => setCamKind(v));
 bindPair("roofPair", (v) => {
@@ -1938,19 +1580,7 @@ function orbitName(ev) {
 }
 
 function tickCamOnce() {
-  let moved = false;
-  if (mapMode === "3d") {
-    moved = stepHeldCam(cam3, keys, cam3.dist * 0.012);
-  } else {
-    const speed = 8 / camera.zoom;
-    const x0 = camera.x;
-    const y0 = camera.y;
-    if (keys.has("ArrowLeft") || keys.has("a") || keys.has("A") || keys.has("KeyA")) camera.x -= speed;
-    if (keys.has("ArrowRight") || keys.has("d") || keys.has("D") || keys.has("KeyD")) camera.x += speed;
-    if (keys.has("ArrowUp") || keys.has("w") || keys.has("W") || keys.has("KeyW")) camera.y += speed;
-    if (keys.has("ArrowDown") || keys.has("s") || keys.has("S") || keys.has("KeyS")) camera.y -= speed;
-    moved = camera.x !== x0 || camera.y !== y0;
-  }
+  const moved = stepHeldCam(cam3, keys, cam3.dist * 0.012);
   if (moved) render();
   return moved;
 }
@@ -1967,7 +1597,7 @@ window.__sandbox = {
       yaw: cam3.yaw, pitch: cam3.pitch, dist: cam3.dist,
       tx: cam3.target.x, ty: cam3.target.y,
       eye: { x: eye.x, y: eye.y, z: eye.z },
-      fpv: !!cam3.fpv, kind: camKind, mode: mapMode,
+      fpv: !!cam3.fpv, kind: camKind,
       keys: [...keys],
     };
   },
@@ -2026,12 +1656,48 @@ function loadScenario(id) {
 }
 
 async function boot() {
-  catalog = await loadCatalog(readContent);
-  fillScenarioSelect(catalog.index, rememberedScenario(catalog.index));
-  document.getElementById("scenarioSelect").onchange = () => {
-    loadScenario(document.getElementById("scenarioSelect").value);
-  };
-  loadScenario(rememberedScenario(catalog.index));
-  tickCam();
+  const phase = document.getElementById("phaseLabel");
+  try {
+    phase.textContent = "loading catalog…";
+    catalog = await loadCatalog(readContent);
+    phase.textContent = "starting WebGPU…";
+    const ok = await initRenderer();
+    if (!ok) {
+      const why = initError() || "WebGPU init failed";
+      phase.textContent = `WebGPU failed: ${why}`;
+      const prompt = document.getElementById("prompt");
+      if (prompt) {
+        prompt.classList.remove("hidden");
+        prompt.textContent = why.includes("adapter") || why.includes("timed out")
+          ? "WebGPU never got a GPU adapter. Cursor's built-in browser cannot do this. In desktop Chrome: quit fully, confirm chrome://gpu says Vulkan, then hard-refresh. The yellow banner was --enable-unsafe-webgpu (now removed — not needed on Chrome 146)."
+          : `WebGPU failed: ${why}`;
+      }
+      console.error("sandbox gpu:", why);
+      return;
+    }
+  } catch (err) {
+    const why = err?.message || String(err);
+    phase.textContent = `boot failed: ${why}`;
+    console.error("sandbox boot:", err);
+    return;
+  }
+  try {
+    phase.textContent = "WebGPU ready — waiting for canvas…";
+    await new Promise((r) => requestAnimationFrame(r));
+    const rect = canvas.getBoundingClientRect();
+    resizeCanvas(canvas, Math.max(1, Math.round(rect.width)), Math.max(1, Math.round(rect.height)));
+    fillScenarioSelect(catalog.index, rememberedScenario(catalog.index));
+    document.getElementById("scenarioSelect").onchange = () => {
+      loadScenario(document.getElementById("scenarioSelect").value);
+    };
+    phase.textContent = "drawing first frame…";
+    await new Promise((r) => requestAnimationFrame(r));
+    loadScenario(rememberedScenario(catalog.index));
+    tickCam();
+  } catch (err) {
+    const why = err?.message || String(err);
+    phase.textContent = `scene failed: ${why}`;
+    console.error("sandbox scene:", err);
+  }
 }
 boot();

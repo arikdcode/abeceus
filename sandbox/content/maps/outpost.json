@@ -60,7 +60,7 @@
     { "prop": "fence_post", "id": "boom-n", "pos": [22.15, 25.6] },
 
     { "prop": "crate", "id": "crate-gate", "pos": [27.4, 17.9] },
-    { "prop": "crate", "id": "crate-stack", "pos": [28.7, 17.55], "yaw": 0.4 },
+    { "prop": "crate", "id": "crate-stack", "pos": [30.6, 16.6], "yaw": 0.4 },
     { "prop": "booth", "id": "booth-gate", "pos": [25.6, 28.8] },
     { "prop": "tower", "id": "tower", "pos": [26.2, 36.2] },
     { "prop": "sandbag", "id": "sandbag-tower", "pos": [23.6, 35.8], "yaw": 1.5708 },

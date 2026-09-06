@@ -23,10 +23,6 @@
         <button type="button" data-val="dev" class="on">Dev</button>
         <button type="button" data-val="player">Player</button>
       </div>
-      <div class="mode-pair" id="projPair" data-value="3d" title="Q/E rotate around the look-at. Wheel zooms. WASD pans. Home resets.">
-        <button type="button" data-val="3d" class="on">3D</button>
-        <button type="button" data-val="2d">2D</button>
-      </div>
       <div class="mode-pair" id="camPair" data-value="strategy" title="Strategy is the tactical angle. Overview is a wide cinematic 3/4. FPV is the acting unit. V cycles.">
         <button type="button" data-val="strategy" class="on">Strategy</button>
         <button type="button" data-val="overview">Overview</button>
@@ -49,7 +45,9 @@
     </aside>
     <div class="center">
       <div class="stage">
-        <canvas id="map" width="880" height="520"></canvas>
+        <div class="viewport">
+          <canvas id="view" width="880" height="520"></canvas>
+        </div>
         <div id="hoverHud" class="hover-hud hidden"></div>
         <div id="prompt" class="prompt hidden"></div>
       </div>

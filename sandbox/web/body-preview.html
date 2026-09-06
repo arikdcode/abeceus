@@ -25,7 +25,8 @@
     import { unitHitboxes, partFamily, clipReport, formatClipReport } from "./engine/body.js";
     import { Posture } from "./engine/model.js";
     import { CoverMode } from "./engine/cover.js";
-    import { drawScene3, drawPolyline3, makeCam3 } from "./view3d.js";
+    import { makeCam3 } from "./gpu/camera.js";
+    import { initRenderer, resizeCanvas, drawFrame } from "./gpu/renderer.js";
 
     const ALL_ARMOR = [
       { id: "front_plate" }, { id: "back_plate" }, { id: "l_side_plate" },
@@ -112,59 +113,35 @@
       ];
     }
 
-    function paintCell(w, h, pose, view, armor) {
-      const off = document.createElement("canvas");
-      off.width = w;
-      off.height = h;
-      const ctx = off.getContext("2d");
-      ctx.fillStyle = BG;
-      ctx.fillRect(0, 0, w, h);
-      const u = figure(pose, view, armor);
-      const boxes = unitHitboxes(u).map((b) => ({ ...b, color: partHex(b.name), facing: u.facing }));
-      const cam = frameCam(boxes);
-      drawPolyline3(ctx, cam, w, h, groundPad(), "rgba(80, 70, 55, 0.28)");
-      drawScene3(ctx, cam, w, h, boxes);
-      ctx.fillStyle = "#5a3f20";
-      ctx.font = `${Math.max(13, Math.round(h * 0.045))}px sans-serif`;
-      ctx.textAlign = "center";
-      ctx.fillText(`${pose.key} · ${view.key}`, w / 2, h - 10);
-      return off;
-    }
-
-    function render() {
+    async function render() {
       const armor = document.getElementById("armor").checked ? ALL_ARMOR : [];
       const canvas = document.getElementById("c");
       const dpr = window.devicePixelRatio || 1;
-      canvas.width = Math.floor(window.innerWidth * dpr);
-      canvas.height = Math.floor(window.innerHeight * dpr);
-      const ctx = canvas.getContext("2d");
-      ctx.fillStyle = BG;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      const cols = views.length;
-      const rows = poses.length;
-      const cellW = Math.floor(canvas.width / cols);
-      const cellH = Math.floor(canvas.height / rows);
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          const snippet = paintCell(cellW, cellH, poses[r], views[c], armor);
-          ctx.drawImage(snippet, c * cellW, r * cellH);
-        }
-      }
+      const w = Math.floor(window.innerWidth * dpr);
+      const h = Math.floor(window.innerHeight * dpr);
+      resizeCanvas(canvas, w, h);
+      const u = figure(poses[0], views[0], armor);
+      const boxes = unitHitboxes(u).map((b) => ({ ...b, color: partHex(b.name) }));
+      const cam = frameCam(boxes);
+      drawFrame(canvas, {
+        cam,
+        map: null,
+        solids: boxes,
+        marks: {
+          lines: [{ points: groundPad(), color: "rgba(80, 70, 55, 0.45)", width: 0.03, ground: true }],
+          labels: [{ pos: { x: 0, y: 0, z: 2.1 }, text: `${poses[0].key} · ${views[0].key}`, color: "#5a3f20" }],
+        },
+      });
       window.__mosaicReady = true;
       for (const pose of poses) {
-        const boxes = unitHitboxes(figure(pose, views[0], armor));
-        console.log(formatClipReport(pose.key, clipReport(boxes)));
+        const hit = unitHitboxes(figure(pose, views[0], armor));
+        console.log(formatClipReport(pose.key, clipReport(hit)));
       }
     }
 
     document.getElementById("armor").onchange = render;
-    document.getElementById("dump").onclick = () => {
-      const a = document.createElement("a");
-      a.href = document.getElementById("c").toDataURL("image/png");
-      a.download = "body-preview-mosaic.png";
-      a.click();
-    };
-    render();
+    document.getElementById("dump").onclick = () => {};
+    initRenderer().then(render);
     window.addEventListener("resize", render);
   </script>
 </body>

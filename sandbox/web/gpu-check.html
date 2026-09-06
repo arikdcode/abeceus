@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>WebGPU check</title>
+  <style>
+    body { font: 14px/1.45 ui-monospace, monospace; background: #12151a; color: #e8edf4; padding: 20px; }
+    pre { white-space: pre-wrap; }
+    .ok { color: #6ecf9a; }
+    .bad { color: #ff8a6e; }
+  </style>
+</head>
+<body>
+  <h1>WebGPU check</h1>
+  <pre id="out">running…</pre>
+  <script type="module">
+    const lines = [];
+    const out = document.getElementById("out");
+    const log = (s, cls) => {
+      lines.push(s);
+      out.textContent = lines.join("\n");
+    };
+    log(`ua: ${navigator.userAgent}`);
+    log(`secure: ${window.isSecureContext}`);
+    log(`navigator.gpu: ${typeof navigator.gpu}`);
+    const ua = navigator.userAgent;
+    if (/Electron|Cursor\//i.test(ua)) {
+      log("This is Cursor's built-in browser (Electron), not Google Chrome.", "bad");
+      log("It cannot get a WebGPU adapter. Open this same URL in desktop Chrome.");
+      window.__gpuCheck = { ok: false, reason: "cursor-electron" };
+      document.title = "WebGPU FAIL";
+    } else if (!navigator.gpu) {
+      log("FAIL: no navigator.gpu", "bad");
+      window.__gpuCheck = { ok: false, reason: "no navigator.gpu" };
+    } else {
+      try {
+        const adapter = await navigator.gpu.requestAdapter({ powerPreference: "high-performance" })
+          || await navigator.gpu.requestAdapter()
+          || await navigator.gpu.requestAdapter({ forceFallbackAdapter: true });
+        log(`adapter: ${adapter ? "yes" : "null"}`);
+        if (!adapter) {
+          log("FAIL: requestAdapter returned null", "bad");
+          window.__gpuCheck = { ok: false, reason: "no adapter" };
+        } else {
+          const info = adapter.info || {};
+          log(`vendor: ${info.vendor || "?"} device: ${info.device || "?"} backend: ${info.architecture || "?"}`);
+          const device = await adapter.requestDevice();
+          log("device: yes");
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("webgpu");
+          log(`getContext(webgpu): ${ctx ? "yes" : "no"}`);
+          const { initRenderer, initError, resizeCanvas, drawFrame } = await import("./gpu/renderer.js");
+          const ok = await initRenderer();
+          log(`initRenderer: ${ok}`);
+          if (!ok) log(`initError: ${initError() || "?"}`);
+          else {
+            canvas.width = 64;
+            canvas.height = 64;
+            resizeCanvas(canvas, 64, 64);
+            const drawn = drawFrame(canvas, {
+              cam: { target: { x: 4, y: 4, z: 0 }, yaw: 0.7, pitch: 0.55, dist: 12 },
+              map: { min: [0, 0], max: [8, 8], ground: "dirt", surfaces: [] },
+              solids: [],
+              marks: { grid: false, shadows: [], paths: [], rings: [], lines: [], rects: [], labels: [], edges: [] },
+            });
+            log(`drawFrame: ${drawn}`);
+            log("OK: full renderer init + first present", "ok");
+          }
+          window.__gpuCheck = { ok, reason: initError() || (ok ? "" : "init failed") };
+        }
+      } catch (err) {
+        log(`FAIL: ${err && err.message ? err.message : err}`, "bad");
+        window.__gpuCheck = { ok: false, reason: String(err && err.message ? err.message : err) };
+      }
+    }
+    document.title = window.__gpuCheck?.ok ? "WebGPU OK" : "WebGPU FAIL";
+  </script>
+</body>
+</html>
