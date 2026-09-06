@@ -7,19 +7,35 @@ layout(std140) uniform Frame {
   vec4 frame_sun;
   vec4 frame_fog;
   vec4 frame_params;
+  vec4 frame_prev_r;
+  vec4 frame_prev_u;
+  vec4 frame_prev_f;
+  vec4 frame_prev_eye;
+  vec4 frame_restir;
+  vec4 frame_map;
 };
 
-vec4 to_clip(vec3 p) {
-  vec3 v = p - frame_eye.xyz;
-  float vx = dot(v, frame_r.xyz);
-  float vy = dot(v, frame_u.xyz);
-  float vz = dot(v, frame_f.xyz);
+vec4 to_clip_basis(vec3 p, vec3 eye, vec3 r, vec3 u, vec3 f) {
+  vec3 v = p - eye;
+  float vx = dot(v, r);
+  float vy = dot(v, u);
+  float vz = dot(v, f);
   float fov = frame_params.z;
   float aspect = frame_params.x / max(frame_params.y, 1.0);
   float near = max(frame_params.w, 0.02);
   float far = 250.0;
   float z_clip = ((far + near) / (far - near)) * vz + (-2.0 * far * near / (far - near));
   return vec4(vx / (fov * aspect), vy / fov, z_clip, vz);
+}
+
+vec4 to_clip(vec3 p) {
+  return to_clip_basis(p, frame_eye.xyz, frame_r.xyz, frame_u.xyz, frame_f.xyz);
+}
+
+vec2 to_uv(vec3 p, vec3 eye, vec3 r, vec3 u, vec3 f) {
+  vec4 c = to_clip_basis(p, eye, r, u, f);
+  if (c.w < 0.05) return vec2(-1.0);
+  return vec2(c.x / c.w, c.y / c.w) * 0.5 + 0.5;
 }
 `;
 
@@ -275,6 +291,474 @@ void main() {
   float fog_a = min(0.55, 1.0 - exp(-v_extra.y * 0.0105));
   lit = mix(lit, frame_fog.rgb, fog_a);
   frag = vec4(lit, v_color.a);
+}
+`;
+
+export const FS_GBUF = /* glsl */ `#version 300 es
+precision highp float;
+${FRAME}
+in vec3 v_world;
+in vec3 v_normal;
+in vec4 v_color;
+in vec4 v_shade;
+in vec4 v_extra;
+layout(location = 0) out vec4 out_albedo;
+layout(location = 1) out vec4 out_normal;
+layout(location = 2) out vec4 out_world;
+
+float hash21(vec2 p) {
+  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+}
+vec2 face_uv(vec3 p, vec3 n) {
+  vec3 an = abs(n);
+  if (an.z >= an.x && an.z >= an.y) return p.xy;
+  if (an.y >= an.x) return p.xz;
+  return p.yz;
+}
+vec3 apply_tex(vec3 base, vec3 p, vec3 n, float tex) {
+  int id = int(tex + 0.5);
+  if (id == 0) return base;
+  vec2 uv = face_uv(p, n);
+  if (id == 1) {
+    float g = abs(fract(uv.x * 3.2) - 0.5);
+    return mix(base, base * vec3(0.55, 0.52, 0.48), 1.0 - smoothstep(0.04, 0.1, g));
+  }
+  if (id == 2) {
+    float g = abs(fract(uv.y * 2.1) - 0.5);
+    float v = abs(fract(uv.x * 0.55) - 0.5);
+    vec3 rgb = mix(base, base * 0.62, 1.0 - smoothstep(0.06, 0.14, g));
+    return mix(rgb, rgb * 0.78, 1.0 - smoothstep(0.02, 0.07, v));
+  }
+  if (id == 3) {
+    float row = floor(uv.y * 1.4);
+    float g = length(vec2(fract(uv.x * 1.15 + row * 0.35) - 0.5, fract(uv.y * 1.4) - 0.5));
+    return mix(base * 0.7, base, smoothstep(0.28, 0.42, g));
+  }
+  if (id == 4) {
+    float g = abs(fract(uv.y * 4.5) - 0.5);
+    return mix(base, base * 0.72, 1.0 - smoothstep(0.03, 0.08, g));
+  }
+  if (id == 5) {
+    float g = abs(fract(uv.x * 2.4 + uv.y * 0.18) - 0.5);
+    return mix(base, base * 0.8, 1.0 - smoothstep(0.08, 0.16, g));
+  }
+  if (id == 6) {
+    float gx = abs(fract(uv.x * 5.0) - 0.5);
+    float gy = abs(fract(uv.y * 5.0) - 0.5);
+    float line = 1.0 - smoothstep(0.03, 0.08, min(gx, gy));
+    return mix(base, base * vec3(0.28, 0.3, 0.32), line * 0.7);
+  }
+  if (id == 7) {
+    float band = step(0.32, fract(uv.y * 0.55)) * (1.0 - step(0.58, fract(uv.y * 0.55)));
+    return mix(base, vec3(0.82, 0.67, 0.16), band * 0.45);
+  }
+  vec2 cell = floor(uv * 2.6);
+  float speck = hash21(cell + vec2(floor(p.z * 3.0), 0.0));
+  return mix(base * 0.78, base * 1.08, speck);
+}
+
+void main() {
+  vec3 n = normalize(v_normal);
+  out_albedo = vec4(apply_tex(v_color.rgb, v_world, n, v_extra.x), v_color.a);
+  out_normal = vec4(n, v_shade.w);
+  out_world = vec4(v_world, v_extra.x);
+}
+`;
+
+export const FS_RESTIR = /* glsl */ `#version 300 es
+precision highp float;
+${FRAME}
+layout(std140) uniform Shadow {
+  vec4 shadow_sun_r;
+  vec4 shadow_sun_u;
+  vec4 shadow_sun_f;
+  vec4 shadow_sun_eye;
+  vec4 shadow_sun_params;
+};
+uniform highp sampler2DShadow u_sun_shadow;
+uniform sampler2D u_g_albedo;
+uniform sampler2D u_g_normal;
+uniform sampler2D u_g_world;
+uniform sampler2D u_lights;
+uniform sampler2D u_occluders;
+uniform sampler2D u_grid;
+uniform sampler2D u_index;
+uniform sampler2D u_lgrid;
+uniform sampler2D u_lindex;
+uniform sampler2D u_prev_res;
+uniform sampler2D u_prev_color;
+layout(location = 0) out vec4 frag;
+layout(location = 1) out vec4 out_res;
+
+float hash21(vec2 p) {
+  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+}
+
+float luma(vec3 c) {
+  return dot(c, vec3(0.3, 0.59, 0.11));
+}
+
+float wrap_n(float ndot, float wrap_k) {
+  if (wrap_k > 0.0) ndot = (ndot + wrap_k) / (1.0 + wrap_k);
+  return max(ndot, 0.0);
+}
+
+float pcf_sun(vec3 world, float ndot) {
+  if (shadow_sun_params.x < 0.5) return 1.0;
+  vec3 to = world - shadow_sun_eye.xyz;
+  float lx = dot(to, shadow_sun_r.xyz);
+  float ly = dot(to, shadow_sun_u.xyz);
+  float lz = dot(to, shadow_sun_f.xyz);
+  vec2 uv = vec2(lx / shadow_sun_params.x, ly / shadow_sun_params.y) * 0.5 + 0.5;
+  if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) return 1.0;
+  float ref = (lz - shadow_sun_params.z) / max(shadow_sun_params.w - shadow_sun_params.z, 0.01);
+  float bias = 0.0014 + 0.0045 * (1.0 - clamp(ndot, 0.0, 1.0));
+  ref = clamp(ref - bias, 0.0, 1.0);
+  float texel = 1.0 / 1024.0;
+  float s = 0.0;
+  for (int i = -1; i <= 1; i++) {
+    for (int j = -1; j <= 1; j++) {
+      s += texture(u_sun_shadow, vec3(uv + vec2(float(i), float(j)) * texel, ref));
+    }
+  }
+  return s / 9.0;
+}
+
+vec4 light_pos(int i) { return texelFetch(u_lights, ivec2(0, i), 0); }
+vec4 light_col(int i) { return texelFetch(u_lights, ivec2(1, i), 0); }
+vec4 light_dir(int i) { return texelFetch(u_lights, ivec2(2, i), 0); }
+vec4 light_rad(int i) { return texelFetch(u_lights, ivec2(3, i), 0); }
+
+float light_contrib(int i, vec3 world, vec3 n, vec3 view_dir, vec3 albedo, float spec_k, float shine, float wrap_k) {
+  if (i < 0) return 0.0;
+  vec4 pr = light_pos(i);
+  vec4 ci = light_col(i);
+  vec4 dd = light_dir(i);
+  vec3 to_l = pr.xyz - world;
+  float dist = length(to_l);
+  float range = max(pr.w, 0.01);
+  float fall = max(1.0 - dist / range, 0.0);
+  fall *= fall;
+  vec3 ldir = to_l / max(dist, 1e-4);
+  float nd = wrap_n(dot(n, ldir), wrap_k);
+  float cone = 1.0;
+  if (dd.w > 0.5 && dot(dd.xyz, dd.xyz) > 0.05) {
+    cone = smoothstep(0.42, 0.78, dot(-ldir, normalize(dd.xyz)));
+  }
+  vec3 lcol = ci.rgb * ci.w;
+  vec3 lh = normalize(ldir + view_dir);
+  float lspec = pow(max(dot(n, lh), 0.0), shine) * spec_k * 0.4;
+  return luma((albedo * nd + lspec) * lcol * fall * cone);
+}
+
+vec3 light_shade(int i, vec3 world, vec3 n, vec3 view_dir, vec3 albedo, float spec_k, float shine, float wrap_k) {
+  vec4 pr = light_pos(i);
+  vec4 ci = light_col(i);
+  vec4 dd = light_dir(i);
+  vec3 to_l = pr.xyz - world;
+  float dist = length(to_l);
+  float range = max(pr.w, 0.01);
+  float fall = max(1.0 - dist / range, 0.0);
+  fall *= fall;
+  vec3 ldir = to_l / max(dist, 1e-4);
+  float nd = wrap_n(dot(n, ldir), wrap_k);
+  float cone = 1.0;
+  if (dd.w > 0.5 && dot(dd.xyz, dd.xyz) > 0.05) {
+    cone = smoothstep(0.42, 0.78, dot(-ldir, normalize(dd.xyz)));
+  }
+  vec3 lcol = ci.rgb * ci.w;
+  vec3 lh = normalize(ldir + view_dir);
+  float lspec = pow(max(dot(n, lh), 0.0), shine) * spec_k * 0.4;
+  return (albedo * nd + lspec) * lcol * fall * cone;
+}
+
+float ray_aabb(vec3 o, vec3 d, vec3 mn, vec3 mx, float max_t) {
+  vec3 inv = vec3(
+    abs(d.x) < 1e-6 ? (d.x < 0.0 ? -1e6 : 1e6) : 1.0 / d.x,
+    abs(d.y) < 1e-6 ? (d.y < 0.0 ? -1e6 : 1e6) : 1.0 / d.y,
+    abs(d.z) < 1e-6 ? (d.z < 0.0 ? -1e6 : 1e6) : 1.0 / d.z
+  );
+  vec3 t0 = (mn - o) * inv;
+  vec3 t1 = (mx - o) * inv;
+  vec3 tmin = min(t0, t1);
+  vec3 tmax = max(t0, t1);
+  float enter = max(max(tmin.x, tmin.y), max(tmin.z, 0.0));
+  float leave = min(min(tmax.x, tmax.y), min(tmax.z, max_t));
+  return leave >= enter ? enter : -1.0;
+}
+
+bool light_owns(vec3 lp, float rad, vec3 mn, vec3 mx) {
+  vec3 c = (mn + mx) * 0.5;
+  vec3 e = mx - mn;
+  return distance(lp, c) < rad + length(e) * 0.15;
+}
+
+int index_at(int k) {
+  return int(texelFetch(u_index, ivec2(k % 2048, k / 2048), 0).r + 0.5);
+}
+
+int lindex_at(int k) {
+  return int(texelFetch(u_lindex, ivec2(k % 2048, k / 2048), 0).r + 0.5);
+}
+
+int fetch_local_count(vec3 world) {
+  float cell = max(frame_restir.w, 1.0);
+  vec2 origin_xy = frame_map.xy;
+  int cols = int(frame_map.z + 0.5);
+  int rows = int(frame_map.w + 0.5);
+  int cx = int(floor((world.x - origin_xy.x) / cell));
+  int cy = int(floor((world.y - origin_xy.y) / cell));
+  if (cx < 0 || cy < 0 || cx >= cols || cy >= rows) return 0;
+  return int(texelFetch(u_lgrid, ivec2(cx, cy), 0).y + 0.5);
+}
+
+int fetch_local_at(vec3 world, int k) {
+  float cell = max(frame_restir.w, 1.0);
+  vec2 origin_xy = frame_map.xy;
+  int cx = int(floor((world.x - origin_xy.x) / cell));
+  int cy = int(floor((world.y - origin_xy.y) / cell));
+  vec4 head = texelFetch(u_lgrid, ivec2(cx, cy), 0);
+  return lindex_at(int(head.x + 0.5) + k);
+}
+
+bool occ_hidden(vec3 origin, int li) {
+  int n_occ = int(frame_restir.z + 0.5);
+  if (n_occ <= 0 || li < 0) return false;
+  vec3 lp = light_pos(li).xyz;
+  float rad = max(light_rad(li).x, 0.2);
+  vec3 delta = lp - origin;
+  float max_t = length(delta);
+  if (max_t < 0.08) return false;
+  vec3 d = delta / max_t;
+  vec3 o = origin + d * 0.10;
+  float reach = max(max_t - 0.16, 0.02);
+  float cell = max(frame_restir.w, 1.0);
+  vec2 origin_xy = frame_map.xy;
+  float cols = max(frame_map.z, 1.0);
+  float rows = max(frame_map.w, 1.0);
+  int cx = int(floor((o.x - origin_xy.x) / cell));
+  int cy = int(floor((o.y - origin_xy.y) / cell));
+  int step_x = d.x > 0.0 ? 1 : -1;
+  int step_y = d.y > 0.0 ? 1 : -1;
+  float t = 0.0;
+  const int MAX_HOPS = 40;
+  int seen0 = -1;
+  int seen1 = -1;
+  int seen2 = -1;
+  int seen3 = -1;
+  for (int hop = 0; hop < MAX_HOPS; hop++) {
+    if (t > reach) break;
+    if (cx >= 0 && cy >= 0 && cx < int(cols + 0.5) && cy < int(rows + 0.5)) {
+      vec4 head = texelFetch(u_grid, ivec2(cx, cy), 0);
+      int off = int(head.x + 0.5);
+      int cnt = int(head.y + 0.5);
+      for (int k = 0; k < 24; k++) {
+        if (k >= cnt) break;
+        int id = index_at(off + k);
+        if (id == seen0 || id == seen1 || id == seen2 || id == seen3) continue;
+        if (seen0 < 0) seen0 = id;
+        else if (seen1 < 0) seen1 = id;
+        else if (seen2 < 0) seen2 = id;
+        else seen3 = id;
+        vec4 a = texelFetch(u_occluders, ivec2(0, id), 0);
+        vec4 b = texelFetch(u_occluders, ivec2(1, id), 0);
+        vec3 mn = a.xyz;
+        vec3 mx = vec3(a.w, b.x, b.y);
+        if (light_owns(lp, rad, mn, mx)) continue;
+        float hit = ray_aabb(o, d, mn, mx, reach);
+        if (hit > 0.001) return true;
+      }
+    }
+    float nx = origin_xy.x + float(cx + (step_x > 0 ? 1 : 0)) * cell;
+    float ny = origin_xy.y + float(cy + (step_y > 0 ? 1 : 0)) * cell;
+    float tx = abs(d.x) > 1e-6 ? (nx - o.x) / d.x : 1e9;
+    float ty = abs(d.y) > 1e-6 ? (ny - o.y) / d.y : 1e9;
+    if (tx < ty) { t = tx; cx += step_x; }
+    else { t = ty; cy += step_y; }
+  }
+  return false;
+}
+
+void restir_add(inout vec4 res, int y, float phat, float w, float u) {
+  res.y += w;
+  res.z += 1.0;
+  if (res.x < 0.0 || u * max(res.y, 1e-6) < w) {
+    res.x = float(y);
+    res.w = phat;
+  }
+}
+
+void add_visible(inout vec3 lit, int li, vec3 world, vec3 n, vec3 view_dir, vec3 albedo, float spec_k, float shine, float wrap_k) {
+  if (li < 0) return;
+  float ph = light_contrib(li, world, n, view_dir, albedo, spec_k, shine, wrap_k);
+  if (ph < 1e-5) return;
+  if (occ_hidden(world, li)) return;
+  lit += light_shade(li, world, n, view_dir, albedo, spec_k, shine, wrap_k);
+}
+
+void main() {
+  vec2 resxy = max(frame_params.xy, vec2(1.0));
+  ivec2 pix = ivec2(gl_FragCoord.xy);
+  vec2 uv = (vec2(pix) + 0.5) / resxy;
+  vec4 albedo_a = texelFetch(u_g_albedo, pix, 0);
+  if (albedo_a.a < 0.01) {
+    frag = vec4(0.0);
+    out_res = vec4(-1.0, 0.0, 0.0, 0.0);
+    return;
+  }
+  vec3 albedo = albedo_a.rgb;
+  vec4 ns = texelFetch(u_g_normal, pix, 0);
+  vec3 n = normalize(ns.xyz);
+  vec3 world = texelFetch(u_g_world, pix, 0).xyz;
+  float emit_k = ns.w;
+  vec3 view_dir = normalize(frame_eye.xyz - world);
+  float spec_k = 0.08;
+  float shine = 16.0;
+  float wrap_k = 0.04;
+
+  vec3 sky = vec3(0.40, 0.50, 0.64);
+  vec3 ground = vec3(0.26, 0.18, 0.11);
+  float hemi = n.z * 0.5 + 0.5;
+  vec3 sun_dir = frame_sun.xyz;
+  vec3 sun_col = vec3(1.02, 0.84, 0.60);
+  float sun_n = wrap_n(dot(n, sun_dir), wrap_k);
+  float sun_on = frame_sun.w;
+  float sun_vis = sun_on > 0.5 ? pcf_sun(world, sun_n) : 0.0;
+  vec3 ambient = mix(ground, sky, hemi) * 0.20 + vec3(0.075, 0.068, 0.058);
+  vec3 lit = albedo * (ambient + sun_col * sun_n * 0.86 * sun_vis);
+  vec3 fill_dir = normalize(-sun_dir + vec3(0.0, 0.0, 0.42));
+  lit += albedo * vec3(0.20, 0.26, 0.36) * max(dot(n, fill_dir), 0.0) * 0.22 * sun_on;
+
+  int n_local = min(fetch_local_count(world), 16);
+  int frame_i = int(frame_restir.x + 0.5);
+  vec4 reservoir = vec4(-1.0, 0.0, 0.0, 0.0);
+  float seed = hash21(gl_FragCoord.xy + float(frame_i) * 19.7);
+  const int EXACT = 8;
+
+  if (n_local > 0 && n_local <= EXACT) {
+    for (int i = 0; i < 16; i++) {
+      if (i >= n_local) break;
+      int li = fetch_local_at(world, i);
+      add_visible(lit, li, world, n, view_dir, albedo, spec_k, shine, wrap_k);
+      if (reservoir.x < 0.0) {
+        reservoir = vec4(float(li), 1.0, 1.0, 1.0);
+      }
+    }
+  } else if (n_local > EXACT) {
+    int nearest = fetch_local_at(world, 0);
+    float nearest_p = -1.0;
+    for (int i = 0; i < 16; i++) {
+      if (i >= n_local) break;
+      int li = fetch_local_at(world, i);
+      float ph = light_contrib(li, world, n, view_dir, albedo, spec_k, shine, wrap_k);
+      if (ph > nearest_p) { nearest_p = ph; nearest = li; }
+    }
+    add_visible(lit, nearest, world, n, view_dir, albedo, spec_k, shine, wrap_k);
+
+    const int CAND = 8;
+    float psel = 1.0 / float(max(n_local - 1, 1));
+    for (int c = 0; c < CAND; c++) {
+      seed = hash21(vec2(seed * 13.1, float(c) + 0.7));
+      int li = fetch_local_at(world, int(floor(seed * float(n_local))) % n_local);
+      if (li == nearest) continue;
+      float phat = light_contrib(li, world, n, view_dir, albedo, spec_k, shine, wrap_k);
+      if (phat < 1e-5) continue;
+      seed = hash21(vec2(seed, 3.3 + float(c)));
+      restir_add(reservoir, li, phat, phat / max(psel, 1e-4), seed);
+    }
+
+    vec2 puv = to_uv(world, frame_prev_eye.xyz, frame_prev_r.xyz, frame_prev_u.xyz, frame_prev_f.xyz);
+    if (puv.x > 0.0 && puv.x < 1.0 && puv.y > 0.0 && puv.y < 1.0) {
+      vec4 prev = texture(u_prev_res, puv);
+      int py = int(prev.x + 0.5);
+      if (prev.x >= 0.0 && prev.z > 0.5 && py != nearest) {
+        float ph = max(prev.w, light_contrib(py, world, n, view_dir, albedo, spec_k, shine, wrap_k));
+        float w = ph * max(prev.y / max(prev.z * ph, 1e-4), 0.0) * min(prev.z, 12.0);
+        seed = hash21(vec2(seed, 8.8));
+        restir_add(reservoir, py, max(ph, 1e-5), w, seed);
+        reservoir.z = min(20.0, reservoir.z + min(prev.z, 12.0));
+      }
+      for (int s = 0; s < 3; s++) {
+        seed = hash21(vec2(seed, float(s) + 11.0));
+        vec2 off = (vec2(seed, hash21(vec2(seed, 4.2))) - 0.5) * 18.0 / resxy;
+        vec4 nei = texture(u_prev_res, uv + off);
+        vec3 nw = texture(u_g_world, uv + off).xyz;
+        int ny = int(nei.x + 0.5);
+        if (nei.x < 0.0 || ny == nearest || distance(nw, world) > 1.4) continue;
+        float ph = max(nei.w, light_contrib(ny, world, n, view_dir, albedo, spec_k, shine, wrap_k));
+        float w = ph * max(nei.y / max(nei.z * ph, 1e-4), 0.0);
+        seed = hash21(vec2(seed, 21.0));
+        restir_add(reservoir, ny, max(ph, 1e-5), w, seed);
+      }
+    }
+
+    int chosen = int(reservoir.x + 0.5);
+    float W = 0.0;
+    if (chosen >= 0 && chosen != nearest && reservoir.z > 0.0 && reservoir.w > 1e-6) {
+      W = min(reservoir.y / (reservoir.z * reservoir.w), 6.0);
+    }
+    if (chosen >= 0 && W > 0.0 && !occ_hidden(world, chosen)) {
+      lit += light_shade(chosen, world, n, view_dir, albedo, spec_k, shine, wrap_k) * W;
+    }
+  }
+
+  if (emit_k > 0.001) {
+    lit += albedo * (0.45 + emit_k * 1.15) + vec3(0.14, 0.09, 0.03) * emit_k;
+  }
+
+  if (n_local > EXACT) {
+    vec2 puv = to_uv(world, frame_prev_eye.xyz, frame_prev_r.xyz, frame_prev_u.xyz, frame_prev_f.xyz);
+    if (puv.x > 0.0 && puv.x < 1.0 && puv.y > 0.0 && puv.y < 1.0) {
+      vec4 hist = texture(u_prev_color, puv);
+      if (hist.a > 0.5) lit = mix(hist.rgb, lit, 0.35);
+    }
+  }
+  frag = vec4(lit, 1.0);
+  out_res = reservoir;
+}
+`;
+
+export const FS_GHOST = /* glsl */ `#version 300 es
+precision highp float;
+${FRAME}
+in vec3 v_world;
+in vec3 v_normal;
+in vec4 v_color;
+in vec4 v_shade;
+in vec4 v_extra;
+out vec4 frag;
+float wrap_n(float ndot, float wrap_k) {
+  if (wrap_k > 0.0) ndot = (ndot + wrap_k) / (1.0 + wrap_k);
+  return max(ndot, 0.0);
+}
+void main() {
+  vec3 n = normalize(v_normal);
+  vec3 albedo = v_color.rgb;
+  float wrap_k = v_shade.z;
+  float hemi = n.z * 0.5 + 0.5;
+  vec3 ambient = mix(vec3(0.26, 0.18, 0.11), vec3(0.40, 0.50, 0.64), hemi) * 0.20 + vec3(0.075, 0.068, 0.058);
+  float sun_n = wrap_n(dot(n, frame_sun.xyz), wrap_k);
+  vec3 lit = albedo * (ambient + vec3(1.02, 0.84, 0.60) * sun_n * 0.5 * frame_sun.w);
+  frag = vec4(lit, v_color.a);
+}
+`;
+
+export const FS_BLIT = /* glsl */ `#version 300 es
+precision highp float;
+${FRAME}
+uniform sampler2D u_color;
+uniform sampler2D u_g_world;
+out vec4 frag;
+void main() {
+  ivec2 pix = ivec2(gl_FragCoord.xy);
+  vec4 c = texelFetch(u_color, pix, 0);
+  if (c.a < 0.01) discard;
+  vec3 lit = c.rgb * 0.96;
+  lit = clamp((lit * (2.51 * lit + 0.03)) / (lit * (2.43 * lit + 0.59) + 0.14), 0.0, 1.0);
+  vec3 world = texelFetch(u_g_world, pix, 0).xyz;
+  float fog_a = min(0.55, 1.0 - exp(-max(dot(world - frame_eye.xyz, frame_f.xyz), 0.05) * 0.0105));
+  lit = mix(lit, frame_fog.rgb, fog_a);
+  frag = vec4(lit, 1.0);
 }
 `;
 

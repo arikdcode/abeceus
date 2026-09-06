@@ -2,27 +2,27 @@
  * Presenter → WebGL2 contract
  *
  * drawFrame(canvas, {
- *   cam,
- *   map,
- *   solids,
- *   casters, // optional; roofs that stay hidden still cast
+ *   cam, map, sun, solids, casters,
  *   marks: { grid, shadows[], paths[], rings[], lines[], rects[],
  *            disks[], polys[], edges[], labels[] },
  * })
+ *
+ * Lighting is ReSTIR-style: sample a few lights, reuse across time/space,
+ * and test the winner with an AABB occupancy ray instead of cube maps.
  */
 import { camBasis, fovOf } from "./camera.js";
-import { FOG, LAMP_FACES, LAMP_SHADOW_SIZE, MAX_LAMP_SHADOWS, MAX_LIGHTS, MAX_SPOT_SHADOWS, SUN, SUN_SHADOW_SIZE } from "./theme.js";
-import { FS_DEPTH, FS_LIT, FS_OVERLAY, FS_SKY, FS_TEXT, VS_DEPTH, VS_LIT, VS_OVERLAY, VS_SKY, VS_TEXT } from "./shaders.js";
+import { FOG, SUN, SUN_SHADOW_SIZE } from "./theme.js";
+import { FS_BLIT, FS_DEPTH, FS_GBUF, FS_GHOST, FS_OVERLAY, FS_RESTIR, FS_SKY, FS_TEXT, VS_DEPTH, VS_LIT, VS_OVERLAY, VS_SKY, VS_TEXT } from "./shaders.js";
 import { LIT_STRIDE, MeshWriter, OVERLAY_STRIDE, TEXT_STRIDE } from "./mesh.js";
 import { rasterFontAtlas } from "./font.js";
-import { collectLights, pushCasters, pushGround, pushLampCasters, pushSolids } from "./world.js";
+import { collectLights, pushCasters, pushGround, pushSolids } from "./world.js";
 import { buildLabels, buildOverlay, pushOverlayGrid } from "./overlay.js";
-import { assignShadowLayers, assignSpotLayers, cubeFaceCam, spotShadowCam, sunShadowCam } from "./shadow.js";
+import { sunShadowCam } from "./shadow.js";
+import { buildLightGrid, buildOccluderGrid, collectOccluders, packLights, packOccluders } from "./restir.js";
 
 const surfaces = new WeakMap();
 const litMesh = new MeshWriter(LIT_STRIDE);
 const casterMesh = new MeshWriter(LIT_STRIDE);
-const lampCasterMesh = new MeshWriter(LIT_STRIDE);
 const ghostMesh = new MeshWriter(LIT_STRIDE);
 const overlayMesh = new MeshWriter(OVERLAY_STRIDE);
 const textMesh = new MeshWriter(TEXT_STRIDE);
@@ -30,13 +30,12 @@ const textMesh = new MeshWriter(TEXT_STRIDE);
 let ready = false;
 let lastError = "";
 let fontCanvas = null;
-let frameData = new Float32Array(28);
-const LIGHT_FLOATS = 4 + MAX_LIGHTS * 4 * 3;
-let lightData = new Float32Array(LIGHT_FLOATS);
+let frameData = new Float32Array(52);
 const SHADOW_FLOATS = 20;
 let shadowData = new Float32Array(SHADOW_FLOATS);
 const DEPTH_CAM_FLOATS = 24;
 let depthCamData = new Float32Array(DEPTH_CAM_FLOATS);
+let frameIndex = 0;
 
 export function rendererReady() {
   return ready;
@@ -134,6 +133,18 @@ function bindDepth(gl, prog) {
   gl.disableVertexAttribArray(3);
 }
 
+function bindText(gl, prog) {
+  gl.useProgram(prog);
+  const b = TEXT_STRIDE * 4;
+  gl.enableVertexAttribArray(0);
+  gl.vertexAttribPointer(0, 3, gl.FLOAT, false, b, 0);
+  gl.enableVertexAttribArray(1);
+  gl.vertexAttribPointer(1, 2, gl.FLOAT, false, b, 16);
+  gl.enableVertexAttribArray(2);
+  gl.vertexAttribPointer(2, 4, gl.FLOAT, false, b, 32);
+  gl.disableVertexAttribArray(3);
+}
+
 function makeDepthTex(gl, size) {
   const tex = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, tex);
@@ -147,29 +158,91 @@ function makeDepthTex(gl, size) {
   return tex;
 }
 
-function makeDepthArray(gl, size, layers) {
+function makeTex(gl, internal, format, type, w, h, filter) {
   const tex = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D_ARRAY, tex);
-  gl.texImage3D(gl.TEXTURE_2D_ARRAY, 0, gl.DEPTH_COMPONENT24, size, size, layers, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_INT, null);
-  gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-  gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-  gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_COMPARE_MODE, gl.COMPARE_REF_TO_TEXTURE);
-  gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_COMPARE_FUNC, gl.LEQUAL);
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, filter);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, filter);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texImage2D(gl.TEXTURE_2D, 0, internal, w, h, 0, format, type, null);
   return tex;
 }
 
-function bindText(gl, prog) {
+function uploadFloatTex(gl, tex, w, h, data) {
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, w, h, 0, gl.RGBA, gl.FLOAT, data);
+}
+
+function setRestirMaps(gl, prog) {
   gl.useProgram(prog);
-  const b = TEXT_STRIDE * 4;
-  gl.enableVertexAttribArray(0);
-  gl.vertexAttribPointer(0, 3, gl.FLOAT, false, b, 0);
-  gl.enableVertexAttribArray(1);
-  gl.vertexAttribPointer(1, 2, gl.FLOAT, false, b, 16);
-  gl.enableVertexAttribArray(2);
-  gl.vertexAttribPointer(2, 4, gl.FLOAT, false, b, 32);
-  gl.disableVertexAttribArray(3);
+  gl.uniform1i(gl.getUniformLocation(prog, "u_sun_shadow"), 1);
+  gl.uniform1i(gl.getUniformLocation(prog, "u_g_albedo"), 2);
+  gl.uniform1i(gl.getUniformLocation(prog, "u_g_normal"), 3);
+  gl.uniform1i(gl.getUniformLocation(prog, "u_g_world"), 4);
+  gl.uniform1i(gl.getUniformLocation(prog, "u_lights"), 5);
+  gl.uniform1i(gl.getUniformLocation(prog, "u_occluders"), 6);
+  gl.uniform1i(gl.getUniformLocation(prog, "u_grid"), 7);
+  gl.uniform1i(gl.getUniformLocation(prog, "u_index"), 8);
+  gl.uniform1i(gl.getUniformLocation(prog, "u_lgrid"), 9);
+  gl.uniform1i(gl.getUniformLocation(prog, "u_lindex"), 10);
+  gl.uniform1i(gl.getUniformLocation(prog, "u_prev_res"), 11);
+  gl.uniform1i(gl.getUniformLocation(prog, "u_prev_color"), 12);
+}
+
+function ensureTargets(s, w, h) {
+  const gl = s.gl;
+  if (s.bufW === w && s.bufH === h && s.gAlbedo) return;
+  s.bufW = w;
+  s.bufH = h;
+  const mk8 = () => makeTex(gl, gl.RGBA8, gl.RGBA, gl.UNSIGNED_BYTE, w, h, gl.LINEAR);
+  const mk16 = () => makeTex(gl, gl.RGBA16F, gl.RGBA, gl.HALF_FLOAT, w, h, gl.LINEAR);
+  const mk16n = () => makeTex(gl, gl.RGBA16F, gl.RGBA, gl.HALF_FLOAT, w, h, gl.NEAREST);
+  s.gAlbedo = mk8();
+  s.gNormal = mk16();
+  s.gWorld = mk16();
+  s.gDepth = makeTex(gl, gl.DEPTH_COMPONENT24, gl.DEPTH_COMPONENT, gl.UNSIGNED_INT, w, h, gl.NEAREST);
+  if (!s.gFbo) s.gFbo = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, s.gFbo);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, s.gAlbedo, 0);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT1, gl.TEXTURE_2D, s.gNormal, 0);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT2, gl.TEXTURE_2D, s.gWorld, 0);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, s.gDepth, 0);
+  gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1, gl.COLOR_ATTACHMENT2]);
+  if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
+    throw new Error("g-buffer FBO incomplete");
+  }
+  s.litA = mk16();
+  s.litB = mk16();
+  s.resA = mk16n();
+  s.resB = mk16n();
+  if (!s.restirFbo) s.restirFbo = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, s.restirFbo);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, s.litA, 0);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT1, gl.TEXTURE_2D, s.resA, 0);
+  gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1]);
+  if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
+    s.litA = mk8();
+    s.litB = mk8();
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, s.litA, 0);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT1, gl.TEXTURE_2D, s.resA, 0);
+    if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
+      throw new Error("restir FBO incomplete");
+    }
+  }
+  for (const pair of [[s.litA, s.resA], [s.litB, s.resB]]) {
+    gl.bindFramebuffer(gl.FRAMEBUFFER, s.restirFbo);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, pair[0], 0);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT1, gl.TEXTURE_2D, pair[1], 0);
+    gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1]);
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+  }
+  s.ping = 0;
 }
 
 function surfaceOf(canvas) {
@@ -183,17 +256,20 @@ function surfaceOf(canvas) {
     preserveDrawingBuffer: canvas.dataset.capture === "1",
   });
   if (!gl) throw new Error("canvas has no webgl2 context");
-  const lit = linkProgram(gl, VS_LIT, FS_LIT);
+  gl.getExtension("EXT_color_buffer_float");
+  gl.getExtension("EXT_color_buffer_half_float");
+  gl.getExtension("OES_texture_float_linear");
+  const lit = linkProgram(gl, VS_LIT, FS_GHOST);
+  const gbuf = linkProgram(gl, VS_LIT, FS_GBUF);
+  const restir = linkProgram(gl, VS_SKY, FS_RESTIR);
+  const blit = linkProgram(gl, VS_SKY, FS_BLIT);
   const depth = linkProgram(gl, VS_DEPTH, FS_DEPTH);
   const sky = linkProgram(gl, VS_SKY, FS_SKY);
   const overlay = linkProgram(gl, VS_OVERLAY, FS_OVERLAY);
   const text = linkProgram(gl, VS_TEXT, FS_TEXT);
   const ubo = gl.createBuffer();
   gl.bindBuffer(gl.UNIFORM_BUFFER, ubo);
-  gl.bufferData(gl.UNIFORM_BUFFER, 112, gl.DYNAMIC_DRAW);
-  const lightUbo = gl.createBuffer();
-  gl.bindBuffer(gl.UNIFORM_BUFFER, lightUbo);
-  gl.bufferData(gl.UNIFORM_BUFFER, LIGHT_FLOATS * 4, gl.DYNAMIC_DRAW);
+  gl.bufferData(gl.UNIFORM_BUFFER, 208, gl.DYNAMIC_DRAW);
   const shadowUbo = gl.createBuffer();
   gl.bindBuffer(gl.UNIFORM_BUFFER, shadowUbo);
   gl.bufferData(gl.UNIFORM_BUFFER, SHADOW_FLOATS * 4, gl.DYNAMIC_DRAW);
@@ -201,13 +277,12 @@ function surfaceOf(canvas) {
   gl.bindBuffer(gl.UNIFORM_BUFFER, depthCamUbo);
   gl.bufferData(gl.UNIFORM_BUFFER, DEPTH_CAM_FLOATS * 4, gl.DYNAMIC_DRAW);
   const sunShadow = makeDepthTex(gl, SUN_SHADOW_SIZE);
-  const lampShadow = makeDepthArray(gl, LAMP_SHADOW_SIZE, MAX_LAMP_SHADOWS * LAMP_FACES);
-  const spotShadow = makeDepthArray(gl, LAMP_SHADOW_SIZE, MAX_SPOT_SHADOWS);
   const shadowFbo = gl.createFramebuffer();
+  setRestirMaps(gl, restir);
+  gl.useProgram(blit);
+  gl.uniform1i(gl.getUniformLocation(blit, "u_color"), 2);
+  gl.uniform1i(gl.getUniformLocation(blit, "u_g_world"), 4);
   gl.useProgram(lit);
-  gl.uniform1i(gl.getUniformLocation(lit, "u_sun_shadow"), 1);
-  gl.uniform1i(gl.getUniformLocation(lit, "u_lamp_shadow"), 2);
-  gl.uniform1i(gl.getUniformLocation(lit, "u_spot_shadow"), 3);
   const fontTex = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, fontTex);
   gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
@@ -226,32 +301,39 @@ function surfaceOf(canvas) {
   s = {
     gl,
     lit,
+    gbuf,
+    restir,
+    blit,
     depth,
     sky,
     overlay,
     text,
     ubo,
-    lightUbo,
     shadowUbo,
     depthCamUbo,
     sunShadow,
-    lampShadow,
-    spotShadow,
     shadowFbo,
     fontTex,
     litVbo: makeVbo(),
     casterVbo: makeVbo(),
-    lampCasterVbo: makeVbo(),
     ghostVbo: makeVbo(),
     overlayVbo: makeVbo(),
     textVbo: makeVbo(),
+    lightTex: gl.createTexture(),
+    occTex: gl.createTexture(),
+    gridTex: gl.createTexture(),
+    indexTex: gl.createTexture(),
+    lgridTex: gl.createTexture(),
+    lindexTex: gl.createTexture(),
+    prevCam: null,
   };
   surfaces.set(canvas, s);
   return s;
 }
 
-function writeFrame(gl, ubo, cam, w, h, sunOn) {
+function writeFrame(gl, ubo, cam, w, h, sunOn, prev, restir) {
   const { eye, f, r, u } = camBasis(cam);
+  const p = prev || { r, u, f, eye };
   frameData.set([r.x, r.y, r.z, 0], 0);
   frameData.set([u.x, u.y, u.z, 0], 4);
   frameData.set([f.x, f.y, f.z, 0], 8);
@@ -259,36 +341,26 @@ function writeFrame(gl, ubo, cam, w, h, sunOn) {
   frameData.set([SUN.x, SUN.y, SUN.z, sunOn ? 1 : 0], 16);
   frameData.set([FOG.r, FOG.g, FOG.b, 0], 20);
   frameData.set([w, h, fovOf(cam), 0.04], 24);
+  frameData.set([p.r.x, p.r.y, p.r.z, 0], 28);
+  frameData.set([p.u.x, p.u.y, p.u.z, 0], 32);
+  frameData.set([p.f.x, p.f.y, p.f.z, 0], 36);
+  frameData.set([p.eye.x, p.eye.y, p.eye.z, 0], 40);
+  frameData.set([
+    restir?.frame || 0,
+    restir?.nLights || 0,
+    restir?.nOcc || 0,
+    restir?.cell || 2,
+  ], 44);
+  frameData.set([
+    restir?.x0 || 0,
+    restir?.y0 || 0,
+    restir?.cols || 1,
+    restir?.rows || 1,
+  ], 48);
   gl.bindBuffer(gl.UNIFORM_BUFFER, ubo);
   gl.bufferSubData(gl.UNIFORM_BUFFER, 0, frameData);
   gl.bindBufferBase(gl.UNIFORM_BUFFER, 0, ubo);
-}
-
-function writeLights(gl, ubo, lights) {
-  lightData.fill(0);
-  const n = Math.min(lights.length, MAX_LIGHTS);
-  lightData[0] = n;
-  for (let i = 0; i < n; i++) {
-    const L = lights[i];
-    const po = 4 + i * 4;
-    const co = 4 + MAX_LIGHTS * 4 + i * 4;
-    const mo = 4 + MAX_LIGHTS * 8 + i * 4;
-    lightData[po] = L.x;
-    lightData[po + 1] = L.y;
-    lightData[po + 2] = L.z;
-    lightData[po + 3] = L.range;
-    lightData[co] = L.r;
-    lightData[co + 1] = L.g;
-    lightData[co + 2] = L.b;
-    lightData[co + 3] = L.intensity;
-    lightData[mo] = L.shadowLayer ?? -1;
-    lightData[mo + 1] = L.dx || 0;
-    lightData[mo + 2] = L.dy || 0;
-    lightData[mo + 3] = L.radius || 0;
-  }
-  gl.bindBuffer(gl.UNIFORM_BUFFER, ubo);
-  gl.bufferSubData(gl.UNIFORM_BUFFER, 0, lightData);
-  gl.bindBufferBase(gl.UNIFORM_BUFFER, 1, ubo);
+  return { r, u, f, eye };
 }
 
 function writeShadow(gl, ubo, sunCam) {
@@ -317,16 +389,12 @@ function writeDepthCam(gl, ubo, cam) {
   gl.bindBufferBase(gl.UNIFORM_BUFFER, 3, ubo);
 }
 
-function drawShadowMap(gl, s, cam, vbo, count, attach2D, layer, arrayTex) {
+function drawShadowMap(gl, s, cam, vbo, count) {
   writeDepthCam(gl, s.depthCamUbo, cam);
   gl.bindFramebuffer(gl.FRAMEBUFFER, s.shadowFbo);
-  if (attach2D) {
-    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, s.sunShadow, 0);
-  } else {
-    gl.framebufferTextureLayer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, arrayTex || s.lampShadow, 0, layer);
-  }
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, s.sunShadow, 0);
   gl.drawBuffers([gl.NONE]);
-  gl.viewport(0, 0, attach2D ? SUN_SHADOW_SIZE : LAMP_SHADOW_SIZE, attach2D ? SUN_SHADOW_SIZE : LAMP_SHADOW_SIZE);
+  gl.viewport(0, 0, SUN_SHADOW_SIZE, SUN_SHADOW_SIZE);
   gl.disable(gl.BLEND);
   gl.enable(gl.DEPTH_TEST);
   gl.depthFunc(gl.LEQUAL);
@@ -347,6 +415,23 @@ function drawShadowMap(gl, s, cam, vbo, count, attach2D, layer, arrayTex) {
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 }
 
+function packIndexTex(indices) {
+  const w = 2048;
+  const h = Math.max(1, Math.ceil(Math.max(indices.length, 1) / w));
+  const data = new Float32Array(w * h * 4);
+  for (let i = 0; i < indices.length; i++) data[i * 4] = indices[i];
+  return { data, w, h };
+}
+
+function packGridTex(grid) {
+  const data = new Float32Array(grid.cols * grid.rows * 4);
+  for (let i = 0; i < grid.cols * grid.rows; i++) {
+    data[i * 4] = grid.header[i * 2];
+    data[i * 4 + 1] = grid.header[i * 2 + 1];
+  }
+  return data;
+}
+
 export async function initRenderer() {
   lastError = "";
   try {
@@ -359,7 +444,7 @@ export async function initRenderer() {
     }
     fontCanvas = rasterFontAtlas();
     ready = true;
-    console.info("sandbox: WebGL2 ready");
+    console.info("sandbox: WebGL2 ReSTIR lighting");
     return true;
   } catch (err) {
     lastError = err?.message || String(err);
@@ -382,95 +467,147 @@ export function drawFrame(canvas, frame) {
   const w = Math.max(1, canvas.width);
   const h = Math.max(1, canvas.height);
   const s = surfaceOf(canvas);
-  if (!s.lampCasterVbo) s.lampCasterVbo = makeVbo();
-  if (!s.spotShadow) {
-    s.spotShadow = makeDepthArray(s.gl, LAMP_SHADOW_SIZE, MAX_SPOT_SHADOWS);
-    s.gl.useProgram(s.lit);
-    s.gl.uniform1i(s.gl.getUniformLocation(s.lit, "u_spot_shadow"), 3);
-  }
   const gl = s.gl;
-  gl.viewport(0, 0, w, h);
+  ensureTargets(s, w, h);
   const sunOn = frame.sun !== false;
-  writeFrame(gl, s.ubo, frame.cam, w, h, sunOn);
   const marks = frame.marks || {};
   const lights = collectLights(marks.shadows);
-  const cubed = assignShadowLayers(lights);
-  const spots = assignSpotLayers(lights);
-  writeLights(gl, s.lightUbo, lights);
+  const packedL = packLights(lights);
+  const occ = collectOccluders(frame.casters || frame.solids);
+  const packedO = packOccluders(occ);
+  const grid = buildOccluderGrid(occ, frame.map);
+  const lgrid = buildLightGrid(lights, grid);
+  const packedI = packIndexTex(grid.indices);
+  const packedG = packGridTex(grid);
+  const packedLI = packIndexTex(lgrid.indices);
+  const packedLG = packGridTex(lgrid);
+  uploadFloatTex(gl, s.lightTex, packedL.width, packedL.height, packedL.data);
+  uploadFloatTex(gl, s.occTex, packedO.width, packedO.height, packedO.data);
+  uploadFloatTex(gl, s.gridTex, grid.cols, grid.rows, packedG);
+  uploadFloatTex(gl, s.indexTex, packedI.w, packedI.h, packedI.data);
+  uploadFloatTex(gl, s.lgridTex, lgrid.cols, lgrid.rows, packedLG);
+  uploadFloatTex(gl, s.lindexTex, packedLI.w, packedLI.h, packedLI.data);
+
+  const restir = {
+    frame: frameIndex,
+    nLights: packedL.n,
+    nOcc: packedO.n,
+    cell: grid.cell,
+    x0: grid.x0,
+    y0: grid.y0,
+    cols: grid.cols,
+    rows: grid.rows,
+  };
+  const camNow = writeFrame(gl, s.ubo, frame.cam, w, h, sunOn, s.prevCam, restir);
 
   litMesh.reset();
   casterMesh.reset();
-  lampCasterMesh.reset();
   ghostMesh.reset();
   overlayMesh.reset();
   textMesh.reset();
   if (frame.map) pushGround(litMesh, frame.map);
   pushSolids(litMesh, ghostMesh, frame.solids);
-  const casterSrc = frame.casters || frame.solids;
-  pushCasters(casterMesh, casterSrc);
-  pushLampCasters(lampCasterMesh, casterSrc);
+  pushCasters(casterMesh, frame.casters || frame.solids);
   buildOverlay(overlayMesh, marks, frame.cam);
   if (marks.grid && frame.map) pushOverlayGrid(overlayMesh, frame.map);
   buildLabels(textMesh, marks, frame.cam, w, h);
 
   const litN = upload(gl, s.litVbo, litMesh.view());
   const casterN = upload(gl, s.casterVbo, casterMesh.view());
-  const lampCasterN = upload(gl, s.lampCasterVbo, lampCasterMesh.view());
   const ghostN = upload(gl, s.ghostVbo, ghostMesh.view());
   const overlayN = upload(gl, s.overlayVbo, overlayMesh.view());
   const textN = upload(gl, s.textVbo, textMesh.view());
   const litVerts = litN / LIT_STRIDE;
   const casterCount = casterN / LIT_STRIDE;
-  const lampCasterCount = lampCasterN / LIT_STRIDE;
 
   const sunCam = frame.map ? sunShadowCam(frame.map) : null;
   writeShadow(gl, s.shadowUbo, sunOn ? sunCam : null);
-  if (sunCam && sunOn) {
-    drawShadowMap(gl, s, sunCam, s.casterVbo, casterCount, true, 0);
+  if (sunCam && sunOn) drawShadowMap(gl, s, sunCam, s.casterVbo, casterCount);
+
+  gl.bindFramebuffer(gl.FRAMEBUFFER, s.gFbo);
+  gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1, gl.COLOR_ATTACHMENT2]);
+  gl.viewport(0, 0, w, h);
+  gl.disable(gl.BLEND);
+  gl.enable(gl.DEPTH_TEST);
+  gl.depthFunc(gl.LEQUAL);
+  gl.depthMask(true);
+  gl.clearColor(0, 0, 0, 0);
+  gl.clearDepth(1);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  if (litN) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, s.litVbo.buf);
+    bindLit(gl, s.gbuf, LIT_STRIDE);
+    gl.drawArrays(gl.TRIANGLES, 0, litVerts);
   }
-  if (frame.map) {
-    for (const L of cubed) {
-      for (let face = 0; face < LAMP_FACES; face++) {
-        drawShadowMap(gl, s, cubeFaceCam(L, face), s.lampCasterVbo, lampCasterCount, false, L.shadowLayer * LAMP_FACES + face);
-      }
-    }
-    for (const L of spots) {
-      drawShadowMap(gl, s, spotShadowCam(L), s.lampCasterVbo, lampCasterCount, false, L.spotLayer, s.spotShadow);
-    }
-  }
+
+  const writeLit = s.ping ? s.litB : s.litA;
+  const writeRes = s.ping ? s.resB : s.resA;
+  const readLit = s.ping ? s.litA : s.litB;
+  const readRes = s.ping ? s.resA : s.resB;
+  gl.bindFramebuffer(gl.FRAMEBUFFER, s.restirFbo);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, writeLit, 0);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT1, gl.TEXTURE_2D, writeRes, 0);
+  gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1]);
+  gl.viewport(0, 0, w, h);
+  gl.disable(gl.DEPTH_TEST);
+  gl.disable(gl.BLEND);
+  gl.clearColor(0, 0, 0, 0);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.activeTexture(gl.TEXTURE1);
+  gl.bindTexture(gl.TEXTURE_2D, s.sunShadow);
+  gl.activeTexture(gl.TEXTURE2);
+  gl.bindTexture(gl.TEXTURE_2D, s.gAlbedo);
+  gl.activeTexture(gl.TEXTURE3);
+  gl.bindTexture(gl.TEXTURE_2D, s.gNormal);
+  gl.activeTexture(gl.TEXTURE4);
+  gl.bindTexture(gl.TEXTURE_2D, s.gWorld);
+  gl.activeTexture(gl.TEXTURE5);
+  gl.bindTexture(gl.TEXTURE_2D, s.lightTex);
+  gl.activeTexture(gl.TEXTURE6);
+  gl.bindTexture(gl.TEXTURE_2D, s.occTex);
+  gl.activeTexture(gl.TEXTURE7);
+  gl.bindTexture(gl.TEXTURE_2D, s.gridTex);
+  gl.activeTexture(gl.TEXTURE8);
+  gl.bindTexture(gl.TEXTURE_2D, s.indexTex);
+  gl.activeTexture(gl.TEXTURE9);
+  gl.bindTexture(gl.TEXTURE_2D, s.lgridTex);
+  gl.activeTexture(gl.TEXTURE10);
+  gl.bindTexture(gl.TEXTURE_2D, s.lindexTex);
+  gl.activeTexture(gl.TEXTURE11);
+  gl.bindTexture(gl.TEXTURE_2D, readRes);
+  gl.activeTexture(gl.TEXTURE12);
+  gl.bindTexture(gl.TEXTURE_2D, readLit);
+  gl.useProgram(s.restir);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   gl.viewport(0, 0, w, h);
   gl.clearColor(0.078, 0.118, 0.157, 1);
   gl.clearDepth(1);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
   gl.disable(gl.DEPTH_TEST);
   gl.useProgram(s.sky);
   gl.drawArrays(gl.TRIANGLES, 0, 3);
+  gl.activeTexture(gl.TEXTURE2);
+  gl.bindTexture(gl.TEXTURE_2D, writeLit);
+  gl.activeTexture(gl.TEXTURE4);
+  gl.bindTexture(gl.TEXTURE_2D, s.gWorld);
+  gl.useProgram(s.blit);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
 
-  gl.enable(gl.DEPTH_TEST);
-  gl.depthFunc(gl.LEQUAL);
-  if (litN) {
+  if (ghostN) {
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthMask(false);
+    gl.enable(gl.BLEND);
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture(gl.TEXTURE_2D, s.sunShadow);
-    gl.activeTexture(gl.TEXTURE2);
-    gl.bindTexture(gl.TEXTURE_2D_ARRAY, s.lampShadow);
-    gl.activeTexture(gl.TEXTURE3);
-    gl.bindTexture(gl.TEXTURE_2D_ARRAY, s.spotShadow);
-    gl.bindBuffer(gl.ARRAY_BUFFER, s.litVbo.buf);
-    bindLit(gl, s.lit, LIT_STRIDE);
-    gl.depthMask(true);
-    gl.drawArrays(gl.TRIANGLES, 0, litVerts);
-  }
-  if (ghostN) {
     gl.bindBuffer(gl.ARRAY_BUFFER, s.ghostVbo.buf);
     bindLit(gl, s.lit, LIT_STRIDE);
-    gl.depthMask(false);
     gl.drawArrays(gl.TRIANGLES, 0, ghostN / LIT_STRIDE);
     gl.depthMask(true);
   }
   gl.disable(gl.DEPTH_TEST);
+  gl.enable(gl.BLEND);
   if (overlayN) {
     gl.bindBuffer(gl.ARRAY_BUFFER, s.overlayVbo.buf);
     bindOverlay(gl, s.overlay);
@@ -483,5 +620,9 @@ export function drawFrame(canvas, frame) {
     bindText(gl, s.text);
     gl.drawArrays(gl.TRIANGLES, 0, textN / TEXT_STRIDE);
   }
+
+  s.prevCam = camNow;
+  s.ping = s.ping ? 0 : 1;
+  frameIndex += 1;
   return true;
 }

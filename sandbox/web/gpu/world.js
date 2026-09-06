@@ -1,4 +1,4 @@
-import { GROUND, MAX_LIGHTS, WARM_LIGHT, hexRgb, matOf, texId } from "./theme.js";
+import { GROUND, MAX_SCENE_LIGHTS, WARM_LIGHT, hexRgb, matOf, texId } from "./theme.js";
 import { pushBox, pushQuad } from "./mesh.js";
 
 function hash2(ix, iy) {
@@ -149,7 +149,7 @@ export function collectLights(boxes) {
       dy: dir.y,
       dz: dir.z,
     });
-    if (lights.length >= MAX_LIGHTS) break;
+    if (lights.length >= MAX_SCENE_LIGHTS) break;
   }
   return lights;
 }

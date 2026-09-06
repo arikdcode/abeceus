@@ -7,6 +7,12 @@ export const SUN = (() => {
 export const FOG = { r: 92 / 255, g: 78 / 255, b: 62 / 255 };
 
 export const MAX_LIGHTS = 16;
+export const MAX_SCENE_LIGHTS = 256;
+export const MAX_OCCLUDERS = 512;
+export const RESTIR_CANDIDATES = 8;
+export const RESTIR_EXACT = 8;
+export const LIGHTS_PER_CELL = 16;
+export const OCCLUDER_CELL = 2;
 export const MAX_LAMP_SHADOWS = 8;
 export const MAX_SPOT_SHADOWS = 4;
 export const LAMP_FACES = 6;

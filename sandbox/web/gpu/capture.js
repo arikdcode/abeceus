@@ -154,6 +154,9 @@ export async function renderShot(canvas, opts = {}) {
   const h = opts.height || canvas.height || 720;
   resizeCanvas(canvas, w, h);
   const frame = buildFrame(eng, { cam, hideRoofs, grid: !!opts.grid, sun: opts.sun !== false });
-  if (!drawFrame(canvas, frame)) throw new Error("drawFrame failed");
+  const warm = opts.warm || 4;
+  for (let i = 0; i < warm; i++) {
+    if (!drawFrame(canvas, frame)) throw new Error("drawFrame failed");
+  }
   return { name: opts.name || opts.preset || "shot", cam, scenario, hideRoofs, sun: opts.sun !== false };
 }
