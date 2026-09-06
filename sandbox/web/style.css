@@ -91,6 +91,21 @@ main {
   position: absolute; background: rgba(18, 21, 26, 0.94);
   border: 1px solid #3d4b5c; border-radius: 4px; padding: 6px 8px;
 }
+.fps-hud {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  z-index: 3;
+  pointer-events: none;
+  text-align: right;
+  font: 600 12px/1.15 ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: #e8edf4;
+  text-shadow: 0 1px 3px #000, 0 0 8px rgba(0, 0, 0, 0.55);
+}
+.fps-hud strong { display: block; font-size: 16px; letter-spacing: 0.02em; }
+.fps-hud strong::after { content: " fps"; font-size: 11px; font-weight: 500; color: #8b96a6; }
+.fps-hud span { display: block; margin-top: 2px; font-size: 11px; font-weight: 500; color: #8b96a6; }
+.fps-hud span.hot { color: #e05656; }
 .hover-hud { font-size: 12px; pointer-events: none; max-width: 240px; z-index: 2; }
 .prompt { left: 14px; top: 14px; background: #2a2416; border-color: var(--gold); max-width: 360px; z-index: 2; }
 .hidden { display: none; }

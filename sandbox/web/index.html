@@ -55,6 +55,10 @@
       <div class="stage">
         <div class="viewport">
           <canvas id="view" width="880" height="520"></canvas>
+          <div id="fpsHud" class="fps-hud" title="Smoothed frames per second. Min is the worst frame in the last second.">
+            <strong id="fpsAvg">—</strong>
+            <span id="fpsMin"></span>
+          </div>
         </div>
         <div id="hoverHud" class="hover-hud hidden"></div>
         <div id="prompt" class="prompt hidden"></div>

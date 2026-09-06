@@ -1612,8 +1612,38 @@ function tickCamOnce() {
   return moved;
 }
 
-function tickCam() {
-  tickCamOnce();
+const fpsHud = { ema: 60, min: 60, last: 0, windowAt: 0 };
+
+function noteFrame(now) {
+  if (!fpsHud.last) {
+    fpsHud.last = now;
+    fpsHud.windowAt = now;
+    return;
+  }
+  const inst = 1000 / Math.max(1, now - fpsHud.last);
+  fpsHud.last = now;
+  fpsHud.ema += (inst - fpsHud.ema) * 0.14;
+  if (now - fpsHud.windowAt >= 900) {
+    fpsHud.min = inst;
+    fpsHud.windowAt = now;
+  } else {
+    fpsHud.min = Math.min(fpsHud.min, inst);
+  }
+  const avgEl = document.getElementById("fpsAvg");
+  const minEl = document.getElementById("fpsMin");
+  if (avgEl) avgEl.textContent = String(Math.round(fpsHud.ema));
+  if (minEl) {
+    minEl.textContent = `min ${Math.round(fpsHud.min)}`;
+    minEl.classList.toggle("hot", fpsHud.min < 45);
+  }
+}
+
+function tickCam(now) {
+  stepHeldCam(cam3, keys, cam3.dist * 0.012);
+  if (view && rendererReady()) {
+    render();
+    noteFrame(typeof now === "number" ? now : performance.now());
+  }
   requestAnimationFrame(tickCam);
 }
 
