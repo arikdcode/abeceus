@@ -1,0 +1,12 @@
+{
+  "id": "humvee",
+  "parts": [
+    { "id": "hull", "min": [-2.15, -1.05], "max": [2.15, 1.05], "z0": 0, "z1": 1.22, "color": "#3d4536", "cover": true, "protection": 20, "durability": 14 },
+    { "id": "cab", "min": [0.15, -1.0], "max": [2.05, 1.0], "z0": 1.18, "z1": 1.85, "color": "#353c30", "cover": true, "usable": false, "block_move": false, "protection": 18, "durability": 12 },
+    { "id": "hood", "min": [-2.1, -0.95], "max": [0.1, 0.95], "z0": 1.18, "z1": 1.38, "color": "#3a4234", "cover": true, "usable": false, "block_move": false, "protection": 16, "durability": 10 },
+    { "id": "wheel-fl", "min": [1.35, -1.15], "max": [1.95, -0.72], "z0": 0, "z1": 0.62, "color": "#2a2a2a", "cover": true, "usable": false, "protection": 10, "durability": 6 },
+    { "id": "wheel-fr", "min": [1.35, 0.72], "max": [1.95, 1.15], "z0": 0, "z1": 0.62, "color": "#2a2a2a", "cover": true, "usable": false, "protection": 10, "durability": 6 },
+    { "id": "wheel-rl", "min": [-1.95, -1.15], "max": [-1.35, -0.72], "z0": 0, "z1": 0.62, "color": "#2a2a2a", "cover": true, "usable": false, "protection": 10, "durability": 6 },
+    { "id": "wheel-rr", "min": [-1.95, 0.72], "max": [-1.35, 1.15], "z0": 0, "z1": 0.62, "color": "#2a2a2a", "cover": true, "usable": false, "protection": 10, "durability": 6 }
+  ]
+}

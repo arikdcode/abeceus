@@ -5,9 +5,9 @@
   "seed": 2,
   "skip_contact": true,
   "units": [
-    {"character": "alpha-1", "pos": [1.6, 8.6], "facing": 0.0},
-    {"character": "alpha-2", "pos": [1.5, 12.4], "facing": 0.1},
-    {"character": "bravo-1", "pos": [4.9, 11.05], "facing": 3.4},
-    {"character": "bravo-2", "pos": [17.9, 11.2], "facing": 3.0}
+    {"character": "alpha-1", "initiative": 5, "pos": [1.8, 8.8], "facing": 0.05},
+    {"character": "alpha-2", "initiative": 5, "pos": [1.7, 9.9], "facing": 0.0},
+    {"character": "bravo-1", "pos": [13.4, 8.8], "facing": 3.14, "cover": {"mode": "hide", "id": "crate-lane", "face": "maxx"}},
+    {"character": "bravo-2", "pos": [21.5, 12.3], "facing": 3.14, "cover": {"mode": "hide", "id": "sandbag-n", "face": "maxx"}}
   ]
 }

@@ -1,4 +1,6 @@
-export const TURN_SECONDS = 5;
+import { DEFAULT_RULES, turnSeconds } from "./rules.js";
+
+export const TURN_SECONDS = DEFAULT_RULES.turn_seconds;
 
 export const ActionType = {
   Move: "move",
@@ -36,8 +38,9 @@ export function unitAlive(u) {
   return u && !u.downed && !u.dead;
 }
 
-export function emptyChannels() {
-  return { hands: TURN_SECONDS, legs: TURN_SECONDS, focus: TURN_SECONDS, voice: TURN_SECONDS };
+export function emptyChannels(seconds = DEFAULT_RULES.turn_seconds) {
+  const t = Number.isFinite(seconds) && seconds > 0 ? seconds : DEFAULT_RULES.turn_seconds;
+  return { hands: t, legs: t, focus: t, voice: t };
 }
 
 export function emptyTape() {
@@ -62,7 +65,7 @@ export function makeUnit(partial, id) {
     medicine: partial.medicine ?? 1,
     experience: partial.experience ?? 0.35,
     posture: partial.posture || Posture.Standing,
-    ch: emptyChannels(),
+    ch: emptyChannels(turnSeconds(null)),
     tape: emptyTape(),
     reaction_left: 2,
     reaction_max: 2,
@@ -115,6 +118,9 @@ export function makeWorld() {
       max: { x: 20, y: 16 },
       grid: 1,
       cover: [],
+      decor: [],
+      surfaces: [],
+      ground: "dirt",
       surprise0: 1,
       surprise1: 1,
     },
@@ -124,6 +130,7 @@ export function makeWorld() {
     round: 1,
     active: 0,
     clock: 0,
+    rules: { ...DEFAULT_RULES, actions: { ...DEFAULT_RULES.actions }, posture: { ...DEFAULT_RULES.posture, stand_from: { ...DEFAULT_RULES.posture.stand_from } } },
     skip_contact: false,
     combat_over: false,
     winner_team: -1,
@@ -153,11 +160,15 @@ export function worldFromScenario(data) {
         id: c.id || null,
         min: { x: c.min[0], y: c.min[1] },
         max: { x: c.max[0], y: c.max[1] },
-        height: c.height ?? 1.1,
+        z0: c.z0 ?? 0,
+        z1: c.z1 ?? c.height ?? 1.1,
+        height: c.z1 ?? c.height ?? 1.1,
         color: c.color || "#6a7b66",
         protection: c.protection ?? 16,
         durability: c.durability ?? 10,
         durability_max: c.durability ?? 10,
+        usable: c.usable !== false,
+        block_move: c.block_move !== false,
       }));
     }
   }

@@ -1,0 +1,29 @@
+{
+  "turn_seconds": 3,
+  "actions": {
+    "snap": { "hands": 1, "focus": 1 },
+    "precise": { "hands": 1, "focus": 1 },
+    "burst": { "hands": 1.8, "focus": 1.8 },
+    "reload": { "hands": 2, "focus_if_unskilled": 0.6, "firearms_skilled": 3 },
+    "bandage": {
+      "hands": 3.6,
+      "focus": 2.8,
+      "legs": 0.4,
+      "voice": 0.4,
+      "skilled_hands": 2,
+      "skilled_focus": 0,
+      "medicine_skilled": 3
+    },
+    "ready": { "hands": 0.6, "focus": 0.2, "contact_reaction": 0.6 },
+    "overwatch_min_focus": 1.5
+  },
+  "posture": {
+    "to_crouch": 0.5,
+    "to_prone": 1,
+    "stand_from": {
+      "stand": 0,
+      "crouch": 0.5,
+      "prone": 1
+    }
+  }
+}

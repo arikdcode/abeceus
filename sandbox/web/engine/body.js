@@ -769,11 +769,12 @@ export function unitHitboxes(unit) {
 }
 
 export function coverBox(c) {
-  const h = c.height || 1;
+  const z0 = c.z0 ?? 0;
+  const z1 = c.z1 ?? c.height ?? 1;
   const corners = [];
   for (const x of [c.min.x, c.max.x]) {
     for (const y of [c.min.y, c.max.y]) {
-      for (const z of [0, h]) corners.push({ x, y, z });
+      for (const z of [z0, z1]) corners.push({ x, y, z });
     }
   }
   return {
@@ -781,7 +782,7 @@ export function coverBox(c) {
     flesh: false,
     x0: c.min.x, x1: c.max.x,
     y0: c.min.y, y1: c.max.y,
-    z0: 0, z1: h,
+    z0, z1,
     corners,
   };
 }
@@ -819,11 +820,13 @@ export function rayLocalBox(origin, dir, box, pos, facing, maxT) {
 }
 
 export function rayCover(origin, dir, cover, maxT) {
+  const z0 = cover.z0 ?? 0;
+  const z1 = cover.z1 ?? cover.height ?? 1;
   return rayAabb3(
     origin,
     dir,
-    { x: cover.min.x, y: cover.min.y, z: 0 },
-    { x: cover.max.x, y: cover.max.y, z: cover.height || 1 },
+    { x: cover.min.x, y: cover.min.y, z: z0 },
+    { x: cover.max.x, y: cover.max.y, z: z1 },
     maxT,
   );
 }

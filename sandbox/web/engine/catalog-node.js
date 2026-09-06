@@ -14,6 +14,6 @@ export function loadRepoCatalog() {
   return loadCatalogSync((p) => readFileSync(join(dir, p), "utf8"));
 }
 
-export function defaultCatalogWorld(id = "duel_2v2") {
+export function defaultCatalogWorld(id = "posted_courtyard") {
   return worldFromCatalog(loadRepoCatalog(), id);
 }

@@ -1,8 +1,9 @@
 import { Rng } from "./rng.js";
 import {
-  ActionType, Gait, ShotMode, AimRegion, Posture, Phase, TURN_SECONDS,
+  ActionType, Gait, ShotMode, AimRegion, Posture, Phase,
   findUnit, unitAlive, surpriseFor, emptyTape, makeWorld,
 } from "./model.js";
+import { rulesOf, turnSeconds, postureTime } from "./rules.js";
 import {
   finalizeUnit, resetChannels, spendChannels, canSpend, channelStretch,
   gaitSpeed, gaitLegTime, pathMove, los2d,
@@ -13,7 +14,7 @@ import {
 import { add, sub, scale, length, normalize, angleOf, clampToAabb, dot } from "./vec.js";
 import { partCenterOffset, prettyPart } from "./body.js";
 import {
-  CoverMode, resolveCoverUse, nearestUse, canPostOver, coverTransitionCost,
+  CoverMode, resolveCoverUse, nearestUse, canPostOver, coverTransitionCost, coverUsable,
 } from "./cover.js";
 
 let nextQueueId = 1;
@@ -79,7 +80,7 @@ function nearestCoverPoint(w, from) {
   let best = { ...from };
   let bestD = 1e30;
   for (const c of w.map.cover) {
-    if (c.durability <= 0) continue;
+    if (!coverUsable(c)) continue;
     const cand = [
       { x: c.min.x - 0.45, y: (c.min.y + c.max.y) * 0.5 },
       { x: c.max.x + 0.45, y: (c.min.y + c.max.y) * 0.5 },
@@ -112,6 +113,8 @@ function segmentInCone(origin, dir, half, range, a, b) {
 
 export function actionCost(unit, action, world) {
   const stretch = channelStretch(unit);
+  const rules = rulesOf(world);
+  const acts = rules.actions;
   const c = { hands: 0, legs: 0, focus: 0, voice: 0, reaction: 0, duration: 0, label: action.type };
   const contact = world?.phase === Phase.Contact;
   if (action.type === ActionType.Move) {
@@ -123,28 +126,31 @@ export function actionCost(unit, action, world) {
     if (contact) c.reaction = time;
     else {
       c.legs = time;
-      c.focus = gait === Gait.Sprint ? Math.min(3, time) : gait === Gait.Run ? time * 0.25 : 0;
+      c.focus = gait === Gait.Sprint ? Math.min(turnSeconds(world), time) : gait === Gait.Run ? time * 0.25 : 0;
     }
     c.label = gait;
   } else if (action.type === ActionType.Shoot) {
-    const burst = action.shot === ShotMode.Burst;
-    const hands = burst ? 1.8 : 1;
-    c.hands = hands * stretch;
-    c.focus = hands * stretch;
+    const shot = action.shot === ShotMode.Burst ? acts.burst
+      : action.shot === ShotMode.Precise || action.shot === ShotMode.Aimed ? acts.precise
+      : acts.snap;
+    c.hands = shot.hands * stretch;
+    c.focus = shot.focus * stretch;
     c.voice = 0;
     c.label = action.shot || "snap";
   } else if (action.type === ActionType.Reload) {
-    c.hands = 2 * stretch;
-    c.focus = (unit.firearms >= 3 ? 0 : 0.6) * stretch;
+    c.hands = acts.reload.hands * stretch;
+    c.focus = (unit.firearms >= acts.reload.firearms_skilled ? 0 : acts.reload.focus_if_unskilled) * stretch;
     c.label = "reload";
   } else if (action.type === ActionType.Bandage) {
-    c.hands = (unit.medicine >= 3 ? 2 : 3.6) * stretch;
-    c.focus = (unit.medicine >= 3 ? 0 : 2.8) * stretch;
-    c.legs = 0.4;
-    c.voice = 0.4;
+    const skilled = unit.medicine >= acts.bandage.medicine_skilled;
+    c.hands = (skilled ? acts.bandage.skilled_hands : acts.bandage.hands) * stretch;
+    c.focus = (skilled ? acts.bandage.skilled_focus : acts.bandage.focus) * stretch;
+    c.legs = acts.bandage.legs;
+    c.voice = acts.bandage.voice;
     c.label = "bandage";
   } else if (action.type === ActionType.SetPosture) {
-    const t = action.posture === Posture.Prone ? 0.8 : 0.45;
+    const from = action.from_posture || unit.posture;
+    const t = postureTime(from, action.posture, world);
     if (contact) c.reaction = t;
     else c.legs = t;
     c.label = action.posture || "posture";
@@ -158,15 +164,15 @@ export function actionCost(unit, action, world) {
       c.label = t.label;
     }
   } else if (action.type === ActionType.ReadyWeapon) {
-    if (contact) c.reaction = 0.6;
+    if (contact) c.reaction = acts.ready.contact_reaction;
     else {
-      c.hands = 0.6 * stretch;
-      c.focus = 0.2 * stretch;
+      c.hands = acts.ready.hands * stretch;
+      c.focus = acts.ready.focus * stretch;
     }
     c.label = "ready";
   } else if (action.type === ActionType.Overwatch) {
     c.hands = unit.ch.hands;
-    c.focus = Math.max(1.5, unit.ch.focus);
+    c.focus = Math.max(acts.overwatch_min_focus, unit.ch.focus);
     c.label = "overwatch";
   } else if (action.type === ActionType.ContactReady) {
     c.label = "ready up";
@@ -198,7 +204,7 @@ export class Engine {
 
   loadWorld(world) {
     if (!world.units.length) return false;
-    for (const u of world.units) finalizeUnit(u);
+    for (const u of world.units) finalizeUnit(u, turnSeconds(world));
     this.world = world;
     this.initial = structuredClone(world);
     this.rng = new Rng(world.seed);
@@ -287,7 +293,7 @@ export class Engine {
       const u = findUnit(w, id);
       if (u && unitAlive(u) && !u.panicked) {
         w.active = id;
-        resetChannels(u);
+        resetChannels(u, turnSeconds(w));
         u.last_gait = Gait.Walk;
         u.overwatch = false;
         w.clock = 0;
@@ -467,7 +473,7 @@ export class Engine {
     };
   }
 
-  earliestSlot(unit, cost, windowEnd = TURN_SECONDS) {
+  earliestSlot(unit, cost, windowEnd = turnSeconds(this.world)) {
     const occ = this.plannedOccupancy(unit);
     const clock = this.world.clock;
     const d = Math.max(0.05, cost.duration);
@@ -487,7 +493,7 @@ export class Engine {
     return null;
   }
 
-  sequentialSlot(unit, cost, windowEnd = TURN_SECONDS) {
+  sequentialSlot(unit, cost, windowEnd = turnSeconds(this.world)) {
     const last = this.queue.filter((q) => q.actor === unit.id).reduce((m, q) => Math.max(m, q.t1), this.world.clock);
     const d = Math.max(0.05, cost.duration);
     if (last + d > windowEnd + 1e-3) return null;
@@ -499,7 +505,7 @@ export class Engine {
   }
 
   remainingWindow() {
-    return Math.max(0, TURN_SECONDS - this.world.clock);
+    return Math.max(0, turnSeconds(this.world) - this.world.clock);
   }
 
   planQueueItem(raw) {
@@ -529,14 +535,15 @@ export class Engine {
       action.face = use.face;
       action.cover_use = use;
     }
-    const costing = { ...actor, pos: this.plannedPos(actor), cover_use: this.plannedCover(actor) };
+    if (action.type === ActionType.SetPosture) action.from_posture = this.plannedPosture(actor);
+    const costing = { ...actor, pos: this.plannedPos(actor), cover_use: this.plannedCover(actor), posture: this.plannedPosture(actor) };
     const cost = actionCost(costing, action, w);
     if (action.type === ActionType.Shoot && actor.mag <= 0) return { ok: false, error: "empty mag" };
     const overlap = !!(action.overlap ?? this.overlap);
     const t0 = overlap ? this.earliestSlot(actor, cost) : this.sequentialSlot(actor, cost);
     if (t0 == null) return { ok: false, error: "no room on the tape" };
-    if (w.clock + cost.duration > TURN_SECONDS + 1e-3 && t0 + cost.duration > TURN_SECONDS + 1e-3) {
-      return { ok: false, error: "past the 5s window" };
+    if (w.clock + cost.duration > turnSeconds(w) + 1e-3 && t0 + cost.duration > turnSeconds(w) + 1e-3) {
+      return { ok: false, error: `past the ${turnSeconds(w)}s window` };
     }
     return {
       ok: true,
@@ -661,7 +668,7 @@ export class Engine {
           const cost = opts.item?.cost || actionCost(u, { ...action, from: opts.from, dest: action.dest }, w);
           const t0 = w.clock;
           this.recordTape(u, t0, cost);
-          w.clock = Math.min(TURN_SECONDS, w.clock + Math.max(0.05, cost.duration));
+          w.clock = Math.min(turnSeconds(w), w.clock + Math.max(0.05, cost.duration));
         }
       }
     }
@@ -862,7 +869,8 @@ export class Engine {
     const u = findUnit(w, action.actor || (w.phase === Phase.Play ? w.active : action.actor));
     if (!u) return this.reject(action, "no actor");
     if (w.phase === Phase.Play && u.id !== w.active) return this.reject(action, "not your turn");
-    const t = action.posture === Posture.Prone ? 0.8 : 0.45;
+    if (u.posture === action.posture) return this.reject(action, "already in this posture");
+    const t = postureTime(u.posture, action.posture, w);
     if (w.phase === Phase.Contact) {
       if (u.reaction_left < t) return this.reject(action, "no contact time");
       u.reaction_left -= t;
@@ -904,7 +912,7 @@ export class Engine {
     let dir = sub(action.dest || u.pos, u.pos);
     if (length(dir) < 0.1) dir = { x: Math.cos(u.facing), y: Math.sin(u.facing) };
     dir = normalize(dir);
-    const err = spendChannels(u, u.ch.hands, 0, Math.max(1.5, u.ch.focus), 0);
+    const err = spendChannels(u, u.ch.hands, 0, Math.max(rulesOf(this.world).actions.overwatch_min_focus, u.ch.focus), 0);
     if (err) return this.reject(action, err);
     u.overwatch = true;
     u.ow_origin = { ...u.pos };
@@ -996,7 +1004,7 @@ export class Engine {
     return r;
   }
 
-  previewMove(actorId, dest, gait, usePlanned = false) {
+  previewMove(actorId, dest, gait, usePlanned = false, cheap = false) {
     const w = this.world;
     const actor = findUnit(w, actorId);
     const p = { ok: false, actor: actorId, from: actor?.pos, dest: actor?.pos, requested: dest, dist: 0, time: 0, budget: 0, speed: 0, truncated: false, gait: gait || Gait.Walk, note: "" };
@@ -1031,7 +1039,7 @@ export class Engine {
       goal = add(from, scale(normalize(sub(goal, from)), maxd));
       p.truncated = true;
     }
-    const landed = pathMove(w.map, from, goal);
+    const landed = pathMove(w.map, from, goal, { cheap });
     p.dest = landed;
     p.dist = length(sub(landed, from));
     p.time = gaitLegTime(p.dist, gait, actor);
@@ -1221,11 +1229,24 @@ export class Engine {
         grid: w.map.grid,
         surprise0: w.map.surprise0,
         surprise1: w.map.surprise1,
+        ground: w.map.ground || "dirt",
+        surfaces: (w.map.surfaces || []).map((s) => ({
+          kind: s.kind, min: s.min, max: s.max, color: s.color || null,
+        })),
         cover: w.map.cover.map((c) => ({
           id: c.id || null,
           min: [c.min.x, c.min.y], max: [c.max.x, c.max.y],
-          height: c.height, color: c.color || "#6a7b66",
+          height: c.z1 ?? c.height, z0: c.z0 ?? 0, z1: c.z1 ?? c.height,
+          color: c.color || "#6a7b66",
           durability: c.durability, durability_max: c.durability_max,
+          roof: !!c.roof,
+        })),
+        decor: (w.map.decor || []).map((c) => ({
+          id: c.id || null,
+          min: [c.min.x, c.min.y], max: [c.max.x, c.max.y],
+          height: c.z1 ?? c.height, z0: c.z0 ?? 0, z1: c.z1 ?? c.height,
+          color: c.color || "#6a7b66",
+          roof: !!c.roof,
         })),
       },
       units: w.units.map((u) => ({
@@ -1244,10 +1265,12 @@ export class Engine {
         armor: u.armor.map((p) => ({ id: p.id, name: p.name, region: p.region, dur: p.durability, max: p.durability_max })),
       })),
       last_shot: lastShotView(w, viewer, fog, visibleTo),
+      turn_seconds: turnSeconds(w),
       quotes: buildQuotes(w, quoteU, findUnit(w, w.pending_react.reactor), {
         gait: this.plannedGait(quoteU),
         pos: this.plannedPos(quoteU),
         cover_use: this.plannedCover(quoteU),
+        posture: this.plannedPosture(quoteU),
       }),
       move: moveInfo(w, quoteU),
     };
@@ -1281,6 +1304,8 @@ function lastShotView(w, viewer, fog, visibleTo) {
     hit: !!s.hit,
     result: s.result || "",
     region: s.region || "",
+    intended: s.intended || 0,
+    struck: s.struck || 0,
   };
 }
 
@@ -1306,17 +1331,21 @@ function buildQuotes(world, u, reactor, extras = {}) {
   if (!u) return { actions: [], shots: [], gaits: [], reactions: [] };
   const contact = world.phase === Phase.Contact;
   const stretch = channelStretch(u);
+  const acts = rulesOf(world).actions;
   const plannedPos = extras.pos || u.pos;
   const plannedCover = extras.cover_use !== undefined ? extras.cover_use : u.cover_use;
+  const plannedPosture = extras.posture || u.posture;
   const actions = [];
-  const postureQ = (id, label, p, t) => {
-    const already = u.posture === p;
+  const postureQ = (id, label, p) => {
+    const already = plannedPosture === p;
+    if (p === Posture.Standing && already) return;
+    const t = postureTime(plannedPosture, p, world);
     const ok = !already && (contact ? u.reaction_left + 1e-4 >= t : canSpend(u, 0, t, 0, 0));
     actions.push(q(id, label, contact, 0, contact ? 0 : t, 0, 0, contact ? t : 0, ok, already ? "already in this posture" : ok ? "" : "not enough time"));
   };
-  postureQ("crouch", "Crouch", Posture.Crouching, 0.45);
-  postureQ("prone", "Prone", Posture.Prone, 0.8);
-  postureQ("stand", "Stand", Posture.Standing, 0.45);
+  postureQ("crouch", "Crouch", Posture.Crouching);
+  postureQ("prone", "Prone", Posture.Prone);
+  postureQ("stand", "Stand", Posture.Standing);
   {
     const near = nearestUse(world, plannedPos);
     const coverQ = (id, label, mode) => {
@@ -1339,23 +1368,25 @@ function buildQuotes(world, u, reactor, extras = {}) {
     coverQ("cover_hide", "Hide", CoverMode.Hide);
   }
   {
-    const hands = 2, focus = u.firearms >= 3 ? 0 : 0.6;
+    const hands = acts.reload.hands;
+    const focus = u.firearms >= acts.reload.firearms_skilled ? 0 : acts.reload.focus_if_unskilled;
     const ok = !contact && u.mag < u.mag_size && u.ammo > 0 && canSpend(u, hands, 0, focus, 0);
     actions.push(q("reload", "Reload", false, hands * stretch, 0, focus * stretch, 0, 0, ok, contact ? "not in contact" : ok ? "" : "not enough time"));
   }
   {
-    const hands = u.medicine >= 3 ? 2 : 3.6;
-    const focus = u.medicine >= 3 ? 0 : 2.8;
+    const skilled = u.medicine >= acts.bandage.medicine_skilled;
+    const hands = skilled ? acts.bandage.skilled_hands : acts.bandage.hands;
+    const focus = skilled ? acts.bandage.skilled_focus : acts.bandage.focus;
     const bleed = u.wounds.some((w) => !w.treated && w.bleed_rate > 0);
-    const ok = !contact && bleed && canSpend(u, hands, 0.4, focus, 0.4);
-    actions.push(q("bandage", "Bandage", false, hands * stretch, 0.4, focus * stretch, 0.4, 0, ok, contact ? "not in contact" : !bleed ? "no untreated bleed" : ok ? "" : "not enough time"));
+    const ok = !contact && bleed && canSpend(u, hands, acts.bandage.legs, focus, acts.bandage.voice);
+    actions.push(q("bandage", "Bandage", false, hands * stretch, acts.bandage.legs, focus * stretch, acts.bandage.voice, 0, ok, contact ? "not in contact" : !bleed ? "no untreated bleed" : ok ? "" : "not enough time"));
   }
   {
-    const t = 0.6;
-    const ok = !u.weapon_ready && (contact ? u.reaction_left + 1e-4 >= t : canSpend(u, t, 0, 0.2, 0));
-    actions.push(q("ready", "Ready weapon", contact, contact ? 0 : t * stretch, 0, contact ? 0 : 0.2 * stretch, 0, contact ? t : 0, ok, u.weapon_ready ? "already ready" : ok ? "" : "not enough time"));
+    const t = acts.ready.contact_reaction;
+    const ok = !u.weapon_ready && (contact ? u.reaction_left + 1e-4 >= t : canSpend(u, acts.ready.hands, 0, acts.ready.focus, 0));
+    actions.push(q("ready", "Ready weapon", contact, contact ? 0 : acts.ready.hands * stretch, 0, contact ? 0 : acts.ready.focus * stretch, 0, contact ? t : 0, ok, u.weapon_ready ? "already ready" : ok ? "" : "not enough time"));
   }
-  actions.push(q("overwatch", "Overwatch", false, u.ch.hands, 0, Math.max(1.5, u.ch.focus), 0, 0, !contact && u.ch.focus + 1e-4 >= 1.5, contact ? "not in contact" : "spends remaining Hands + Focus"));
+  actions.push(q("overwatch", "Overwatch", false, u.ch.hands, 0, Math.max(acts.overwatch_min_focus, u.ch.focus), 0, 0, !contact && u.ch.focus + 1e-4 >= acts.overwatch_min_focus, contact ? "not in contact" : "spends remaining Hands + Focus"));
   actions.push(q("contact_ready", "Ready up", true, 0, 0, 0, 0, 0, contact && !u.contact_ready, contact ? "" : "contact only"));
 
   const shotQ = (id, label, hands, focus, voice) => {
@@ -1363,11 +1394,11 @@ function buildQuotes(world, u, reactor, extras = {}) {
     return q(id, label, false, hands * stretch, 0, focus * stretch, voice, 0, ok, contact ? "no shooting in contact" : ok ? "" : "not enough time");
   };
   const shots = [
-    shotQ("snap", "Snap", 1, 1, 0),
-    shotQ("precise", "Precise", 1, 1, 0),
-    shotQ("burst", "Burst ×3", 1.8, 1.8, 0),
+    shotQ("snap", "Snap", acts.snap.hands, acts.snap.focus, 0),
+    shotQ("precise", "Precise", acts.precise.hands, acts.precise.focus, 0),
+    shotQ("burst", "Burst ×3", acts.burst.hands, acts.burst.focus, 0),
   ];
-  const budget = contact ? u.reaction_left : Math.min(u.ch.legs, Math.max(0, TURN_SECONDS - world.clock));
+  const budget = contact ? u.reaction_left : Math.min(u.ch.legs, Math.max(0, turnSeconds(world) - world.clock));
   const gaits = [Gait.Walk, Gait.Run, Gait.Sprint].map((g) => {
     const spd = gaitSpeed(g, u);
     let ok = budget > 0.05 && (!contact || g === Gait.Walk);
@@ -1393,17 +1424,18 @@ function buildQuotes(world, u, reactor, extras = {}) {
 function moveInfo(world, u) {
   if (!u) return { kind: "legs", budget: 0, max: 0, walk: 0, run: 0, sprint: 0 };
   const contact = world.phase === Phase.Contact;
-  const budget = contact ? u.reaction_left : Math.min(u.ch.legs, Math.max(0, TURN_SECONDS - world.clock));
+  const budget = contact ? u.reaction_left : Math.min(u.ch.legs, Math.max(0, turnSeconds(world) - world.clock));
   return {
     kind: contact ? "reaction" : "legs",
     budget,
-    max: contact ? u.reaction_max : TURN_SECONDS,
+    max: contact ? u.reaction_max : turnSeconds(world),
     walk: gaitSpeed(Gait.Walk, u) * budget,
     run: gaitSpeed(Gait.Run, u) * budget,
     sprint: gaitSpeed(Gait.Sprint, u) * budget,
   };
 }
 
+export { turnSeconds, rulesOf, postureTime } from "./rules.js";
 export { defaultWorld, worldFromScenario } from "./model.js";
 export { loadCatalog, loadCatalogSync, assembleWorld, worldFromCatalog } from "./content.js";
 export { silhouetteFor, aimPointOffset, accuracyAngle, resolveAimOffset } from "./combat.js";

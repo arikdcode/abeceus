@@ -1,11 +1,23 @@
-import { Engine, actionCost, unitHitboxes } from "./engine.js";
+import { Engine, actionCost, unitHitboxes, turnSeconds, assembleWorld } from "./engine.js";
 import { ActionType, Gait, ShotMode, AimRegion, Posture } from "./model.js";
 import { CoverMode } from "./cover.js";
 import { localHitboxes, clipReport, formatClipReport } from "./body.js";
 import { loadRepoCatalog, worldFromCatalog } from "./catalog-node.js";
 
 const catalog = loadRepoCatalog();
-const courtyard = () => worldFromCatalog(catalog, "duel_2v2");
+const courtyard = () => assembleWorld(catalog, {
+  id: "smoke_courtyard",
+  name: "Smoke courtyard",
+  map: "courtyard",
+  seed: 1,
+  skip_contact: true,
+  units: [
+    { character: "alpha-1", pos: [3.0, 5.5], facing: 0.0 },
+    { character: "alpha-2", pos: [3.2, 10.5], facing: 0.15 },
+    { character: "bravo-1", pos: [17.0, 6.0], facing: 3.14 },
+    { character: "bravo-2", pos: [16.5, 11.2], facing: 3.0 },
+  ],
+});
 
 function fail(msg) {
   console.error(msg);
@@ -41,6 +53,25 @@ function toPlay(eng) {
   const fence = chk.map.cover.find((c) => c.id === "fence-south");
   if (!fence || fence.color === "#6a7b66") fail("fences should be a distinct color");
   if (!chk.map.cover.some((c) => c.id === "crate-lane" && c.height < 1.3)) fail("checkpoint should keep some postable crates");
+  const chkB1 = chk.units.find((u) => u.name === "Bravo-1");
+  const chkB2 = chk.units.find((u) => u.name === "Bravo-2");
+  if (chkB1?.cover_use?.mode !== "hide" || chkB2?.cover_use?.mode !== "hide") {
+    fail(`checkpoint Bravo should start hidden: ${JSON.stringify([chkB1?.cover_use, chkB2?.cover_use])}`);
+  }
+  const chkEng = new Engine();
+  if (!chkEng.loadWorld(chk)) fail("checkpoint load failed");
+  const firstTwo = chkEng.world.turn_order.slice(0, 2).map((id) => chkEng.world.units.find((u) => u.id === id));
+  if (firstTwo.some((u) => !u || u.team !== 0)) fail("checkpoint should open on Alpha's breach");
+
+  const op = worldFromCatalog(catalog, "outpost");
+  if (op.units.length < 8) fail("outpost should field more than a fireteam");
+  if ((op.map.max.x - op.map.min.x) < 50) fail("outpost should be a large map");
+  if (!op.map.surfaces?.some((s) => s.kind === "road")) fail("outpost should have a road surface");
+  if (!op.map.decor?.length) fail("outpost should place elevated decor");
+  if (!op.map.cover.some((c) => c.id === "tower-cabin" && (c.z0 || 0) > 4)) fail("tower cabin should sit off the ground");
+  if (!op.map.cover.some((c) => c.id === "crate-gate")) fail("outpost should keep a postable gate crate");
+  if (op.units.filter((u) => u.cover_use?.mode === "hide").length < 8) fail("outpost teams should start in hide");
+  if (!op.map.decor.some((c) => c.roof && (c.id || "").includes("office"))) fail("office roof should stay in the map as hidden-by-default decor");
 }
 
 const eng = new Engine();
@@ -119,6 +150,18 @@ const afterSprint = eng.schedule({ type: ActionType.Shoot, actor, target: enemy.
 if (!afterSprint.ok) fail(`precise after sprint should queue: ${afterSprint.error}`);
 eng.clearQueue();
 
+if (Math.abs(turnSeconds(eng.world) - 3) > 1e-6) fail(`turn should be 3s from rules.json, got ${turnSeconds(eng.world)}`);
+const crouchCost = actionCost(me, { type: ActionType.SetPosture, posture: Posture.Crouching }, eng.world);
+const proneCost = actionCost(me, { type: ActionType.SetPosture, posture: Posture.Prone }, eng.world);
+if (Math.abs(crouchCost.legs - 0.5) > 1e-6) fail(`crouch should be 0.5s, got ${crouchCost.legs}`);
+if (Math.abs(proneCost.legs - 1) > 1e-6) fail(`prone should be 1s, got ${proneCost.legs}`);
+const standFromProne = actionCost({ ...me, posture: Posture.Prone }, { type: ActionType.SetPosture, posture: Posture.Standing }, eng.world);
+if (Math.abs(standFromProne.legs - 1) > 1e-6) fail(`stand from prone should be 1s, got ${standFromProne.legs}`);
+const standFromCrouch = actionCost({ ...me, posture: Posture.Crouching }, { type: ActionType.SetPosture, posture: Posture.Standing }, eng.world);
+if (Math.abs(standFromCrouch.legs - 0.5) > 1e-6) fail(`stand from crouch should be 0.5s, got ${standFromCrouch.legs}`);
+const quotes = eng.view().quotes.actions.map((a) => a.id);
+if (quotes.includes("stand")) fail("stand should be hidden while already standing");
+if (!quotes.includes("crouch") || !quotes.includes("prone")) fail("crouch and prone should stay listed");
 const snapCost = actionCost(me, { type: ActionType.Shoot, shot: ShotMode.Snap }, eng.world);
 if (snapCost.voice > 1e-6 || Math.abs(snapCost.hands - snapCost.focus) > 1e-6) {
   fail(`snap cost should be hands=focus, no voice; got ${JSON.stringify(snapCost)}`);
@@ -174,7 +217,7 @@ if (left.aim_world.y <= right.aim_world.y) fail("silhouette left should map to s
   eng.clearQueue();
 }
 
-const walk = eng.schedule({ type: ActionType.Move, actor, dest: { x: 8, y: 6 }, gait: Gait.Walk });
+const walk = eng.schedule({ type: ActionType.Move, actor, dest: { x: 5, y: 5.5 }, gait: Gait.Walk });
 const thenSnap = eng.schedule({ type: ActionType.Shoot, actor, target: enemy.id, shot: ShotMode.Snap });
 console.log("then walk", walk.ok, walk.item && `${walk.item.t0.toFixed(2)}-${walk.item.t1.toFixed(2)}`);
 console.log("then snap", thenSnap.ok, thenSnap.item && `${thenSnap.item.t0.toFixed(2)}-${thenSnap.item.t1.toFixed(2)}`);
@@ -185,7 +228,7 @@ if (eng.queue.length) fail("unschedule should drop the move and everything after
 
 eng.clearQueue();
 const snap = eng.schedule({ type: ActionType.Shoot, actor, target: enemy.id, shot: ShotMode.Snap, overlap: true });
-const move = eng.schedule({ type: ActionType.Move, actor, dest: { x: 8, y: 6 }, gait: Gait.Walk, overlap: true });
+const move = eng.schedule({ type: ActionType.Move, actor, dest: { x: 5, y: 5.5 }, gait: Gait.Walk, overlap: true });
 console.log("overlap snap", snap.ok, snap.item && `${snap.item.t0.toFixed(2)}-${snap.item.t1.toFixed(2)}`);
 console.log("overlap move", move.ok, move.item && `${move.item.t0.toFixed(2)}-${move.item.t1.toFixed(2)}`);
 const overlap = snap.item && move.item && Math.abs(snap.item.t0 - move.item.t0) < 0.15;

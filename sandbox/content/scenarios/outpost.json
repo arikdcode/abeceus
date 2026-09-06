@@ -1,0 +1,19 @@
+{
+  "id": "outpost",
+  "name": "Forward outpost",
+  "map": "outpost",
+  "seed": 4,
+  "skip_contact": true,
+  "units": [
+    {"character": "alpha-1", "initiative": 5, "pos": [9.9, 22.5], "facing": 0.04, "cover": {"mode": "hide", "id": "rock-a1-main", "face": "minx"}},
+    {"character": "alpha-2", "pos": [7.3, 17.6], "facing": 0.12, "cover": {"mode": "hide", "id": "rock-a2-main", "face": "minx"}},
+    {"character": "alpha-3", "pos": [11.5, 28.2], "facing": -0.08, "cover": {"mode": "hide", "id": "rock-a3-main", "face": "minx"}},
+    {"character": "alpha-4", "pos": [7.7, 25.6], "facing": 0.02, "cover": {"mode": "hide", "id": "rock-a4-main", "face": "minx"}},
+
+    {"character": "bravo-1", "pos": [28.7, 17.9], "facing": 3.14, "cover": {"mode": "hide", "id": "crate-gate", "face": "maxx"}},
+    {"character": "bravo-2", "pos": [27.4, 28.8], "facing": 3.14, "cover": {"mode": "hide", "id": "booth-gate-wall-e", "face": "maxx"}},
+    {"character": "bravo-3", "pos": [45.4, 34.2], "facing": 3.14, "cover": {"mode": "hide", "id": "sandbag-office", "face": "maxx"}},
+    {"character": "bravo-4", "pos": [39.1, 18.6], "facing": 3.14, "cover": {"mode": "hide", "id": "humvee-workshop-hull", "face": "maxx"}},
+    {"character": "bravo-5", "pos": [24.4, 35.8], "facing": 3.14, "cover": {"mode": "hide", "id": "sandbag-tower", "face": "maxx"}}
+  ]
+}

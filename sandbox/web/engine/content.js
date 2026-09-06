@@ -1,5 +1,13 @@
 import { makeWorld, makeUnit, Posture } from "./model.js";
 import { resolveCoverUse, CoverMode } from "./cover.js";
+import { DEFAULT_RULES, mergeRules } from "./rules.js";
+import { instantiatePlaces, parseBox, parseSurface } from "./props.js";
+
+function loadProps(index, readOne) {
+  const props = {};
+  for (const id of index.props || []) props[id] = JSON.parse(readOne(`props/${id}.json`));
+  return props;
+}
 
 export function loadCatalogSync(readSync) {
   const index = JSON.parse(readSync("index.json"));
@@ -11,7 +19,8 @@ export function loadCatalogSync(readSync) {
   for (const id of index.maps || []) maps[id] = JSON.parse(readSync(`maps/${id}.json`));
   const scenarios = {};
   for (const s of index.scenarios) scenarios[s.id] = JSON.parse(readSync(`scenarios/${s.id}.json`));
-  return { index, weapons, characters, maps, scenarios };
+  const rules = index.rules ? JSON.parse(readSync(`${index.rules}.json`)) : JSON.parse(readSync("rules.json"));
+  return { index, weapons, characters, maps, scenarios, rules, props: loadProps(index, readSync) };
 }
 
 export async function loadCatalog(read) {
@@ -24,7 +33,10 @@ export async function loadCatalog(read) {
   for (const id of index.maps || []) maps[id] = JSON.parse(await read(`maps/${id}.json`));
   const scenarios = {};
   for (const s of index.scenarios) scenarios[s.id] = JSON.parse(await read(`scenarios/${s.id}.json`));
-  return { index, weapons, characters, maps, scenarios };
+  const rules = index.rules ? JSON.parse(await read(`${index.rules}.json`)) : JSON.parse(await read("rules.json"));
+  const props = {};
+  for (const id of index.props || []) props[id] = JSON.parse(await read(`props/${id}.json`));
+  return { index, weapons, characters, maps, scenarios, rules, props };
 }
 
 function xy(p, fallback = { x: 0, y: 0 }) {
@@ -33,20 +45,7 @@ function xy(p, fallback = { x: 0, y: 0 }) {
   return { x: p.x, y: p.y };
 }
 
-function parseCover(c) {
-  return {
-    id: c.id || null,
-    min: xy(c.min),
-    max: xy(c.max),
-    height: c.height ?? 1.1,
-    color: c.color || "#6a7b66",
-    protection: c.protection ?? 16,
-    durability: c.durability ?? 10,
-    durability_max: c.durability_max ?? c.durability ?? 10,
-  };
-}
-
-function applyMap(w, map) {
+function applyMap(w, map, catalog) {
   if (!map) return;
   w.map.id = map.id || w.map.id || "";
   if (map.min) w.map.min = xy(map.min);
@@ -54,7 +53,13 @@ function applyMap(w, map) {
   if (map.grid != null) w.map.grid = map.grid;
   if (map.surprise0 != null) w.map.surprise0 = map.surprise0;
   if (map.surprise1 != null) w.map.surprise1 = map.surprise1;
-  if (map.cover) w.map.cover = map.cover.map(parseCover);
+  w.map.ground = map.ground || "dirt";
+  const placed = instantiatePlaces(map.places, catalog?.props);
+  const inline = (map.cover || []).map(parseBox);
+  const inlineDecor = (map.decor || []).map(parseBox);
+  w.map.cover = [...inline, ...placed.cover];
+  w.map.decor = [...inlineDecor, ...placed.decor];
+  w.map.surfaces = (map.surfaces || []).map(parseSurface);
 }
 
 function mergePlacement(character, weapon, placement) {
@@ -105,7 +110,9 @@ export function assembleWorld(catalog, scenario) {
     map = catalog.maps[map];
     if (!map) throw new Error(`unknown map: ${src.map}`);
   }
-  applyMap(w, map);
+  applyMap(w, map, catalog);
+  w.rules = mergeRules(DEFAULT_RULES, catalog.rules);
+  if (src.turn_seconds != null) w.rules.turn_seconds = src.turn_seconds;
   if (src.surprise0 != null) w.map.surprise0 = src.surprise0;
   if (src.surprise1 != null) w.map.surprise1 = src.surprise1;
   let next = 1;

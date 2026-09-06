@@ -1,0 +1,11 @@
+{
+  "id": "booth",
+  "parts": [
+    { "id": "wall-w", "min": [-1.35, -1.25], "max": [-1.18, 1.25], "z0": 0, "z1": 2.32, "color": "#8d7d6a", "cover": true, "protection": 20, "durability": 14 },
+    { "id": "wall-e", "min": [1.18, -1.25], "max": [1.35, 1.25], "z0": 0, "z1": 2.32, "color": "#8d7d6a", "cover": true, "protection": 20, "durability": 14 },
+    { "id": "wall-n", "min": [-1.35, 1.08], "max": [1.35, 1.25], "z0": 0, "z1": 2.32, "color": "#8d7d6a", "cover": true, "protection": 20, "durability": 14 },
+    { "id": "wall-s-w", "min": [-1.35, -1.25], "max": [-0.25, -1.08], "z0": 0, "z1": 2.32, "color": "#8d7d6a", "cover": true, "protection": 20, "durability": 14 },
+    { "id": "wall-s-e", "min": [0.25, -1.25], "max": [1.35, -1.08], "z0": 0, "z1": 2.32, "color": "#8d7d6a", "cover": true, "protection": 20, "durability": 14 },
+    { "id": "roof", "role": "roof", "min": [-1.42, -1.32], "max": [1.42, 1.32], "z0": 2.46, "z1": 2.72, "color": "#5a5346", "cover": false }
+  ]
+}

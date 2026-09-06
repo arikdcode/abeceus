@@ -18,7 +18,7 @@ export function pointInCoverXY(p, c, pad = 0) {
 }
 
 export function inUseZone(p, c) {
-  if (!c || c.durability <= 0) return false;
+  if (!coverUsable(c)) return false;
   if (pointInCoverXY(p, c, -0.02)) return false;
   return coverDistXY(p, c) <= COVER_USE_PAD;
 }
@@ -60,14 +60,36 @@ export function faceInward(face) {
   return { x: 0, y: -1 };
 }
 
+export function coverTop(c) {
+  return c?.z1 ?? c?.height ?? 1;
+}
+
+export function coverBottom(c) {
+  return c?.z0 ?? 0;
+}
+
+export function coverBlocksMove(c) {
+  if (!c || c.durability <= 0) return false;
+  if (c.block_move === false) return false;
+  return coverBottom(c) <= 0.35;
+}
+
+export function coverUsable(c) {
+  if (!c || c.durability <= 0) return false;
+  if (c.usable === false) return false;
+  return coverBottom(c) <= 0.25;
+}
+
 export function canPostOver(c) {
-  return (c?.height || 1) <= COVER_POST_MAX;
+  if (!c || coverBottom(c) > 0.2) return false;
+  return coverTop(c) <= COVER_POST_MAX;
 }
 
 export function nearestUse(world, pos) {
   let best = null;
   let bestD = 1e9;
   (world?.map?.cover || []).forEach((c, index) => {
+    if (!coverUsable(c)) return;
     if (!inUseZone(pos, c) && coverDistXY(pos, c) > COVER_USE_PAD) return;
     if (pointInCoverXY(pos, c, -0.02)) return;
     const d = coverDistXY(pos, c);
@@ -86,7 +108,7 @@ export function resolveCoverUse(world, pos, mode, prefer = null) {
     if (byId >= 0) index = byId;
   }
   let cover = index != null ? world.map.cover[index] : null;
-  if (!cover || cover.durability <= 0 || (coverDistXY(pos, cover) > COVER_USE_PAD + 0.35 && !inUseZone(pos, cover))) {
+  if (!coverUsable(cover) || (coverDistXY(pos, cover) > COVER_USE_PAD + 0.35 && !inUseZone(pos, cover))) {
     const near = nearestUse(world, pos);
     if (!near) return null;
     cover = near.cover;
@@ -100,7 +122,7 @@ export function resolveCoverUse(world, pos, mode, prefer = null) {
     index,
     face,
     mode,
-    lip: cover.height || 1,
+    lip: coverTop(cover),
     slot: slotOnFace(cover, face, pos),
     facing: Math.atan2(inward.y, inward.x),
   };

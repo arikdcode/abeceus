@@ -1,11 +1,12 @@
 {
+  "rules": "rules",
   "weapons": ["rifle"],
-  "characters": ["alpha-1", "alpha-2", "bravo-1", "bravo-2"],
-  "maps": ["courtyard", "open", "checkpoint"],
+  "characters": ["alpha-1", "alpha-2", "alpha-3", "alpha-4", "bravo-1", "bravo-2", "bravo-3", "bravo-4", "bravo-5"],
+  "props": ["slab", "crate", "jersey", "sandbag", "lamp", "tree", "rock", "booth", "office", "mess", "tent", "tower", "humvee", "conex"],
+  "maps": ["outpost", "checkpoint", "courtyard"],
   "scenarios": [
-    { "id": "duel_2v2", "name": "2v2 courtyard" },
-    { "id": "posted_courtyard", "name": "Posted courtyard" },
+    { "id": "outpost", "name": "Forward outpost" },
     { "id": "checkpoint", "name": "Checkpoint approach" },
-    { "id": "open_1v1", "name": "Open 1v1" }
+    { "id": "posted_courtyard", "name": "Posted courtyard" }
   ]
 }

@@ -1,0 +1,7 @@
+{
+  "id": "lamp",
+  "parts": [
+    { "id": "pole", "min": [-0.07, -0.07], "max": [0.07, 0.07], "z0": 0, "z1": 3.45, "color": "#3a3f44", "cover": true, "usable": false, "protection": 8, "durability": 4 },
+    { "id": "head", "min": [-0.32, -0.32], "max": [0.32, 0.32], "z0": 3.28, "z1": 3.58, "color": "#c8b56a", "cover": false }
+  ]
+}

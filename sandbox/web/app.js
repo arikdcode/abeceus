@@ -1,7 +1,7 @@
 import { Engine, loadCatalog, worldFromCatalog, unitHitboxes, coverBox, muzzleWorld, rayLocalBox, rayCover, nearestUse, useBounds, resolveCoverUse, CoverMode, partFamily, prettyPart } from "./engine/engine.js";
 import { ActionType, Gait, ShotMode, AimRegion, Phase } from "./engine/model.js";
 import { rotate } from "./engine/vec.js";
-import { makeCam3, drawScene3, drawFloor3, drawPolyline3, drawLabel3, screenRay, hitGround, orbitCam, zoomCam, project3, eyeOf } from "./view3d.js";
+import { makeCam3, frameCam3, drawScene3, drawFloor3, drawPolyline3, drawLabel3, screenRay, hitGround, orbitCam, zoomCam, project3, eyeOf, GROUND, sliceBox3 } from "./view3d.js";
 import { stepHeldCam, stepOrbitKey } from "./engine/camstep.js";
 
 const canvas = document.getElementById("map");
@@ -25,9 +25,11 @@ let coverPreview = null;
 let movePreview = null;
 let scanHold = 0;
 let shotPreview = null;
+let shotPreviewKey = "";
 let fog = false;
 let owAim = false;
 let mapMode = "3d";
+let hideRoofs = localStorage.getItem("sandbox.hideRoofs") !== "show";
 const cam3 = makeCam3();
 let camKind = "strategy";
 let silView = null;
@@ -62,6 +64,7 @@ function refresh() {
   tapePreview = null;
   posePreview = null;
   movePreview = null;
+  shotPreviewKey = "";
   window.clearTimeout(scanHold);
   render();
   renderChrome();
@@ -230,6 +233,39 @@ function partLabel(part) {
   return prettyPart(part);
 }
 
+const hitboxCache = new WeakMap();
+
+function cachedHitboxes(u) {
+  if (!u) return [];
+  const cover = u.cover_use;
+  let e = hitboxCache.get(u);
+  if (
+    e
+    && e.x === u.pos.x && e.y === u.pos.y
+    && e.facing === (u.facing || 0)
+    && e.posture === u.posture
+    && e.downed === !!u.downed
+    && e.cover === cover
+  ) return e.boxes;
+  const boxes = unitHitboxes(u);
+  hitboxCache.set(u, {
+    boxes,
+    x: u.pos.x, y: u.pos.y,
+    facing: u.facing || 0,
+    posture: u.posture,
+    downed: !!u.downed,
+    cover,
+  });
+  return boxes;
+}
+
+function keepDrawnPart(b, far) {
+  if (!far) return true;
+  if (b.armor || b.name === "skull" || b.name === "chest" || b.name === "abdomen" || b.name === "pelvis") return true;
+  if (b.name === "gun" || b.name?.startsWith("gun_")) return true;
+  return (b.hx || 0) + (b.hy || 0) + (b.hz || 0) > 0.18;
+}
+
 function pickFromEvent(ev) {
   if (mapMode === "3d") {
     const { sx, sy } = canvasXY(ev);
@@ -237,11 +273,13 @@ function pickFromEvent(ev) {
     let unit = null;
     let part = null;
     let best = 1e9;
+    const far = cam3.dist > 30;
     for (const vu of visibleUnits()) {
       const u = worldUnit(vu.id);
       if (!u) continue;
-      for (const b of unitHitboxes(u)) {
+      for (const b of cachedHitboxes(u)) {
         if (!b.flesh && !b.armor) continue;
+        if (!keepDrawnPart(b, far)) continue;
         const t = rayLocalBox(ray.origin, ray.dir, b, u.pos, u.facing || 0, 80);
         if (t != null && t < best) {
           best = t;
@@ -285,19 +323,43 @@ function unitAt(w) {
   return null;
 }
 
+function fillWorldRect(min, max, hex) {
+  const a = toScreen([min[0], max[1]]);
+  const b = toScreen([max[0], min[1]]);
+  ctx.fillStyle = hex;
+  ctx.fillRect(a.x, a.y, b.x - a.x, b.y - a.y);
+}
+
 function drawGrid() {
   const map = view.map;
-  const g = map.grid || 1;
-  ctx.strokeStyle = "rgba(255,255,255,0.06)";
+  const step = 1;
+  const majorEvery = 5;
+  fillWorldRect(map.min, map.max, GROUND[map.ground] || GROUND.dirt);
+  for (const s of map.surfaces || []) {
+    if (!s.min || !s.max) continue;
+    fillWorldRect(s.min, s.max, s.color || GROUND[s.kind] || GROUND.dirt);
+    if (s.kind === "road") {
+      const y = (s.min[1] + s.max[1]) * 0.5;
+      ctx.strokeStyle = "rgba(210, 190, 70, 0.55)";
+      ctx.lineWidth = 2;
+      ctx.setLineDash([14, 16]);
+      const a = toScreen([s.min[0] + 1, y]);
+      const b = toScreen([s.max[0] - 1, y]);
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  }
   ctx.lineWidth = 1;
-  for (let x = map.min[0]; x <= map.max[0] + 1e-6; x += g) {
+  for (let x = map.min[0]; x <= map.max[0] + 1e-6; x += step) {
     const a = toScreen([x, map.min[1]]);
     const b = toScreen([x, map.max[1]]);
+    ctx.strokeStyle = Math.abs(x - map.min[0]) % majorEvery < 1e-6 ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.05)";
     ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
   }
-  for (let y = map.min[1]; y <= map.max[1] + 1e-6; y += g) {
+  for (let y = map.min[1]; y <= map.max[1] + 1e-6; y += step) {
     const a = toScreen([map.min[0], y]);
     const b = toScreen([map.max[0], y]);
+    ctx.strokeStyle = Math.abs(y - map.min[1]) % majorEvery < 1e-6 ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.05)";
     ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
   }
 }
@@ -316,18 +378,38 @@ function hotCoverIndex() {
   return -1;
 }
 
+function drawBox2d(c, fill, stroke) {
+  const a = toScreen([c.min[0], c.max[1]]);
+  const b = toScreen([c.max[0], c.min[1]]);
+  ctx.fillStyle = fill;
+  ctx.fillRect(a.x, a.y, b.x - a.x, b.y - a.y);
+  if (stroke) {
+    ctx.strokeStyle = stroke;
+    ctx.strokeRect(a.x, a.y, b.x - a.x, b.y - a.y);
+  }
+}
+
+function isRoof(c) {
+  if (!c) return false;
+  if (c.roof) return true;
+  const id = c.id || "";
+  return id === "roof" || id.endsWith("-roof");
+}
+
 function drawCover() {
   const hot = hotCoverIndex();
+  for (const c of view.map.decor || []) {
+    if (hideRoofs && isRoof(c)) continue;
+    ctx.globalAlpha = 0.55;
+    drawBox2d(c, c.color || "#6a7b66", "rgba(40,32,24,0.35)");
+    ctx.globalAlpha = 1;
+  }
   view.map.cover.forEach((c, i) => {
-    const a = toScreen([c.min[0], c.max[1]]);
-    const b = toScreen([c.max[0], c.min[1]]);
+    if (hideRoofs && isRoof(c)) return;
     const frac = c.durability_max ? c.durability / c.durability_max : 1;
     ctx.globalAlpha = frac < 0.05 ? 1 : 0.45 + 0.5 * frac;
-    ctx.fillStyle = frac < 0.05 ? "#2a2a2a" : (c.color || "#6a7b66");
-    ctx.fillRect(a.x, a.y, b.x - a.x, b.y - a.y);
+    drawBox2d(c, frac < 0.05 ? "#2a2a2a" : (c.color || "#6a7b66"), i === hot ? "#d7b15a" : "#6d7c64");
     ctx.globalAlpha = 1;
-    ctx.strokeStyle = i === hot ? "#d7b15a" : "#6d7c64";
-    ctx.strokeRect(a.x, a.y, b.x - a.x, b.y - a.y);
     if (i === hot || coverPreview) {
       const raw = eng.world.map.cover[i];
       if (!raw) return;
@@ -351,7 +433,13 @@ function asXY(p) {
 function coverAsRay(c) {
   const min = Array.isArray(c.min) ? { x: c.min[0], y: c.min[1] } : c.min;
   const max = Array.isArray(c.max) ? { x: c.max[0], y: c.max[1] } : c.max;
-  return { min, max, height: c.height || 1, durability: c.durability };
+  return {
+    min, max,
+    z0: c.z0 ?? 0,
+    z1: c.z1 ?? c.height ?? 1,
+    height: c.z1 ?? c.height ?? 1,
+    durability: c.durability,
+  };
 }
 
 function coverClipT(origin, dir, maxT) {
@@ -409,8 +497,15 @@ function drawShotLine2(origin, dest) {
   }
 }
 
+function shotTargetDowned(shot) {
+  const id = shot?.target || shot?.intended || shot?.struck;
+  if (!id) return false;
+  const u = worldUnit(id) || view?.units.find((x) => x.id === id);
+  return !!(u && (u.downed || u.dead));
+}
+
 function drawShotGeom(prev) {
-  if (!prev?.ok) return;
+  if (!prev?.ok || shotTargetDowned(prev)) return;
   const origin = prev.origin;
   const aim = prev.aim_world || {
     x: asXY(origin).x + asXY(prev.aim_dir).x * (prev.distance || 8),
@@ -472,8 +567,8 @@ function drawCoverUseRings3() {
 function drawReachRing3(origin, radius) {
   if (!radius || radius < 0.05) return;
   const ring = [];
-  for (let i = 0; i <= 48; i++) {
-    const a = (i / 48) * Math.PI * 2;
+  for (let i = 0; i <= 28; i++) {
+    const a = (i / 28) * Math.PI * 2;
     ring.push({ x: origin.x + Math.cos(a) * radius, y: origin.y + Math.sin(a) * radius, z: 0.04 });
   }
   drawPolyline3(ctx, cam3, canvas.width, canvas.height, ring, reachRingColor());
@@ -588,18 +683,37 @@ function restoreStrategyCam() {
   cam3.dist = savedStrategy.dist;
 }
 
-function resetCam3() {
-  const fresh = makeCam3();
-  cam3.target = { ...fresh.target };
-  cam3.yaw = fresh.yaw;
-  cam3.pitch = fresh.pitch;
-  cam3.dist = fresh.dist;
-  cam3.fpv = false;
-  cam3.fpvEye = null;
-  cam3.fpvLook = null;
+function frameCameras(map) {
+  if (!map) return;
+  const min = Array.isArray(map.min) ? map.min : [map.min.x, map.min.y];
+  const max = Array.isArray(map.max) ? map.max : [map.max.x, map.max.y];
+  const sx = max[0] - min[0];
+  const sy = max[1] - min[1];
+  camera.x = (min[0] + max[0]) * 0.5;
+  camera.y = (min[1] + max[1]) * 0.5;
+  const fit = Math.min(canvas.width / (sx + 6), canvas.height / (sy + 6));
+  camera.zoom = Math.max(10, Math.min(36, fit || 22));
+  frameCam3(cam3, { min, max });
   camKind = "strategy";
   savedStrategy = snapshotStrategyCam();
   syncModePairs();
+}
+
+function resetCam3() {
+  if (view?.map) frameCameras(view.map);
+  else {
+    const fresh = makeCam3();
+    cam3.target = { ...fresh.target };
+    cam3.yaw = fresh.yaw;
+    cam3.pitch = fresh.pitch;
+    cam3.dist = fresh.dist;
+    cam3.fpv = false;
+    cam3.fpvEye = null;
+    cam3.fpvLook = null;
+    camKind = "strategy";
+    savedStrategy = snapshotStrategyCam();
+    syncModePairs();
+  }
 }
 
 function setPair(id, value) {
@@ -613,6 +727,7 @@ function syncModePairs() {
   setPair("fogPair", fog ? "player" : "dev");
   setPair("projPair", mapMode);
   setPair("camPair", camKind);
+  setPair("roofPair", hideRoofs ? "hide" : "show");
 }
 
 function setCamKind(next) {
@@ -634,6 +749,53 @@ function toggleCamKind() {
   setCamKind(camKind === "fpv" ? "strategy" : "fpv");
 }
 
+function asCoverRay(c) {
+  return {
+    min: { x: c.min[0], y: c.min[1] },
+    max: { x: c.max[0], y: c.max[1] },
+    z0: c.z0 ?? 0,
+    z1: c.z1 ?? c.height ?? 1,
+  };
+}
+
+function occludersOf(map) {
+  const list = [];
+  for (const c of map.cover || []) {
+    if (hideRoofs && isRoof(c)) continue;
+    list.push(asCoverRay(c));
+  }
+  if (!hideRoofs) {
+    for (const c of map.decor || []) {
+      if (isRoof(c)) list.push(asCoverRay(c));
+    }
+  }
+  return list;
+}
+
+function partCenter3(b) {
+  const cs = b.corners;
+  if (!cs?.length) return { x: 0, y: 0, z: 0 };
+  let x = 0, y = 0, z = 0;
+  for (const p of cs) {
+    x += p.x; y += p.y; z += p.z;
+  }
+  const n = cs.length;
+  return { x: x / n, y: y / n, z: z / n };
+}
+
+function hiddenByCover(eye, p, occluders) {
+  const raw = { x: p.x - eye.x, y: p.y - eye.y, z: (p.z || 0) - (eye.z || 0) };
+  const len = Math.hypot(raw.x, raw.y, raw.z);
+  if (len < 0.08) return false;
+  const dir = { x: raw.x / len, y: raw.y / len, z: raw.z / len };
+  const maxT = len - 0.05;
+  for (const c of occluders) {
+    const t = rayCover(eye, dir, c, maxT);
+    if (t != null && t > 0.15) return true;
+  }
+  return false;
+}
+
 function render3() {
   if (camKind === "fpv") applyFpvCam();
   ctx.fillStyle = "#1a2228";
@@ -643,16 +805,37 @@ function render3() {
   const h = canvas.height;
   drawFloor3(ctx, cam3, w, h, map);
   if (camKind !== "fpv") drawCoverUseRings3();
-  const parts = [];
+  const worldParts = [];
+  const pushBox = (c, color) => {
+    if (hideRoofs && isRoof(c)) return;
+    for (const slab of sliceBox3(c)) {
+      const box = coverBox(slab);
+      worldParts.push({ ...box, color, facing: 0, roof: isRoof(c) });
+    }
+  };
+  for (const c of map.decor || []) pushBox(c, c.color || "#6a7b66");
   for (const c of map.cover) {
-    const box = coverBox({
-      min: { x: c.min[0], y: c.min[1] },
-      max: { x: c.max[0], y: c.max[1] },
-      height: c.height,
-    });
     const frac = c.durability_max ? c.durability / c.durability_max : 1;
-    parts.push({ ...box, color: frac < 0.05 ? "#3a3a3a" : (c.color || "#6a7b66"), facing: 0 });
+    pushBox(c, frac < 0.05 ? "#3a3a3a" : (c.color || "#6a7b66"));
   }
+  drawScene3(ctx, cam3, w, h, worldParts);
+  const eye = eyeOf(cam3);
+  const occluders = occludersOf(map);
+  const bodyParts = [];
+  const pushUnitParts = (drawn, team, down, ghost, vu) => {
+    const far = cam3.dist > 30;
+    for (const b of cachedHitboxes(drawn)) {
+      if (!keepDrawnPart(b, far)) continue;
+      if (hiddenByCover(eye, partCenter3(b), occluders)) continue;
+      const hot = vu && hoverUnit && hoverUnit.id === vu.id && hoverPart === b.name;
+      bodyParts.push({
+        ...b,
+        color: partHex(b.name, team, down, hot),
+        facing: drawn.facing || 0,
+        ghost,
+      });
+    }
+  };
   const ghost = ghostActor();
   const realActor = worldUnit(actorId());
   const ghostMoved = ghost && realActor
@@ -663,28 +846,13 @@ function render3() {
     if (camKind === "fpv" && u.id === actorId()) continue;
     const drawn = (u.id === actorId() && ghost && !ghostMoved) ? ghost : u;
     const faded = u.id === actorId() && ghostMoved;
-    for (const b of unitHitboxes(drawn)) {
-      const hot = hoverUnit && hoverUnit.id === vu.id && hoverPart === b.name;
-      parts.push({
-        ...b,
-        color: partHex(b.name, vu.team, vu.downed || vu.dead, hot),
-        facing: drawn.facing || 0,
-        ghost: faded,
-      });
-    }
+    pushUnitParts(drawn, vu.team, vu.downed || vu.dead, faded, vu);
   }
   if (ghostMoved && ghost && camKind !== "fpv") {
     const vu = view.units.find((x) => x.id === ghost.id);
-    for (const b of unitHitboxes(ghost)) {
-      parts.push({
-        ...b,
-        color: partHex(b.name, vu?.team ?? 0, false, false),
-        facing: ghost.facing || 0,
-        ghost: true,
-      });
-    }
+    pushUnitParts(ghost, vu?.team ?? 0, false, true, vu);
   }
-  drawScene3(ctx, cam3, w, h, parts);
+  drawScene3(ctx, cam3, w, h, bodyParts);
   const actor = view.units.find((x) => x.id === actorId());
   const wu = actor ? worldUnit(actor.id) : null;
   if (wu && camKind !== "fpv") drawReachRing3((ghost || wu).pos, gaitReach());
@@ -703,7 +871,7 @@ function render3() {
       { ...asXY(movePreview.dest), z: 0.07 },
     ], MOVE_LINE, [5, 4]);
   }
-  if (shotPreview?.ok && wu) {
+  if (shotPreview?.ok && wu && !shotTargetDowned(shotPreview)) {
     const o = shotPreview.origin3 || muzzleWorld(ghost || wu);
     const aim = shotPreview.aim_world || {};
     const z = shotPreview.aim_offset?.z ?? 1.2;
@@ -716,7 +884,7 @@ function render3() {
     drawPolyline3(ctx, cam3, w, h, [o, hit], SHOT_CLEAR);
     if (tHit < len - 0.04) drawPolyline3(ctx, cam3, w, h, [hit, dest], SHOT_BLOCKED);
   }
-  if (view.last_shot?.valid && !shotPreview?.ok) {
+  if (view.last_shot?.valid && !shotPreview?.ok && !shotTargetDowned(view.last_shot)) {
     const ls = view.last_shot;
     const a = ls.origin3 || { ...asXY(ls.origin), z: 1.2 };
     const b = ls.end3 || { ...asXY(ls.end), z: 1.0 };
@@ -739,11 +907,11 @@ function render3() {
   if (ghostMoved && ghost && camKind !== "fpv") {
     const z = ghost.posture === "prone" ? 0.45 : ghost.posture === "crouch" ? 1.35 : 1.95;
     drawLabel3(ctx, cam3, w, h, { x: ghost.pos.x, y: ghost.pos.y, z }, `${ghost.name} …`, "#d7b15a");
-    for (const b of unitHitboxes(ghost)) drawBoxEdges3(b, "rgba(215,177,90,0.7)");
+    for (const b of cachedHitboxes(ghost)) drawBoxEdges3(b, "rgba(215,177,90,0.7)");
   }
   if (hoverUnit && hoverPart) {
     const hu = worldUnit(hoverUnit.id);
-    const box = hu && unitHitboxes(hu).find((b) => b.name === hoverPart);
+    const box = hu && cachedHitboxes(hu).find((b) => b.name === hoverPart);
     if (box) drawBoxEdges3(box, "#f2d78a");
   }
 }
@@ -788,7 +956,7 @@ function render2d() {
     ctx.beginPath(); ctx.arc(e.x, e.y, 5, 0, Math.PI * 2); ctx.fillStyle = MOVE_LINE; ctx.fill();
   }
   if (shotPreview?.ok) drawShotGeom(shotPreview);
-  if (view.last_shot?.valid) {
+  if (view.last_shot?.valid && !shotTargetDowned(view.last_shot)) {
     const ls = view.last_shot;
     const aimPt = ls.aim_world || ls.end;
     drawCone(ls.origin, aimPt, ls.cone_half_rad);
@@ -877,7 +1045,7 @@ function renderTimeline() {
       ? blockHtml({ t0: tapePreview.t0, t1: tapePreview.t0 + tapePreview.cost[ch], label: tapePreview.cost.label }, ch, "preview")
       : "";
     return `<div class="tl-row"><div class="tl-lab">${ch}</div>
-      <div class="tl-track">${committed}${queued}${ghost}<div class="tl-clock" style="left:${(clock / 5) * 100}%"></div></div></div>`;
+      <div class="tl-track">${committed}${queued}${ghost}<div class="tl-clock" style="left:${(clock / Math.max(0.01, view.turn_seconds || 3)) * 100}%"></div></div></div>`;
   }).join("");
   document.getElementById("timeline").innerHTML = html;
   document.getElementById("clockLabel").textContent = view.phase === Phase.Play
@@ -951,9 +1119,20 @@ function shotContext() {
 
 function syncShotPreview() {
   const ctxn = shotContext();
-  shotPreview = ctxn
-    ? eng.previewShot(ctxn.actor.id, ctxn.target.id, ctxn.mode, ctxn.aim, ctxn.offset, ctxn.overrides)
-    : null;
+  if (!ctxn) {
+    shotPreview = null;
+    shotPreviewKey = "";
+    return null;
+  }
+  const o = ctxn.offset || {};
+  const ov = ctxn.overrides || {};
+  const key = [
+    ctxn.actor.id, ctxn.target.id, ctxn.mode, ctxn.aim, ctxn.part || "",
+    o.x, o.z, ov.pos?.x, ov.pos?.y, ov.posture,
+  ].join(":");
+  if (key === shotPreviewKey && shotPreview) return ctxn;
+  shotPreviewKey = key;
+  shotPreview = eng.previewShot(ctxn.actor.id, ctxn.target.id, ctxn.mode, ctxn.aim, ctxn.offset, ctxn.overrides);
   return ctxn;
 }
 
@@ -1286,7 +1465,7 @@ function renderChrome() {
   document.getElementById("phaseLabel").textContent =
     view.phase === Phase.Contact ? "CONTACT — walk, posture, ready, then Ready-up"
     : view.combat_over ? `Fight over · winner team ${view.winner_team}`
-    : `Round ${view.round} · play · tape ${view.clock.toFixed(1)} / 5.0s`;
+    : `Round ${view.round} · play · tape ${view.clock.toFixed(1)} / ${(view.turn_seconds || 3).toFixed(1)}s`;
   syncModePairs();
   document.getElementById("skipContact").classList.toggle("hidden", view.phase !== Phase.Contact);
 
@@ -1465,7 +1644,10 @@ canvas.addEventListener("click", (ev) => {
   }
 });
 
-canvas.addEventListener("mousemove", (ev) => {
+let hoverRaf = 0;
+let hoverEv = null;
+
+function handleHover(ev) {
   if (!view) return;
   if (orbiting) {
     orbitCam(cam3, ev.movementX * 0.008, -ev.movementY * 0.008);
@@ -1475,6 +1657,8 @@ canvas.addEventListener("mousemove", (ev) => {
   }
   const pick = pickFromEvent(ev);
   const w = pick.ground;
+  const prevUnit = hoverUnit?.id || 0;
+  const prevPart = hoverPart;
   hoverWorld = w;
   hoverUnit = pick.unit;
   hoverPart = pick.part || null;
@@ -1483,7 +1667,7 @@ canvas.addEventListener("mousemove", (ev) => {
   const actor = view.units.find((x) => x.id === actorId());
   if (!u && actor && w) {
     window.clearTimeout(scanHold);
-    const prev = eng.previewMove(actor.id, { x: w.x, y: w.y }, selectedGait(), view.phase === Phase.Play);
+    const prev = eng.previewMove(actor.id, { x: w.x, y: w.y }, selectedGait(), view.phase === Phase.Play, true);
     if (prev?.ok && !prev.truncated) {
       movePreview = prev;
       if (view.phase === Phase.Play) {
@@ -1504,7 +1688,10 @@ canvas.addEventListener("mousemove", (ev) => {
     tapePreview = null;
   }
   syncShotPreview();
-  updateInspectShots();
+  const subject = inspectSubject();
+  if (u && subject && u.id === subject.id && (u.id !== prevUnit || hoverPart !== prevPart)) {
+    updateInspectShots();
+  }
   render();
   renderTimeline();
   const hud = document.getElementById("hoverHud");
@@ -1529,6 +1716,19 @@ canvas.addEventListener("mousemove", (ev) => {
       + (movePreview.note ? `<br>${movePreview.note}` : "");
     placeHoverHud(ev);
   } else hud.classList.add("hidden");
+}
+
+canvas.addEventListener("mousemove", (ev) => {
+  if (orbiting) {
+    handleHover(ev);
+    return;
+  }
+  hoverEv = ev;
+  if (hoverRaf) return;
+  hoverRaf = requestAnimationFrame(() => {
+    hoverRaf = 0;
+    if (hoverEv) handleHover(hoverEv);
+  });
 });
 
 canvas.addEventListener("mouseleave", (ev) => {
@@ -1627,6 +1827,12 @@ bindPair("projPair", (v) => {
   render();
 });
 bindPair("camPair", (v) => setCamKind(v));
+bindPair("roofPair", (v) => {
+  hideRoofs = v !== "show";
+  localStorage.setItem("sandbox.hideRoofs", hideRoofs ? "hide" : "show");
+  syncModePairs();
+  render();
+});
 
 document.querySelectorAll(".icon-toggle").forEach((group) => {
   group.querySelectorAll("button").forEach((btn) => {
@@ -1641,7 +1847,7 @@ document.querySelectorAll(".icon-toggle").forEach((group) => {
       const dest = hoverWorld || (movePreview?.ok ? movePreview.dest : null);
       if (dest) {
         const actor = view?.units.find((x) => x.id === actorId());
-        if (actor) movePreview = eng.previewMove(actor.id, { x: dest.x, y: dest.y }, toggleVal("gait"), view.phase === Phase.Play);
+        if (actor) movePreview = eng.previewMove(actor.id, { x: dest.x, y: dest.y }, toggleVal("gait"), view.phase === Phase.Play, true);
       }
       syncShotPreview();
       updateInspectShots();
@@ -1725,7 +1931,7 @@ async function readContent(path) {
 function rememberedScenario(index) {
   const id = localStorage.getItem(SCENARIO_KEY);
   if (id && index.scenarios.some((s) => s.id === id)) return id;
-  return index.scenarios[0]?.id || "duel_2v2";
+  return index.scenarios[0]?.id || "outpost";
 }
 
 function fillScenarioSelect(index, selected) {
@@ -1750,6 +1956,10 @@ function loadScenario(id) {
   if (!eng.loadWorld(world)) return false;
   document.getElementById("scenarioSelect").value = id;
   refresh();
+  if (view?.map) {
+    frameCameras(view.map);
+    render();
+  }
   agentDump(`scenario ${id}`);
   return true;
 }

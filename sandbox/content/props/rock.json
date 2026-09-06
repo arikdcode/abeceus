@@ -1,0 +1,7 @@
+{
+  "id": "rock",
+  "parts": [
+    { "id": "main", "min": [-1.1, -0.85], "max": [1.1, 0.85], "z0": 0, "z1": 1.12, "color": "#6a6458", "cover": true, "protection": 20, "durability": 14 },
+    { "id": "chunk", "min": [0.4, -1.15], "max": [1.25, -0.2], "z0": 0, "z1": 0.7, "color": "#5c564c", "cover": true, "protection": 16, "durability": 10 }
+  ]
+}

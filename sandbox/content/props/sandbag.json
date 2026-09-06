@@ -1,0 +1,6 @@
+{
+  "id": "sandbag",
+  "parts": [
+    { "min": [-1.2, -0.35], "max": [1.2, 0.35], "z0": 0, "z1": 0.72, "color": "#8a8068", "cover": true, "protection": 10, "durability": 7 }
+  ]
+}

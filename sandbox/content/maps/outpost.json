@@ -1,0 +1,68 @@
+{
+  "id": "outpost",
+  "name": "Forward outpost",
+  "min": [0, 0],
+  "max": [64, 48],
+  "grid": 1.0,
+  "ground": "dirt",
+  "surprise0": 1.0,
+  "surprise1": 0.85,
+  "surfaces": [
+    { "kind": "grass", "min": [0, 0], "max": [22, 48] },
+    { "kind": "grass", "min": [22, 40], "max": [64, 48] },
+    { "kind": "grass", "min": [22, 0], "max": [64, 8] },
+    { "kind": "gravel", "min": [32, 8.2], "max": [46, 18] },
+    { "kind": "concrete", "min": [22, 18], "max": [32, 28] },
+    { "kind": "concrete", "min": [44, 30], "max": [56, 39] },
+    { "kind": "road", "min": [0, 20], "max": [64, 26] }
+  ],
+  "places": [
+    { "prop": "slab", "id": "fence-south", "pos": [41, 8], "size": [38, 0.14], "z1": 1.9, "color": "#5c666c", "protection": 12, "durability": 8 },
+    { "prop": "slab", "id": "fence-north", "pos": [41, 40], "size": [38, 0.14], "z1": 1.9, "color": "#5c666c", "protection": 12, "durability": 8 },
+    { "prop": "slab", "id": "fence-west-s", "pos": [22, 14], "size": [0.14, 12], "z1": 1.9, "color": "#5c666c", "protection": 12, "durability": 8 },
+    { "prop": "slab", "id": "fence-west-n", "pos": [22, 33], "size": [0.14, 14], "z1": 1.9, "color": "#5c666c", "protection": 12, "durability": 8 },
+    { "prop": "slab", "id": "fence-east-s", "pos": [60, 14], "size": [0.14, 12], "z1": 1.9, "color": "#5c666c", "protection": 12, "durability": 8 },
+    { "prop": "slab", "id": "fence-east-n", "pos": [60, 33], "size": [0.14, 14], "z1": 1.9, "color": "#5c666c", "protection": 12, "durability": 8 },
+
+    { "prop": "jersey", "id": "jersey-gate-s", "pos": [23.2, 19.55] },
+    { "prop": "jersey", "id": "jersey-gate-n", "pos": [23.2, 26.45] },
+    { "prop": "slab", "id": "gate-boom", "pos": [22.15, 23], "size": [0.16, 5.4], "z0": 1.65, "z1": 1.88, "color": "#2a2a28", "usable": false, "protection": 10, "durability": 6 },
+
+    { "prop": "crate", "id": "crate-gate", "pos": [27.4, 17.9] },
+    { "prop": "booth", "id": "booth-gate", "pos": [25.6, 28.8] },
+    { "prop": "tower", "id": "tower", "pos": [26.2, 36.2] },
+    { "prop": "sandbag", "id": "sandbag-tower", "pos": [23.6, 35.8], "yaw": 1.5708 },
+
+    { "prop": "office", "id": "office", "pos": [50, 35] },
+    { "prop": "sandbag", "id": "sandbag-office", "pos": [44.6, 34.2], "yaw": 1.5708 },
+
+    { "prop": "tent", "id": "tent", "pos": [38, 13] },
+    { "prop": "humvee", "id": "humvee-workshop", "pos": [36.5, 18.6] },
+    { "prop": "humvee", "id": "humvee-yard", "pos": [42, 28.2] },
+    { "prop": "conex", "id": "conex-south", "pos": [54, 12] },
+    { "prop": "mess", "id": "mess", "pos": [51, 11.5] },
+
+    { "prop": "crate", "id": "crate-yard", "pos": [32.2, 30.4] },
+    { "prop": "sandbag", "id": "sandbag-e-back", "pos": [55.2, 16.2] },
+    { "prop": "sandbag", "id": "sandbag-n-back", "pos": [56.5, 17.6], "yaw": 1.5708 },
+
+    { "prop": "lamp", "id": "lamp-w1", "pos": [8, 19.55] },
+    { "prop": "lamp", "id": "lamp-w2", "pos": [16, 26.45] },
+    { "prop": "lamp", "id": "lamp-g1", "pos": [30, 19.55] },
+    { "prop": "lamp", "id": "lamp-g2", "pos": [42, 26.45] },
+    { "prop": "lamp", "id": "lamp-e1", "pos": [54, 19.55] },
+
+    { "prop": "rock", "id": "rock-a1", "pos": [11.4, 22.5] },
+    { "prop": "rock", "id": "rock-a2", "pos": [8.8, 17.6] },
+    { "prop": "rock", "id": "rock-a3", "pos": [13.0, 28.2] },
+    { "prop": "rock", "id": "rock-a4", "pos": [9.2, 25.6] },
+    { "prop": "rock", "id": "rock-south", "pos": [16.5, 12.4] },
+    { "prop": "rock", "id": "rock-north", "pos": [18.2, 31.8] },
+
+    { "prop": "tree", "id": "tree-w1", "pos": [5.5, 14.2] },
+    { "prop": "tree", "id": "tree-w2", "pos": [6.8, 32.5] },
+    { "prop": "tree", "id": "tree-w3", "pos": [15.2, 35.8] },
+    { "prop": "tree", "id": "tree-w4", "pos": [4.2, 21.0] },
+    { "prop": "tree", "id": "tree-yard", "pos": [56.4, 36.2] }
+  ]
+}
