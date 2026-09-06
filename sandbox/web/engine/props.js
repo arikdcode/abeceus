@@ -1,3 +1,5 @@
+import { rockMesh, rockOptsFrom, transformMesh } from "./rock.js";
+
 function xy(p, fallback = { x: 0, y: 0 }) {
   if (!p) return { ...fallback };
   if (Array.isArray(p)) return { x: p[0], y: p[1] };
@@ -91,7 +93,37 @@ function partId(place, part, index, partCount) {
   return part.id || null;
 }
 
+function instantiateRock(def, place) {
+  const pos = xy(place.pos);
+  const yaw = place.yaw || 0;
+  const template = (def.parts && def.parts[0]) || {};
+  const local = rockMesh(rockOptsFrom(def, place));
+  const mesh = transformMesh(local, pos, yaw);
+  const b = mesh.bounds;
+  return [{
+    ...parseBox({
+      id: partId(place, { id: template.id || "main" }, 0, 1),
+      min: [b.x0, b.y0],
+      max: [b.x1, b.y1],
+      z0: b.z0,
+      z1: b.z1,
+      color: place.color || template.color || "#f2f0ea",
+      mat: place.mat || template.mat || "stone",
+      tex: place.tex || template.tex,
+      surf: place.surf || template.surf || "boulder",
+      label: place.label || template.label,
+      protection: place.protection ?? template.protection ?? 20,
+      durability: place.durability ?? template.durability ?? 14,
+      usable: place.usable ?? template.usable ?? true,
+      block_move: place.block_move ?? template.block_move ?? true,
+    }),
+    cover: place.cover ?? template.cover ?? true,
+    mesh,
+  }];
+}
+
 export function instantiatePlace(def, place) {
+  if (def.form === "rock") return instantiateRock(def, place);
   const pos = xy(place.pos);
   const yaw = place.yaw || 0;
   const parts = def.parts || [];

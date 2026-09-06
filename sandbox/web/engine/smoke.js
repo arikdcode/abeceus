@@ -80,6 +80,13 @@ function toPlay(eng) {
   if (!op.map.decor?.length) fail("outpost should place elevated decor");
   if (!op.map.cover.some((c) => c.id === "tower-cabin" && (c.z0 || 0) > 4)) fail("tower cabin should sit off the ground");
   if (!op.map.cover.some((c) => c.id === "crate-gate")) fail("outpost should keep a postable gate crate");
+  const rocks = op.map.cover.filter((c) => (c.id || "").startsWith("boulder-"));
+  if (rocks.length < 7) fail(`outpost should place boulders, got ${rocks.length}`);
+  if (!rocks.every((c) => c.mesh?.faces?.length)) fail("outpost boulders should carry sculpted meshes");
+  if (new Set(rocks.map((c) => c.mesh.seed)).size < 3) fail("placed boulders should vary by seed");
+  if (!opEng.view({ fog: false }).map.cover.some((c) => (c.id || "").startsWith("boulder-") && c.mesh?.faces?.length)) {
+    fail("outpost view should keep boulder meshes");
+  }
   for (const [id, surf] of [["crate-gate", "crate_wood"], ["conex-south", "corrugated"], ["fence-south", "grate_wall"], ["tent-wall-n", "tarp_tan"]]) {
     const c = [...(op.map.cover || []), ...(op.map.decor || [])].find((x) => x.id === id);
     if (!c || c.surf !== surf) fail(`${id} should wear ${surf}`);

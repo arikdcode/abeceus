@@ -31,14 +31,25 @@ export const PHOTO_SHEET_ANGLES = (() => {
 })();
 
 export function objectParts(def) {
-  if (!def?.parts) throw new Error("studio needs a prop with parts");
-  return instantiatePlace(def, { prop: def.id, id: def.id, pos: [0, 0] });
+  if (!def?.parts && def?.form !== "rock") throw new Error("studio needs a prop with parts");
+  return instantiatePlace(def, { prop: def.id, id: def.id, pos: [0, 0], seed: def.seed });
 }
 
 export function objectBounds(parts) {
   let x0 = Infinity, y0 = Infinity, z0 = Infinity;
   let x1 = -Infinity, y1 = -Infinity, z1 = -Infinity;
   for (const p of parts || []) {
+    if (p.mesh?.verts?.length) {
+      for (const v of p.mesh.verts) {
+        x0 = Math.min(x0, v.x);
+        y0 = Math.min(y0, v.y);
+        z0 = Math.min(z0, v.z);
+        x1 = Math.max(x1, v.x);
+        y1 = Math.max(y1, v.y);
+        z1 = Math.max(z1, v.z);
+      }
+      continue;
+    }
     const min = p.min;
     const max = p.max;
     const pz0 = p.z0 ?? 0;
@@ -95,6 +106,7 @@ function asSolid(part) {
     tex: part.tex || null,
     surf: part.surf || null,
     emit: part.emit || 0,
+    mesh: part.mesh || null,
     roof: false,
   };
 }

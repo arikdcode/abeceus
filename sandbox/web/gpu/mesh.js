@@ -124,6 +124,25 @@ function cornersOf(b) {
   return out;
 }
 
+export function pushMesh(out, mesh, rgb, alpha, mat, tex = 0, emit = 0) {
+  const verts = mesh?.verts;
+  const faces = mesh?.faces;
+  if (!verts?.length || !faces?.length) return;
+  const mid = boxCenter(verts);
+  for (const f of faces) {
+    const a = verts[f[0]];
+    const b = verts[f[1]];
+    const c = verts[f[2]];
+    if (!a || !b || !c) continue;
+    let n = faceNormal(a, b, c);
+    const fx = (a.x + b.x + c.x) / 3 - mid.x;
+    const fy = (a.y + b.y + c.y) / 3 - mid.y;
+    const fz = (a.z + b.z + c.z) / 3 - mid.z;
+    if (n.x * fx + n.y * fy + n.z * fz < 0) n = { x: -n.x, y: -n.y, z: -n.z };
+    pushTri(out, a, b, c, n, rgb, alpha, mat, tex, emit);
+  }
+}
+
 export function pushBox(out, corners, rgb, alpha, mat, tex = 0, emit = 0) {
   if (!corners || corners.length < 8) return;
   const box = aabbOf(corners);

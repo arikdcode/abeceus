@@ -1,4 +1,4 @@
-import { LIT_STRIDE, MeshWriter, pushBox } from "./mesh.js";
+import { LIT_STRIDE, MeshWriter, pushBox, pushMesh } from "./mesh.js";
 
 function fail(msg) {
   console.error(msg);
@@ -33,5 +33,12 @@ for (let i = 0; i < verts; i++) {
 }
 if (top !== 6) fail(`top face should be 6 verts with +z, got ${top}`);
 if (outward !== verts) fail(`every box normal should point outward, ${outward}/${verts}`);
+
+const meshOut = new MeshWriter(LIT_STRIDE);
+pushMesh(meshOut, {
+  verts: [{ x: 0, y: 0, z: 0 }, { x: 1, y: 0, z: 0 }, { x: 0, y: 1, z: 0 }],
+  faces: [[0, 1, 2]],
+}, [1, 1, 1], 1, { spec: 0, shine: 1, wrap: 0 });
+if (meshOut.vertexCount() !== 3) fail(`pushMesh should write one triangle, got ${meshOut.vertexCount()}`);
 
 console.log("mesh_test ok");

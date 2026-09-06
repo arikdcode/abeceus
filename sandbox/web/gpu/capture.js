@@ -45,6 +45,16 @@ export const PRESETS = {
     hideRoofs: true,
     cam: { target: { x: 8.3, y: 18.5, z: 0.55 }, yaw: 2.55, pitch: 0.68, dist: 7.8 },
   },
+  boulders: {
+    scenario: "outpost",
+    hideRoofs: true,
+    cam: { target: { x: 11.2, y: 22.4, z: 0.45 }, yaw: 2.42, pitch: 0.46, dist: 13.5 },
+  },
+  "boulder-close": {
+    scenario: "outpost",
+    hideRoofs: true,
+    cam: { target: { x: 11.4, y: 22.5, z: 0.55 }, yaw: -2.35, pitch: 0.40, dist: 6.4 },
+  },
   bravo3: {
     scenario: "outpost",
     hideRoofs: true,
@@ -157,6 +167,7 @@ export function buildFrame(eng, opts = {}) {
       tex: c.tex || null,
       surf: c.surf || null,
       emit: c.emit || 0,
+      mesh: c.mesh || null,
     };
     casters.push(part);
     if (!(hideRoofs && part.roof)) visible.push(part);

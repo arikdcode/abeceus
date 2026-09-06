@@ -596,6 +596,8 @@ export function drawFrame(canvas, frame) {
     frame.map?.surfaces?.length || 0,
     worldSolids[0]?.corners?.[0]?.x ?? 0,
     worldSolids[worldSolids.length - 1]?.z1 ?? 0,
+    worldSolids[0]?.mesh?.key || "",
+    worldSolids[worldSolids.length - 1]?.mesh?.key || "",
     groundAtlas() ? "atlas" : "flat",
     surfAtlas() ? "surf" : "nosurf",
   ].join(":");

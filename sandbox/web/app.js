@@ -582,6 +582,7 @@ function collectWorldParts() {
       tex: c.tex || null,
       surf: c.surf || null,
       emit: c.emit || 0,
+      mesh: c.mesh || null,
     };
     casters.push(part);
     if (!(hideRoofs && part.roof)) visible.push(part);

@@ -1,5 +1,6 @@
 import { loadRepoCatalog } from "../engine/catalog-node.js";
 import { PHOTO_ANGLES, PHOTO_SHEET_ANGLES, buildStudioFrame, frameObjectCam, objectBounds, objectParts, photoObjects } from "./studio.js";
+import { rockMesh } from "../engine/rock.js";
 
 function fail(msg) {
   console.error(msg);
@@ -41,8 +42,15 @@ if (PHOTO_SHEET_ANGLES.some((a) => {
 
 const boulder = catalog.props.boulder;
 if (!boulder) fail("catalog should rename rock to boulder");
+if (boulder.form !== "rock") fail("boulder should use the rock form");
 if (boulder.parts.some((p) => p.surf !== "boulder")) fail("boulder should wear the boulder surf");
 if (catalog.props.rock) fail("old rock prop should be gone");
+const boulderParts = objectParts(boulder);
+if (!boulderParts[0]?.mesh?.faces?.length) fail("studio should instance a sculpted boulder mesh");
+if (boulderParts[0].mesh.faces.length > (boulder.budget || 480)) fail("studio boulder should stay in budget");
+const framedBoulder = buildStudioFrame(boulder);
+if (!framedBoulder.solids[0]?.mesh?.faces?.length) fail("studio frame should keep the boulder mesh");
+if (rockMesh({ seed: 1, budget: 480, extent: boulder.extent }).faces.length < 80) fail("catalog boulder mesh is too thin");
 
 console.log("studio", props.map((p) => p.id).join(" "), "crate", crateCam.dist.toFixed(1), "tower", towerCam.dist.toFixed(1));
 console.log("ok");

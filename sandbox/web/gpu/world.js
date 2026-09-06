@@ -1,5 +1,5 @@
 import { GROUND, MAX_SCENE_LIGHTS, WARM_LIGHT, hexRgb, matOf, partTexId } from "./theme.js";
-import { pushBox, pushQuad } from "./mesh.js";
+import { pushBox, pushMesh, pushQuad } from "./mesh.js";
 import { groundTexId } from "./grounds.js";
 
 function hash2(ix, iy) {
@@ -201,15 +201,23 @@ export function mergeLights(boxes, placed) {
   return lights;
 }
 
+function pushSolid(dest, part, rgb, alpha, tex, emit) {
+  const mat = matOf(part.mat);
+  if (part.mesh?.faces?.length) {
+    pushMesh(dest, part.mesh, rgb, alpha, mat, tex, emit);
+    return;
+  }
+  pushBox(dest, part.corners, rgb, alpha, mat, tex, emit);
+}
+
 export function pushSolids(opaque, ghost, solids) {
   for (const part of solids || []) {
     const dest = part.ghost ? ghost : opaque;
-    pushBox(
+    pushSolid(
       dest,
-      part.corners,
+      part,
       hexRgb(part.color),
       part.ghost ? 0.62 : 1,
-      matOf(part.mat),
       partTexId(part),
       part.emit || (part.mat === "emit" ? 1 : 0),
     );
@@ -246,7 +254,7 @@ export function pushCasters(out, solids) {
   for (const part of solids || []) {
     if (part.ghost) continue;
     if ((part.emit || 0) > 0) continue;
-    pushBox(out, part.corners, [0, 0, 0], 1, matOf(part.mat), 0, 0);
+    pushSolid(out, part, [0, 0, 0], 1, 0, 0);
   }
 }
 
@@ -256,6 +264,6 @@ export function pushLampCasters(out, solids) {
     if ((part.emit || 0) > 0) continue;
     if (part.mat === "emit") continue;
     if (isPoleLike(part)) continue;
-    pushBox(out, part.corners, [0, 0, 0], 1, matOf(part.mat), 0, 0);
+    pushSolid(out, part, [0, 0, 0], 1, 0, 0);
   }
 }
