@@ -117,6 +117,7 @@ const enemy = eng.world.units.find((u) => u.team !== me.team && !u.downed);
     ["crouch", Posture.Crouching, null],
     ["post", Posture.Crouching, { mode: CoverMode.Post, lip: 1.15 }],
     ["hide", Posture.Crouching, { mode: CoverMode.Hide, lip: 1.15 }],
+    ["hide-sandbag", Posture.Crouching, { mode: CoverMode.Hide, lip: 0.72 }],
     ["prone", Posture.Prone, null],
     ["dead", Posture.Standing, null],
   ];
@@ -124,6 +125,10 @@ const enemy = eng.world.units.find((u) => u.team !== me.team && !u.downed);
     const parts = localHitboxes(posture, cover, { armor, downed: label === "dead" });
     console.log(formatClipReport(label, clipReport(parts)));
   }
+  const sandbagHide = localHitboxes(Posture.Crouching, { mode: CoverMode.Hide, lip: 0.72 }, { armor });
+  const sandbagSkull = sandbagHide.find((b) => b.name === "skull");
+  const sandbagTop = sandbagSkull ? sandbagSkull.origin.z + sandbagSkull.hz : 0;
+  if (sandbagTop < 0.72) fail(`short-cover hide should peek the skull: top=${sandbagTop}`);
   const corpse = unitHitboxes({ ...me, downed: true });
   const chest = corpse.find((b) => b.name === "chest");
   const zs = (chest?.corners || []).map((c) => c.z);

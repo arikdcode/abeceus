@@ -3,12 +3,12 @@ export const OVERLAY_STRIDE = 8;
 export const TEXT_STRIDE = 12;
 
 const FACE = [
-  [0, 2, 3, 1],
-  [4, 5, 7, 6],
-  [0, 1, 5, 4],
-  [2, 6, 7, 3],
-  [0, 4, 6, 2],
-  [1, 3, 7, 5],
+  [0, 1, 3, 2],
+  [4, 6, 7, 5],
+  [0, 4, 5, 1],
+  [2, 3, 7, 6],
+  [0, 2, 6, 4],
+  [1, 5, 7, 3],
 ];
 
 export class MeshWriter {
@@ -74,14 +74,80 @@ export function pushQuad(out, pts, rgb, alpha, mat, tex = 0, emit = 0, n = { x: 
   pushTri(out, pts[0], pts[2], pts[3], n, rgb, alpha, mat, tex, emit);
 }
 
+function boxCenter(corners) {
+  let x = 0, y = 0, z = 0;
+  for (const p of corners) {
+    x += p.x; y += p.y; z += p.z;
+  }
+  const n = corners.length || 1;
+  return { x: x / n, y: y / n, z: z / n };
+}
+
+function outward(n, a, b, c, d, mid) {
+  const fx = (a.x + b.x + c.x + d.x) * 0.25 - mid.x;
+  const fy = (a.y + b.y + c.y + d.y) * 0.25 - mid.y;
+  const fz = (a.z + b.z + c.z + d.z) * 0.25 - mid.z;
+  if (n.x * fx + n.y * fy + n.z * fz < 0) return { x: -n.x, y: -n.y, z: -n.z };
+  return n;
+}
+
+function aabbOf(corners) {
+  let x0 = Infinity, y0 = Infinity, z0 = Infinity;
+  let x1 = -Infinity, y1 = -Infinity, z1 = -Infinity;
+  for (const p of corners) {
+    if (p.x < x0) x0 = p.x;
+    if (p.y < y0) y0 = p.y;
+    if (p.z < z0) z0 = p.z;
+    if (p.x > x1) x1 = p.x;
+    if (p.y > y1) y1 = p.y;
+    if (p.z > z1) z1 = p.z;
+  }
+  return { x0, y0, z0, x1, y1, z1 };
+}
+
+function axisAligned(corners, b) {
+  for (const p of corners) {
+    const xOk = Math.abs(p.x - b.x0) < 1e-5 || Math.abs(p.x - b.x1) < 1e-5;
+    const yOk = Math.abs(p.y - b.y0) < 1e-5 || Math.abs(p.y - b.y1) < 1e-5;
+    if (!xOk || !yOk) return false;
+  }
+  return true;
+}
+
+function cornersOf(b) {
+  const out = [];
+  for (const x of [b.x0, b.x1]) {
+    for (const y of [b.y0, b.y1]) {
+      for (const z of [b.z0, b.z1]) out.push({ x, y, z });
+    }
+  }
+  return out;
+}
+
 export function pushBox(out, corners, rgb, alpha, mat, tex = 0, emit = 0) {
   if (!corners || corners.length < 8) return;
+  const box = aabbOf(corners);
+  const sx = box.x1 - box.x0;
+  const sy = box.y1 - box.y0;
+  if (axisAligned(corners, box) && Math.max(sx, sy) > 3.2) {
+    if (sx >= sy) {
+      const xm = (box.x0 + box.x1) * 0.5;
+      pushBox(out, cornersOf({ ...box, x1: xm }), rgb, alpha, mat, tex, emit);
+      pushBox(out, cornersOf({ ...box, x0: xm }), rgb, alpha, mat, tex, emit);
+    } else {
+      const ym = (box.y0 + box.y1) * 0.5;
+      pushBox(out, cornersOf({ ...box, y1: ym }), rgb, alpha, mat, tex, emit);
+      pushBox(out, cornersOf({ ...box, y0: ym }), rgb, alpha, mat, tex, emit);
+    }
+    return;
+  }
+  const mid = boxCenter(corners);
   for (const idx of FACE) {
     const a = corners[idx[0]];
     const b = corners[idx[1]];
     const c = corners[idx[2]];
     const d = corners[idx[3]];
-    const n = faceNormal(a, b, c);
+    const n = outward(faceNormal(a, b, c), a, b, c, d, mid);
     pushTri(out, a, b, c, n, rgb, alpha, mat, tex, emit);
     pushTri(out, a, c, d, n, rgb, alpha, mat, tex, emit);
   }

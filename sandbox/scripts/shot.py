@@ -1,0 +1,57 @@
+#!/usr/bin/env python3
+"""Render named camera presets from the outpost scene to sandbox/.agent/shots/."""
+
+import os
+import subprocess
+import sys
+import time
+import urllib.error
+import urllib.request
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SHOTS = os.path.join(ROOT, ".agent", "shots")
+BASE = os.environ.get("SANDBOX_URL", "http://127.0.0.1:8080")
+CHROME = os.environ.get(
+    "CHROME",
+    "/opt/google/chrome/google-chrome" if os.path.isfile("/opt/google/chrome/google-chrome") else "google-chrome",
+)
+DEFAULTS = ["overview", "bravo3", "office-in", "tent-wall", "tent-in", "alpha2-lamp"]
+
+
+def wait_server():
+    for _ in range(40):
+        try:
+            urllib.request.urlopen(BASE + "/web/shot.html", timeout=1)
+            return
+        except (urllib.error.URLError, TimeoutError):
+            time.sleep(0.15)
+    raise SystemExit(f"sandbox not up at {BASE}")
+
+
+def shoot(name):
+    dest = os.path.join(SHOTS, name + ".png")
+    if os.path.isfile(dest):
+        os.remove(dest)
+    url = f"{BASE}/web/shot.html?preset={name}&t={int(time.time() * 1000)}"
+    tmp = f"/tmp/chrome-shot-{name}"
+    cmd = [
+        CHROME, "--headless=new", "--no-first-run", "--disable-extensions",
+        f"--user-data-dir={tmp}",
+        "--virtual-time-budget=20000",
+        url,
+    ]
+    subprocess.run(cmd, check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    for _ in range(40):
+        if os.path.isfile(dest) and os.path.getsize(dest) > 1000:
+            print(dest)
+            return dest
+        time.sleep(0.1)
+    raise SystemExit(f"shot failed: {name} ({url})")
+
+
+if __name__ == "__main__":
+    os.makedirs(SHOTS, exist_ok=True)
+    wait_server()
+    names = sys.argv[1:] or DEFAULTS
+    for name in names:
+        shoot(name)

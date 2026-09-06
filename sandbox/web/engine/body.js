@@ -332,6 +332,10 @@ function postJoints(aimZ) {
 }
 
 function hideJoints(lip) {
+  const peek = lip < 0.95;
+  const skullZ = peek
+    ? Math.min(Math.max(lip + 0.06, 0.78), 0.94)
+    : Math.min(lip - 0.10, 0.94);
   const lShoulder = { x: -0.18, y: 0.04, z: 0.75 };
   const rShoulder = { x: 0.18, y: 0.08, z: 0.76 };
   const stock = { x: 0.08, y: 0.18, z: 0.62 };
@@ -350,8 +354,8 @@ function hideJoints(lip) {
     pelvis: { x: 0.00, y: -0.14, z: 0.52 },
     abdomen: { x: 0.00, y: -0.04, z: 0.62 },
     chest: { x: 0.01, y: 0.08, z: 0.72 },
-    neck: { x: 0.02, y: 0.14, z: 0.84 },
-    skull: { x: 0.02, y: 0.18, z: Math.min(lip - 0.22, 0.94) },
+    neck: { x: 0.02, y: peek ? 0.20 : 0.14, z: peek ? 0.72 : 0.84 },
+    skull: { x: 0.02, y: peek ? 0.26 : 0.18, z: skullZ },
     l_shoulder: lShoulder,
     r_shoulder: rShoulder,
     ...rifleJoints({ l_shoulder: lShoulder, r_shoulder: rShoulder }, stock, muzzle, {
@@ -360,7 +364,7 @@ function hideJoints(lip) {
     }),
     r_elbow: { x: 0.22, y: 0.10, z: 0.52 },
     l_elbow: { x: -0.22, y: 0.12, z: 0.52 },
-    look: { x: 0.04, y: 1, z: -0.22 },
+    look: { x: 0.04, y: 1, z: peek ? -0.06 : -0.22 },
   };
 }
 

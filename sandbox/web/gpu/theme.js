@@ -6,6 +6,15 @@ export const SUN = (() => {
 
 export const FOG = { r: 92 / 255, g: 78 / 255, b: 62 / 255 };
 
+export const MAX_LIGHTS = 16;
+export const MAX_LAMP_SHADOWS = 8;
+export const MAX_SPOT_SHADOWS = 4;
+export const LAMP_FACES = 6;
+export const SUN_SHADOW_SIZE = 1024;
+export const LAMP_SHADOW_SIZE = 256;
+export const SPOT_HALF_TAN = Math.tan((36 * Math.PI) / 180);
+export const WARM_LIGHT = [1, 0.74, 0.42];
+
 export const GROUND = {
   dirt: "#4a3d30",
   grass: "#35462a",

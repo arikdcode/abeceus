@@ -13,10 +13,10 @@ vec4 to_clip(vec3 p) {
   vec3 v = p - frame_eye.xyz;
   float vx = dot(v, frame_r.xyz);
   float vy = dot(v, frame_u.xyz);
-  float vz = max(dot(v, frame_f.xyz), 0.05);
+  float vz = dot(v, frame_f.xyz);
   float fov = frame_params.z;
   float aspect = frame_params.x / max(frame_params.y, 1.0);
-  float near = max(frame_params.w, 0.05);
+  float near = max(frame_params.w, 0.02);
   float far = 250.0;
   float z_clip = ((far + near) / (far - near)) * vz + (-2.0 * far * near / (far - near));
   return vec4(vx / (fov * aspect), vy / fov, z_clip, vz);
@@ -40,13 +40,30 @@ void main() {
   v_normal = a_normal.xyz;
   v_color = a_color;
   v_shade = vec4(a_mat.x, a_mat.y, a_mat.z, a_normal.w);
-  v_extra = vec4(a_pos.w, max(dot(a_pos.xyz - frame_eye.xyz, frame_f.xyz), 0.2), 0.0, 0.0);
+  v_extra = vec4(a_pos.w, max(dot(a_pos.xyz - frame_eye.xyz, frame_f.xyz), 0.05), 0.0, 0.0);
 }
 `;
 
 export const FS_LIT = /* glsl */ `#version 300 es
 precision highp float;
 ${FRAME}
+const int MAX_LIGHTS = 16;
+layout(std140) uniform Lights {
+  vec4 light_count;
+  vec4 light_pos_range[16];
+  vec4 light_color_int[16];
+  vec4 light_misc[16];
+};
+layout(std140) uniform Shadow {
+  vec4 shadow_sun_r;
+  vec4 shadow_sun_u;
+  vec4 shadow_sun_f;
+  vec4 shadow_sun_eye;
+  vec4 shadow_sun_params;
+};
+uniform highp sampler2DShadow u_sun_shadow;
+uniform highp sampler2DArrayShadow u_lamp_shadow;
+uniform highp sampler2DArrayShadow u_spot_shadow;
 in vec3 v_world;
 in vec3 v_normal;
 in vec4 v_color;
@@ -108,36 +125,186 @@ vec3 apply_tex(vec3 base, vec3 p, vec3 n, float tex) {
   return mix(base * 0.78, base * 1.08, speck);
 }
 
+vec3 aces_tonemap(vec3 x) {
+  return clamp((x * (2.51 * x + 0.03)) / (x * (2.43 * x + 0.59) + 0.14), 0.0, 1.0);
+}
+
+float wrap_n(float ndot, float wrap_k) {
+  if (wrap_k > 0.0) ndot = (ndot + wrap_k) / (1.0 + wrap_k);
+  return max(ndot, 0.0);
+}
+
+float pcf_sun(vec3 world, float ndot) {
+  if (shadow_sun_params.x < 0.5) return 1.0;
+  vec3 to = world - shadow_sun_eye.xyz;
+  float lx = dot(to, shadow_sun_r.xyz);
+  float ly = dot(to, shadow_sun_u.xyz);
+  float lz = dot(to, shadow_sun_f.xyz);
+  vec2 uv = vec2(lx / shadow_sun_params.x, ly / shadow_sun_params.y) * 0.5 + 0.5;
+  if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) return 1.0;
+  float ref = (lz - shadow_sun_params.z) / max(shadow_sun_params.w - shadow_sun_params.z, 0.01);
+  float bias = 0.0014 + 0.0045 * (1.0 - clamp(ndot, 0.0, 1.0));
+  ref = clamp(ref - bias, 0.0, 1.0);
+  float texel = 1.0 / 1024.0;
+  float s = 0.0;
+  for (int i = -1; i <= 1; i++) {
+    for (int j = -1; j <= 1; j++) {
+      s += texture(u_sun_shadow, vec3(uv + vec2(float(i), float(j)) * texel, ref));
+    }
+  }
+  return s / 9.0;
+}
+
+void cube_basis(int face, out vec3 r, out vec3 u, out vec3 f) {
+  if (face == 0) { r = vec3(0.0, -1.0, 0.0); u = vec3(0.0, 0.0, 1.0); f = vec3(1.0, 0.0, 0.0); }
+  else if (face == 1) { r = vec3(0.0, 1.0, 0.0); u = vec3(0.0, 0.0, 1.0); f = vec3(-1.0, 0.0, 0.0); }
+  else if (face == 2) { r = vec3(1.0, 0.0, 0.0); u = vec3(0.0, 0.0, 1.0); f = vec3(0.0, 1.0, 0.0); }
+  else if (face == 3) { r = vec3(-1.0, 0.0, 0.0); u = vec3(0.0, 0.0, 1.0); f = vec3(0.0, -1.0, 0.0); }
+  else if (face == 4) { r = vec3(-1.0, 0.0, 0.0); u = vec3(0.0, 1.0, 0.0); f = vec3(0.0, 0.0, 1.0); }
+  else { r = vec3(1.0, 0.0, 0.0); u = vec3(0.0, 1.0, 0.0); f = vec3(0.0, 0.0, -1.0); }
+}
+
+int cube_face(vec3 d) {
+  vec3 a = abs(d);
+  if (a.x >= a.y && a.x >= a.z) return d.x >= 0.0 ? 0 : 1;
+  if (a.y >= a.z) return d.y >= 0.0 ? 2 : 3;
+  return d.z >= 0.0 ? 4 : 5;
+}
+
+float lamp_occluded(int cube, vec3 world, vec3 eye, float range) {
+  vec3 to = world - eye;
+  int face = cube_face(to);
+  vec3 r, u, f;
+  cube_basis(face, r, u, f);
+  float vz = dot(to, f);
+  float near = 0.08;
+  float far = max(range, 4.0);
+  if (vz < near || vz > far) return 0.0;
+  vec2 uv = vec2(dot(to, r), dot(to, u)) / vz * 0.5 + 0.5;
+  if (uv.x <= 0.0 || uv.x >= 1.0 || uv.y <= 0.0 || uv.y >= 1.0) return 1.0;
+  float ref = (vz - near) / max(far - near, 0.01);
+  ref = clamp(ref - 0.0009, 0.0, 1.0);
+  float layer = float(cube * 6 + face);
+  return texture(u_lamp_shadow, vec4(uv, layer, ref));
+}
+
+void basis_from_f(vec3 f, out vec3 r, out vec3 u) {
+  vec3 up = abs(f.z) > 0.92 ? vec3(0.0, 1.0, 0.0) : vec3(0.0, 0.0, 1.0);
+  r = cross(f, up);
+  if (dot(r, r) < 1e-8) r = cross(f, vec3(0.0, 1.0, 0.0));
+  r = normalize(r);
+  u = normalize(cross(r, f));
+}
+
+float spot_occluded(int layer, vec3 world, vec3 eye, vec3 dir, float range) {
+  vec3 f = normalize(dir);
+  vec3 r, u;
+  basis_from_f(f, r, u);
+  vec3 to = world - eye;
+  float vz = dot(to, f);
+  float near = 0.14;
+  float far = max(range, 3.0);
+  if (vz < near || vz > far) return 0.0;
+  float hx = 0.726542528;
+  vec2 uv = vec2(dot(to, r), dot(to, u)) / (vz * hx) * 0.5 + 0.5;
+  if (uv.x <= 0.0 || uv.x >= 1.0 || uv.y <= 0.0 || uv.y >= 1.0) return 0.0;
+  float ref = (vz - near) / max(far - near, 0.01);
+  ref = clamp(ref - 0.0014, 0.0, 1.0);
+  return texture(u_spot_shadow, vec4(uv, float(layer), ref));
+}
+
 void main() {
   vec3 n = normalize(v_normal);
-  vec3 toward = -frame_f.xyz;
-  if (dot(n, toward) < 0.0) n = -n;
-  vec3 rgb = apply_tex(v_color.rgb, v_world, n, v_extra.x);
+  vec3 view_dir = normalize(frame_eye.xyz - v_world);
+  vec3 albedo = apply_tex(v_color.rgb, v_world, n, v_extra.x);
   float spec_k = v_shade.x;
   float shine = max(v_shade.y, 1.0);
   float wrap_k = v_shade.z;
   float emit_k = v_shade.w;
-  if (emit_k > 0.001) {
-    rgb = min(rgb * (1.15 + 0.35 * emit_k) + vec3(0.16, 0.11, 0.03) * emit_k, vec3(1.0));
-  } else {
-    float ndot = dot(n, frame_sun.xyz);
-    if (wrap_k > 0.0) ndot = (ndot + wrap_k) / (1.0 + wrap_k);
-    float lambert = max(ndot, 0.0);
-    float hemi = n.z * 0.5 + 0.5;
-    float under = max(-n.z, 0.0);
-    float ambient = 0.16 + 0.22 * hemi + 0.07 * under;
-    float diffuse = 0.78 * lambert;
-    vec3 h = normalize(frame_sun.xyz + toward);
-    float spec = pow(max(dot(n, h), 0.0), shine) * spec_k;
-    float warm = 0.55 * lambert;
-    rgb = rgb * (ambient * vec3(0.86, 0.90, 0.96) + diffuse * vec3(0.92 + 0.16 * warm, 0.90 + 0.08 * warm, 0.82));
-    rgb = rgb * vec3(1.08, 0.92, 0.72);
-    rgb = rgb + spec * vec3(0.72, 0.60, 0.48);
+
+  vec3 sky = vec3(0.40, 0.50, 0.64);
+  vec3 ground = vec3(0.26, 0.18, 0.11);
+  float hemi = n.z * 0.5 + 0.5;
+  vec3 sun_dir = frame_sun.xyz;
+  vec3 sun_col = vec3(1.02, 0.84, 0.60);
+  float sun_n = wrap_n(dot(n, sun_dir), wrap_k);
+  vec3 sun_h = normalize(sun_dir + view_dir);
+  float sun_spec = pow(max(dot(n, sun_h), 0.0), shine) * spec_k;
+  float sun_on = frame_sun.w;
+  float sun_vis = sun_on > 0.5 ? pcf_sun(v_world, sun_n) : 0.0;
+  vec3 ambient = mix(ground, sky, hemi) * 0.20 + vec3(0.075, 0.068, 0.058);
+  vec3 lit = albedo * (ambient + sun_col * sun_n * 0.86 * sun_vis) + sun_col * sun_spec * 0.4 * sun_vis;
+
+  vec3 fill_dir = normalize(-sun_dir + vec3(0.0, 0.0, 0.42));
+  float fill_n = max(dot(n, fill_dir), 0.0);
+  lit += albedo * vec3(0.20, 0.26, 0.36) * fill_n * 0.22 * sun_on;
+
+  int n_lights = int(light_count.x + 0.5);
+  for (int i = 0; i < MAX_LIGHTS; i++) {
+    if (i >= n_lights) break;
+    vec3 to_l = light_pos_range[i].xyz - v_world;
+    float dist = length(to_l);
+    float range = max(light_pos_range[i].w, 0.01);
+    float fall = max(1.0 - dist / range, 0.0);
+    fall *= fall;
+    vec3 ldir = to_l / max(dist, 1e-4);
+    float nd = wrap_n(dot(n, ldir), wrap_k);
+    vec3 lcol = light_color_int[i].rgb * light_color_int[i].w;
+    vec3 lh = normalize(ldir + view_dir);
+    float lspec = pow(max(dot(n, lh), 0.0), shine) * spec_k * 0.4;
+    float vis = 1.0;
+    if (light_misc[i].x >= 0.0) {
+      vis = lamp_occluded(int(light_misc[i].x + 0.5), v_world, light_pos_range[i].xyz, range);
+    } else if (light_misc[i].x < -1.5) {
+      int spot_i = int(-light_misc[i].x + 0.5) - 2;
+      vis = spot_occluded(spot_i, v_world, light_pos_range[i].xyz, vec3(light_misc[i].yz, 0.0), range);
+    }
+    vec3 spot = vec3(light_misc[i].yz, 0.0);
+    float cone = 1.0;
+    if (dot(spot, spot) > 0.05) {
+      cone = smoothstep(0.42, 0.78, dot(-ldir, normalize(spot)));
+    }
+    lit += (albedo * nd + lspec) * lcol * fall * vis * cone;
   }
-  float fog_a = min(0.62, 1.0 - exp(-v_extra.y * 0.0115));
-  rgb = mix(rgb, frame_fog.rgb, fog_a);
-  frag = vec4(rgb, v_color.a);
+
+  if (emit_k > 0.001) {
+    lit += albedo * (0.45 + emit_k * 1.15) + vec3(0.14, 0.09, 0.03) * emit_k;
+  }
+
+  lit = aces_tonemap(lit * 0.96);
+  float fog_a = min(0.55, 1.0 - exp(-v_extra.y * 0.0105));
+  lit = mix(lit, frame_fog.rgb, fog_a);
+  frag = vec4(lit, v_color.a);
 }
+`;
+
+export const VS_DEPTH = /* glsl */ `#version 300 es
+layout(std140) uniform ShadowCam {
+  vec4 depth_r;
+  vec4 depth_u;
+  vec4 depth_f;
+  vec4 depth_eye;
+  vec4 depth_params;
+  vec4 depth_mode;
+};
+layout(location = 0) in vec4 a_pos;
+void main() {
+  vec3 v = a_pos.xyz - depth_eye.xyz;
+  float vx = dot(v, depth_r.xyz);
+  float vy = dot(v, depth_u.xyz);
+  float vz = max(dot(v, depth_f.xyz), 0.02);
+  float z_ndc = ((vz - depth_params.z) / max(depth_params.w - depth_params.z, 0.01)) * 2.0 - 1.0;
+  if (depth_mode.x < 0.5) {
+    gl_Position = vec4(vx / max(depth_params.x, 0.01), vy / max(depth_params.y, 0.01), z_ndc, 1.0);
+  } else {
+    gl_Position = vec4(vx / (vz * max(depth_params.x, 0.01)), vy / (vz * max(depth_params.y, 0.01)), z_ndc, 1.0);
+  }
+}
+`;
+
+export const FS_DEPTH = /* glsl */ `#version 300 es
+precision highp float;
+void main() {}
 `;
 
 export const VS_SKY = /* glsl */ `#version 300 es

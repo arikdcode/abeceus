@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>shot</title>
+  <style>
+    html, body { margin: 0; background: #111; color: #ddd; font: 13px/1.4 ui-monospace, monospace; }
+    canvas { display: block; width: 1280px; height: 720px; }
+  </style>
+</head>
+<body>
+  <canvas id="view" data-capture="1" width="1280" height="720"></canvas>
+  <pre id="out">shooting…</pre>
+  <script type="module">
+    import { PRESETS, renderShot } from "./gpu/capture.js";
+
+    const q = new URLSearchParams(location.search);
+    const preset = q.get("preset") || "";
+    const name = q.get("name") || preset || "shot";
+    const out = document.getElementById("out");
+    const canvas = document.getElementById("view");
+
+    function camFromQuery() {
+      if (![q.get("tx"), q.get("ty"), q.get("yaw"), q.get("dist")].every((v) => v != null)) return null;
+      return {
+        target: { x: +q.get("tx"), y: +q.get("ty"), z: +(q.get("tz") || 0) },
+        yaw: +q.get("yaw"),
+        pitch: +(q.get("pitch") || 0.5),
+        dist: +q.get("dist"),
+      };
+    }
+
+    try {
+      const result = await renderShot(canvas, {
+        preset: PRESETS[preset] ? preset : "",
+        name,
+        scenario: q.get("scenario") || undefined,
+        hideRoofs: q.get("roofs") !== "show",
+        sun: q.get("sun") === "1",
+        cam: camFromQuery(),
+        width: +(q.get("w") || 1280),
+        height: +(q.get("h") || 720),
+      });
+      const png = canvas.toDataURL("image/png");
+      const res = await fetch("/debug/shot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: result.name, png, cam: result.cam, scenario: result.scenario }),
+      });
+      if (!res.ok) throw new Error(`save ${res.status}`);
+      out.textContent = `saved ${result.name}`;
+      document.title = "SHOT OK";
+      window.__shot = { ok: true, name: result.name };
+    } catch (err) {
+      out.textContent = String(err && err.message ? err.message : err);
+      document.title = "SHOT FAIL";
+      window.__shot = { ok: false, reason: String(err && err.message ? err.message : err) };
+    }
+  </script>
+</body>
+</html>

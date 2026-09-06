@@ -61,6 +61,7 @@ export function parseBox(c) {
     mat: c.mat || null,
     tex: c.tex || null,
     emit: c.emit || 0,
+    emit_dir: c.emit_dir || null,
     protection: c.protection ?? 16,
     durability: c.durability ?? 10,
     durability_max: c.durability_max ?? c.durability ?? 10,
@@ -95,6 +96,10 @@ export function instantiatePlace(def, place) {
     const aabb = worldAabb(ext.min, ext.max, pos, yaw);
     const z0 = place.z0 ?? part.z0 ?? 0;
     const z1 = place.z1 ?? part.z1 ?? part.height ?? 1;
+    const rawDir = place.emit_dir || part.emit_dir;
+    const dir = rawDir
+      ? rot2(Array.isArray(rawDir) ? rawDir[0] : rawDir.x, Array.isArray(rawDir) ? rawDir[1] : rawDir.y, yaw)
+      : null;
     return {
       ...parseBox({
         id: partId(place, part, i, parts.length),
@@ -106,6 +111,7 @@ export function instantiatePlace(def, place) {
         mat: place.mat || part.mat,
         tex: place.tex || part.tex,
         emit: place.emit ?? part.emit,
+        emit_dir: dir ? { x: dir.x, y: dir.y, z: Array.isArray(rawDir) ? (rawDir[2] || 0) : (rawDir.z || 0) } : null,
         protection: place.protection ?? part.protection,
         durability: place.durability ?? part.durability,
         usable: place.usable ?? part.usable,

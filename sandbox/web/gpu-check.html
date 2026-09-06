@@ -35,8 +35,24 @@
         const drawn = drawFrame(canvas, {
           cam: { target: { x: 4, y: 4, z: 0 }, yaw: 0.7, pitch: 0.55, dist: 12 },
           map: { min: [0, 0], max: [8, 8], ground: "dirt", surfaces: [] },
-          solids: [],
-          marks: { grid: false, shadows: [], paths: [], rings: [], lines: [], rects: [], labels: [], edges: [] },
+          solids: [{
+            corners: [
+              { x: 3, y: 3, z: 0 }, { x: 3, y: 3, z: 1.2 },
+              { x: 3, y: 5, z: 0 }, { x: 3, y: 5, z: 1.2 },
+              { x: 5, y: 3, z: 0 }, { x: 5, y: 3, z: 1.2 },
+              { x: 5, y: 5, z: 0 }, { x: 5, y: 5, z: 1.2 },
+            ],
+            color: "#6a7b66",
+            mat: "concrete",
+          }],
+          marks: {
+            grid: false,
+            shadows: [{
+              min: { x: 3.7, y: 3.5 }, max: { x: 4.3, y: 4.0 },
+              z0: 3.12, z1: 3.48, emit: 1, color: "#e8c86a",
+            }],
+            paths: [], rings: [], lines: [], rects: [], labels: [], edges: [],
+          },
         });
         log(`drawFrame: ${drawn}`);
         log("OK: WebGL2 renderer init + first present");

@@ -29,8 +29,9 @@ let fog = false;
 let owAim = false;
 let hideRoofs = localStorage.getItem("sandbox.hideRoofs") !== "show";
 let hideGrid = localStorage.getItem("sandbox.hideGrid") === "hide";
+let sunOn = localStorage.getItem("sandbox.sun") !== "off";
 const cam3 = makeCam3();
-let camKind = "strategy";
+let camKind = "overview";
 let silView = null;
 let savedStrategy = null;
 let orbiting = false;
@@ -466,8 +467,9 @@ function applyOverviewCam() {
 function frameCameras(map) {
   if (!map) return;
   frameCam3(cam3, map);
-  camKind = "strategy";
   savedStrategy = snapshotStrategyCam();
+  applyOverviewCam();
+  camKind = "overview";
   syncModePairs();
 }
 
@@ -487,8 +489,8 @@ function resetCam3() {
     cam3.fpv = false;
     cam3.fpvEye = null;
     cam3.fpvLook = null;
-    cam3.overview = false;
-    camKind = "strategy";
+    cam3.overview = true;
+    camKind = "overview";
     savedStrategy = snapshotStrategyCam();
     syncModePairs();
   }
@@ -506,6 +508,7 @@ function syncModePairs() {
   setPair("camPair", camKind);
   setPair("roofPair", hideRoofs ? "hide" : "show");
   setPair("gridPair", hideGrid ? "hide" : "show");
+  setPair("sunPair", sunOn ? "on" : "off");
 }
 
 function setCamKind(next) {
@@ -545,25 +548,27 @@ function slabOf(c) {
 
 function collectWorldParts() {
   const map = view.map;
-  const worldParts = [];
-  const pushBox = (c, color) => {
-    if (hideRoofs && isRoof(c)) return;
+  const visible = [];
+  const casters = [];
+  const add = (c, color) => {
     const box = coverBox(slabOf(c));
-    worldParts.push({
+    const part = {
       ...box,
       color,
       roof: isRoof(c),
       mat: c.mat || null,
       tex: c.tex || null,
       emit: c.emit || 0,
-    });
+    };
+    casters.push(part);
+    if (!(hideRoofs && part.roof)) visible.push(part);
   };
-  for (const c of map.decor || []) pushBox(c, c.color || "#6a7b66");
+  for (const c of map.decor || []) add(c, c.color || "#6a7b66");
   for (const c of map.cover) {
     const frac = c.durability_max ? c.durability / c.durability_max : 1;
-    pushBox(c, frac < 0.05 ? "#3a3a3a" : (c.color || "#6a7b66"));
+    add(c, frac < 0.05 ? "#3a3a3a" : (c.color || "#6a7b66"));
   }
-  return worldParts;
+  return { visible, casters };
 }
 
 function collectBodyParts() {
@@ -601,7 +606,7 @@ function shotMarks(marks, origin, dest) {
 function collectFrame() {
   if (camKind === "fpv") applyFpvCam();
   const map = view.map;
-  const worldParts = collectWorldParts();
+  const { visible: worldParts, casters: worldCasters } = collectWorldParts();
   const { bodyParts, pushUnitParts } = collectBodyParts();
   const ghost = ghostActor();
   const realActor = worldUnit(actorId());
@@ -697,7 +702,14 @@ function collectFrame() {
     const box = hu && cachedHitboxes(hu).find((b) => b.name === hoverPart);
     if (box) marks.edges.push({ corners: box.corners, color: "#f2d78a" });
   }
-  return { cam: cam3, map, solids: [...worldParts, ...bodyParts], marks };
+  return {
+    cam: cam3,
+    map,
+    sun: sunOn,
+    solids: [...worldParts, ...bodyParts],
+    casters: [...worldCasters, ...bodyParts],
+    marks,
+  };
 }
 
 
@@ -1533,6 +1545,12 @@ bindPair("roofPair", (v) => {
 bindPair("gridPair", (v) => {
   hideGrid = v === "hide";
   localStorage.setItem("sandbox.hideGrid", hideGrid ? "hide" : "show");
+  syncModePairs();
+  render();
+});
+bindPair("sunPair", (v) => {
+  sunOn = v !== "off";
+  localStorage.setItem("sandbox.sun", sunOn ? "on" : "off");
   syncModePairs();
   render();
 });

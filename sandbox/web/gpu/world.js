@@ -1,4 +1,4 @@
-import { GROUND, MAT, SUN, hexRgb, matOf, texId } from "./theme.js";
+import { GROUND, MAX_LIGHTS, WARM_LIGHT, hexRgb, matOf, texId } from "./theme.js";
 import { pushBox, pushQuad } from "./mesh.js";
 
 function hash2(ix, iy) {
@@ -113,53 +113,45 @@ function boxXY(c) {
   return { x0: min.x, y0: min.y, x1: max.x, y1: max.y };
 }
 
-export function pushShadows(out, boxes) {
-  if (!boxes) return;
-  const sx = -SUN.x / Math.max(0.28, SUN.z);
-  const sy = -SUN.y / Math.max(0.28, SUN.z);
-  const rgb = [0.04, 0.03, 0.02];
-  const mat = matOf("dirt");
-  for (const c of boxes) {
-    if (c.roof) continue;
-    const z0 = c.z0 ?? 0;
-    if (z0 > 0.45) continue;
-    const { x0, y0, x1, y1 } = boxXY(c);
-    const area = (x1 - x0) * (y1 - y0);
-    if (area < 0.02 || area > 14) continue;
-    const hgt = (c.z1 ?? c.height ?? 1) - z0;
-    if (hgt < 0.28) continue;
-    const stretch = Math.min(2.4, 0.22 + hgt * 0.48);
-    const ox = sx * stretch;
-    const oy = sy * stretch;
-    const pad = 0.06;
-    pushQuad(out, [
-      { x: x0 - pad + ox * 0.12, y: y0 - pad + oy * 0.12, z: 0.04 },
-      { x: x1 + pad + ox * 0.12, y: y0 - pad + oy * 0.12, z: 0.04 },
-      { x: x1 + pad + ox, y: y1 + pad + oy, z: 0.04 },
-      { x: x0 - pad + ox, y: y1 + pad + oy, z: 0.04 },
-    ], rgb, 0.35, mat);
-  }
+function emitDir(c) {
+  const d = c.emit_dir;
+  if (!d) return { x: 0, y: 0, z: 0, spot: false };
+  const x = Array.isArray(d) ? (d[0] || 0) : (d.x || 0);
+  const y = Array.isArray(d) ? (d[1] || 0) : (d.y || 0);
+  const z = Array.isArray(d) ? (d[2] || 0) : (d.z || 0);
+  return { x, y, z, spot: x * x + y * y + z * z > 0.01 };
 }
 
-export function pushEmitPools(out, boxes) {
-  if (!boxes) return;
-  const mat = MAT.emit;
+export function collectLights(boxes) {
+  const lights = [];
+  if (!boxes) return lights;
   for (const c of boxes) {
     if (!(c.emit > 0)) continue;
     const { x0, y0, x1, y1 } = boxXY(c);
-    const cx = (x0 + x1) * 0.5;
-    const cy = (y0 + y1) * 0.5;
-    const r = 2.6 * (0.7 + c.emit);
-    pushQuad(out, [
-      { x: cx - r, y: cy - r, z: 0.05 }, { x: cx + r, y: cy - r, z: 0.05 },
-      { x: cx + r, y: cy + r, z: 0.05 }, { x: cx - r, y: cy + r, z: 0.05 },
-    ], [1, 0.75, 0.35], 0.16, mat, 0, 1);
-    const r2 = r * 0.55;
-    pushQuad(out, [
-      { x: cx - r2, y: cy - r2, z: 0.055 }, { x: cx + r2, y: cy - r2, z: 0.055 },
-      { x: cx + r2, y: cy + r2, z: 0.055 }, { x: cx - r2, y: cy + r2, z: 0.055 },
-    ], [1, 0.82, 0.47], 0.2, mat, 0, 1);
+    const z0 = c.z0 ?? 0;
+    const z1 = c.z1 ?? c.height ?? 1;
+    const rgb = hexRgb(c.color || "#e8c86a");
+    const luma = 0.3 * rgb[0] + 0.59 * rgb[1] + 0.11 * rgb[2];
+    const color = luma < 0.28 ? WARM_LIGHT : rgb;
+    const dir = emitDir(c);
+    const len = Math.hypot(dir.x, dir.y, dir.z) || 1;
+    const inset = dir.spot ? 0.2 : 0;
+    lights.push({
+      x: (x0 + x1) * 0.5 + (dir.x / len) * inset,
+      y: (y0 + y1) * 0.5 + (dir.y / len) * inset,
+      z: (z0 + z1) * 0.5 + (dir.z / len) * inset,
+      range: dir.spot ? 4.5 + c.emit * 5 : 7 + c.emit * 8,
+      r: color[0],
+      g: color[1],
+      b: color[2],
+      intensity: 0.7 + c.emit * 1.15,
+      dx: dir.x,
+      dy: dir.y,
+      dz: dir.z,
+    });
+    if (lights.length >= MAX_LIGHTS) break;
   }
+  return lights;
 }
 
 export function pushSolids(opaque, ghost, solids) {
@@ -174,5 +166,48 @@ export function pushSolids(opaque, ghost, solids) {
       texId(part.tex),
       part.emit || (part.mat === "emit" ? 1 : 0),
     );
+  }
+}
+
+function partSpan(part) {
+  if (part.x0 != null && part.x1 != null) {
+    return {
+      x0: part.x0, x1: part.x1,
+      y0: part.y0, y1: part.y1,
+      z0: part.z0 ?? 0, z1: part.z1 ?? part.height ?? 0,
+    };
+  }
+  const corners = part.corners;
+  if (!corners?.length) return null;
+  let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity, z0 = Infinity, z1 = -Infinity;
+  for (const p of corners) {
+    x0 = Math.min(x0, p.x); x1 = Math.max(x1, p.x);
+    y0 = Math.min(y0, p.y); y1 = Math.max(y1, p.y);
+    z0 = Math.min(z0, p.z); z1 = Math.max(z1, p.z);
+  }
+  return { x0, x1, y0, y1, z0, z1 };
+}
+
+export function isPoleLike(part) {
+  const e = partSpan(part);
+  if (!e) return false;
+  const area = (e.x1 - e.x0) * (e.y1 - e.y0);
+  return area < 0.08 && (e.z1 - e.z0) > 1.8;
+}
+
+export function pushCasters(out, solids) {
+  for (const part of solids || []) {
+    if (part.ghost) continue;
+    if ((part.emit || 0) > 0) continue;
+    pushBox(out, part.corners, [0, 0, 0], 1, matOf(part.mat), 0, 0);
+  }
+}
+
+export function pushLampCasters(out, solids) {
+  for (const part of solids || []) {
+    if (part.ghost) continue;
+    if ((part.emit || 0) > 0) continue;
+    if (isPoleLike(part)) continue;
+    pushBox(out, part.corners, [0, 0, 0], 1, matOf(part.mat), 0, 0);
   }
 }

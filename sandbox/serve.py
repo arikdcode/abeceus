@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Static server for the browser sandbox. Open http://127.0.0.1:8080/web/"""
 
+import base64
 import http.server
 import json
 import os
+import re
 import socketserver
 import sys
 
@@ -65,9 +67,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         return super().do_GET()
 
     def do_POST(self):
-        if self.path.split("?")[0] != "/debug/dump":
-            self.send_error(404)
-            return
+        path = self.path.split("?")[0]
         n = int(self.headers.get("Content-Length") or 0)
         raw = self.rfile.read(n) if n else b"{}"
         try:
@@ -75,9 +75,30 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         except json.JSONDecodeError:
             self.send_error(400, "bad json")
             return
-        _write_dump(payload)
-        self.send_response(204)
-        self.end_headers()
+        if path == "/debug/dump":
+            _write_dump(payload)
+            self.send_response(204)
+            self.end_headers()
+            return
+        if path == "/debug/shot":
+            name = re.sub(r"[^a-zA-Z0-9._-]+", "_", str(payload.get("name") or "shot"))
+            png = payload.get("png") or ""
+            if "," in png:
+                png = png.split(",", 1)[1]
+            try:
+                data = base64.b64decode(png)
+            except Exception:
+                self.send_error(400, "bad png")
+                return
+            dest_dir = os.path.join(AGENT, "shots")
+            os.makedirs(dest_dir, exist_ok=True)
+            dest = os.path.join(dest_dir, name + ".png")
+            with open(dest, "wb") as f:
+                f.write(data)
+            self.send_response(204)
+            self.end_headers()
+            return
+        self.send_error(404)
 
     def log_message(self, fmt, *args):
         sys.stderr.write("%s - %s\n" % (self.address_string(), fmt % args))
