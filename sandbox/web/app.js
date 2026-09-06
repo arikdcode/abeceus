@@ -541,8 +541,39 @@ function gaitReach() {
   return quoteOf(view?.quotes?.gaits, selectedGait())?.radius || 0;
 }
 
+function reachOrigin() {
+  const u = worldUnit(actorId());
+  if (!u) return null;
+  return eng.plannedPos(u);
+}
+
 function reachRingColor() {
   return selectedGait() === Gait.Walk ? "rgba(110,168,255,0.5)" : "rgba(215,177,90,0.6)";
+}
+
+function drawMovePath3(ctx, cam, w, h, pts, color) {
+  if (!pts || pts.length < 2) return;
+  for (let i = 0; i < pts.length - 1; i++) {
+    drawPolyline3(ctx, cam, w, h, [pts[i], pts[i + 1]], color, [5, 4]);
+  }
+}
+
+function drawMovePath2(pts, color) {
+  if (!pts || pts.length < 2) return;
+  ctx.beginPath();
+  const a = toScreen(pts[0]);
+  ctx.moveTo(a.x, a.y);
+  for (let i = 1; i < pts.length; i++) {
+    const p = toScreen(pts[i]);
+    ctx.lineTo(p.x, p.y);
+  }
+  ctx.strokeStyle = color;
+  ctx.setLineDash([5, 4]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  const e = toScreen(pts[pts.length - 1]);
+  ctx.beginPath(); ctx.arc(e.x, e.y, 5, 0, Math.PI * 2);
+  ctx.fillStyle = color; ctx.fill();
 }
 
 function drawGroundRect3(min, max, color) {
@@ -891,21 +922,22 @@ function render3() {
   drawScene3(ctx, cam3, w, h, bodyParts);
   const actor = view.units.find((x) => x.id === actorId());
   const wu = actor ? worldUnit(actor.id) : null;
-  if (wu && camKind !== "fpv") drawReachRing3((ghost || wu).pos, gaitReach());
+  const ringAt = reachOrigin() || wu;
+  if (ringAt && camKind !== "fpv") drawReachRing3(ringAt, gaitReach());
   if (actor) {
     let from = asXY(actor.pos);
     for (const q of view.queue || []) {
       if (q.type !== "move" || !q.dest) continue;
       const to = asXY(q.dest);
-      drawPolyline3(ctx, cam3, w, h, [{ ...from, z: 0.06 }, { ...to, z: 0.06 }], MOVE_LINE, [5, 4]);
+      const path = (q.path || [from, to]).map((p) => ({ ...asXY(p), z: 0.06 }));
+      drawMovePath3(ctx, cam3, w, h, path, MOVE_LINE);
       from = to;
     }
   }
   if (movePreview?.ok) {
-    drawPolyline3(ctx, cam3, w, h, [
-      { ...asXY(movePreview.from), z: 0.07 },
-      { ...asXY(movePreview.dest), z: 0.07 },
-    ], MOVE_LINE, [5, 4]);
+    const path = (movePreview.path || [movePreview.from, movePreview.dest])
+      .map((p) => ({ ...asXY(p), z: 0.07 }));
+    drawMovePath3(ctx, cam3, w, h, path, MOVE_LINE);
   }
   if (shotPreview?.ok && wu && !shotTargetDowned(shotPreview)) {
     const o = shotPreview.origin3 || muzzleWorld(ghost || wu);
@@ -963,33 +995,20 @@ function render2d() {
   drawCover();
   const actor = view.units.find((x) => x.id === actorId());
   if (actor) {
-    const ringAt = ghostActor() || actor;
-    drawCircle(ringAt.pos, gaitReach(), reachRingColor());
+    const ringAt = reachOrigin() || actor;
+    drawCircle(ringAt, gaitReach(), reachRingColor());
   }
   if (actor) {
     let from = asXY(actor.pos);
     for (const q of view.queue || []) {
       if (q.type !== "move" || !q.dest) continue;
       const to = asXY(q.dest);
-      const s = toScreen(from);
-      const e = toScreen(to);
-      ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(e.x, e.y);
-      ctx.strokeStyle = "rgba(110,207,154,0.7)";
-      ctx.setLineDash([4, 3]);
-      ctx.stroke(); ctx.setLineDash([]);
-      ctx.beginPath(); ctx.arc(e.x, e.y, 4, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(110,207,154,0.85)"; ctx.fill();
+      drawMovePath2(q.path || [from, to], "rgba(110,207,154,0.7)");
       from = to;
     }
   }
   if (movePreview?.ok) {
-    const s = toScreen(movePreview.from);
-    const e = toScreen(movePreview.dest);
-    ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(e.x, e.y);
-    ctx.strokeStyle = MOVE_LINE;
-    ctx.setLineDash([5, 4]);
-    ctx.stroke(); ctx.setLineDash([]);
-    ctx.beginPath(); ctx.arc(e.x, e.y, 5, 0, Math.PI * 2); ctx.fillStyle = MOVE_LINE; ctx.fill();
+    drawMovePath2(movePreview.path || [movePreview.from, movePreview.dest], MOVE_LINE);
   }
   if (shotPreview?.ok) drawShotGeom(shotPreview);
   if (view.last_shot?.valid && !shotTargetDowned(view.last_shot)) {
@@ -1704,7 +1723,7 @@ function handleHover(ev) {
   if (!u && actor && w) {
     window.clearTimeout(scanHold);
     const prev = eng.previewMove(actor.id, { x: w.x, y: w.y }, selectedGait(), view.phase === Phase.Play, true);
-    if (prev?.ok && !prev.truncated) {
+    if (prev?.ok) {
       movePreview = prev;
       if (view.phase === Phase.Play) {
         const r = eng.previewSchedule({

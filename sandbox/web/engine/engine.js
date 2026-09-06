@@ -6,7 +6,7 @@ import {
 import { rulesOf, turnSeconds, postureTime } from "./rules.js";
 import {
   finalizeUnit, resetChannels, spendChannels, canSpend, channelStretch,
-  gaitSpeed, gaitLegTime, pathMove, los2d,
+  gaitSpeed, gaitLegTime, pathMove, followPath, los2d,
   resolveConeSample, applyCoverHit, applyArmorHit, generateWound,
   previewDisk, sampleDiskOffset, accuracyRadius,
   resolveAimOffset, worldAimPoint,
@@ -522,6 +522,7 @@ export class Engine {
       if (!preview.ok) return { ok: false, error: preview.note || "cannot move" };
       action.dest = preview.dest;
       action.from = preview.from;
+      action.path = preview.path || null;
       action.gait = preview.gait;
     }
     if (action.type === ActionType.CoverPost || action.type === ActionType.CoverHide) {
@@ -684,21 +685,16 @@ export class Engine {
     if (w.phase === Phase.Play && gait === Gait.Sprint && actor.ch.focus < 2) {
       return this.reject(action, "sprint needs Focus");
     }
-    let dest = pathMove(w.map, actor.pos, action.dest);
-    let dist = length(sub(dest, actor.pos));
-    if (dist < 0.05) return this.reject(action, "path blocked");
-    let time = gaitLegTime(dist, gait, actor);
     const budget = w.phase === Phase.Contact
       ? actor.reaction_left
       : Math.min(actor.ch.legs, this.remainingWindow());
-    if (time > budget + 1e-3) {
-      const maxd = gaitSpeed(gait, actor) * Math.max(0, budget);
-      const dir = normalize(sub(dest, actor.pos));
-      dest = pathMove(w.map, actor.pos, add(actor.pos, scale(dir, maxd)));
-      dist = length(sub(dest, actor.pos));
-      time = gaitLegTime(dist, gait, actor);
-      if (dist < 0.05) return this.reject(action, "no movement time left");
-    }
+    const maxd = gaitSpeed(gait, actor) * Math.max(0, budget);
+    const walked = followPath(w.map, actor.pos, action.dest, maxd);
+    let dest = walked.pos;
+    let dist = walked.dist;
+    if (dist < 0.05) return this.reject(action, "path blocked");
+    let time = gaitLegTime(dist, gait, actor);
+    if (time > budget + 1e-3 && dist >= 0.05) time = budget;
     if (w.phase === Phase.Contact) {
       actor.reaction_left -= time;
     } else {
@@ -710,7 +706,8 @@ export class Engine {
     }
     const from = { ...actor.pos };
     actor.pos = dest;
-    actor.facing = angleOf(sub(dest, from));
+    const faceFrom = walked.points?.length > 1 ? walked.points[walked.points.length - 2] : from;
+    actor.facing = angleOf(sub(dest, faceFrom));
     actor.cover_use = null;
     const e = this.ev("moved", `${actor.name} ${gait}s`);
     e.actor = actor.id;
@@ -1032,18 +1029,14 @@ export class Engine {
       p.note = budget < 0.05 ? "no movement time left" : "cannot move";
       return p;
     }
-    let goal = dest;
-    const want = length(sub(goal, from));
     const maxd = speed * budget;
-    if (want > maxd && want > 0.01) {
-      goal = add(from, scale(normalize(sub(goal, from)), maxd));
-      p.truncated = true;
-    }
-    const landed = pathMove(w.map, from, goal, { cheap });
-    p.dest = landed;
-    p.dist = length(sub(landed, from));
+    const walked = followPath(w.map, from, dest, maxd);
+    p.dest = walked.pos;
+    p.path = walked.points;
+    p.dist = walked.dist;
     p.time = gaitLegTime(p.dist, gait, actor);
     p.ok = p.dist > 0.04;
+    p.truncated = !walked.reached && p.ok;
     if (!p.ok) p.note = "blocked or too close";
     else if (p.truncated) p.note = p.note ? `${p.note}; truncated` : "truncated to remaining time";
     return p;
@@ -1169,6 +1162,7 @@ export class Engine {
         posture: q.action.posture || null,
         target: q.action.target || null,
         dest: q.action.dest || null,
+        path: q.action.path || null,
         t0: q.t0,
         t1: q.t1,
         overlap: !!q.overlap,
@@ -1217,6 +1211,7 @@ export class Engine {
         t1: q.t1,
         cost: q.cost,
         dest: q.action.dest,
+        path: q.action.path,
         target: q.action.target,
         shot: q.action.shot,
         aim: q.action.aim,

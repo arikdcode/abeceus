@@ -3,6 +3,7 @@ import { ActionType, Gait, ShotMode, AimRegion, Posture } from "./model.js";
 import { CoverMode } from "./cover.js";
 import { localHitboxes, clipReport, formatClipReport } from "./body.js";
 import { loadRepoCatalog, worldFromCatalog } from "./catalog-node.js";
+import { pathFind } from "./path.js";
 
 const catalog = loadRepoCatalog();
 const courtyard = () => assembleWorld(catalog, {
@@ -74,6 +75,17 @@ function toPlay(eng) {
   if (!op.map.cover.some((c) => c.id === "crate-gate")) fail("outpost should keep a postable gate crate");
   if (op.units.filter((u) => u.cover_use?.mode === "hide").length < 8) fail("outpost teams should start in hide");
   if (!op.map.decor.some((c) => c.roof && (c.id || "").includes("office"))) fail("office roof should stay in the map as hidden-by-default decor");
+
+  const yard = worldFromCatalog(catalog, "posted_courtyard");
+  const around = pathFind(yard.map, { x: 6.4, y: 4.6 }, { x: 10.6, y: 4.6 });
+  if (!around.ok || around.points.length < 3) fail("path should bend around the west crate instead of stopping at it");
+  const crate = yard.map.cover.find((c) => c.id === "crate-west");
+  if (crate) {
+    const through = around.points.some((p) => p.x > crate.min.x + 0.15 && p.x < crate.max.x - 0.15 && p.y > crate.min.y + 0.15 && p.y < crate.max.y - 0.15);
+    if (through) fail("path should not cut through the west crate");
+  }
+  const intoYard = pathFind(op.map, { x: 11, y: 23 }, { x: 40, y: 23 });
+  if (!intoYard.ok || intoYard.dist < 22) fail("path should take the road through the outpost gate");
 }
 
 const eng = new Engine();

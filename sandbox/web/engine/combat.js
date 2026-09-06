@@ -1,5 +1,5 @@
 import {
-  add, sub, scale, length, normalize, rotate, angleOf, clampToAabb, pointInAabb, rayAabb, rayEllipse,
+  add, sub, scale, length, normalize, rotate, angleOf, clampToAabb, rayAabb, rayEllipse,
 } from "./vec.js";
 import { emptyChannels, unitAlive, Posture, Gait, ShotMode, AimRegion } from "./model.js";
 import {
@@ -8,72 +8,7 @@ import {
 } from "./body.js";
 import { coverBlocksMove } from "./cover.js";
 
-const PERSON_R = 0.28;
-const CLEAR = 0.12;
-const MOVE_CELL = 4;
-
-function coverHitsPoint(c, p) {
-  return p.x >= c.min.x - CLEAR && p.x <= c.max.x + CLEAR
-    && p.y >= c.min.y - CLEAR && p.y <= c.max.y + CLEAR;
-}
-
-function moveIndex(map) {
-  const blockers = [];
-  for (const c of map.cover) {
-    if (coverBlocksMove(c)) blockers.push(c);
-  }
-  const grid = new Map();
-  for (const c of blockers) {
-    const x0 = Math.floor((c.min.x - CLEAR) / MOVE_CELL);
-    const x1 = Math.floor((c.max.x + CLEAR) / MOVE_CELL);
-    const y0 = Math.floor((c.min.y - CLEAR) / MOVE_CELL);
-    const y1 = Math.floor((c.max.y + CLEAR) / MOVE_CELL);
-    for (let ix = x0; ix <= x1; ix++) {
-      for (let iy = y0; iy <= y1; iy++) {
-        const k = ix * 4096 + iy;
-        let bin = grid.get(k);
-        if (!bin) {
-          bin = [];
-          grid.set(k, bin);
-        }
-        bin.push(c);
-      }
-    }
-  }
-  return { blockers, grid };
-}
-
-function blockedAt(idx, map, p) {
-  const insetMin = add(map.min, { x: PERSON_R, y: PERSON_R });
-  const insetMax = sub(map.max, { x: PERSON_R, y: PERSON_R });
-  if (!pointInAabb(p, insetMin, insetMax)) return true;
-  const bin = idx.grid.get(Math.floor(p.x / MOVE_CELL) * 4096 + Math.floor(p.y / MOVE_CELL));
-  if (!bin) return false;
-  for (const c of bin) {
-    if (coverHitsPoint(c, p)) return true;
-  }
-  return false;
-}
-
-function blocked(map, p) {
-  return blockedAt(moveIndex(map), map, p);
-}
-
-function slide(map, from, to, idx = null) {
-  const index = idx || moveIndex(map);
-  const delta = sub(to, from);
-  const dist = length(delta);
-  if (dist < 1e-5) return { ...from };
-  const dir = scale(delta, 1 / dist);
-  const steps = Math.max(6, Math.floor(dist / 0.08));
-  let last = { ...from };
-  for (let i = 1; i <= steps; i++) {
-    const p = add(from, scale(dir, (dist * i) / steps));
-    if (blockedAt(index, map, p)) break;
-    last = p;
-  }
-  return last;
-}
+export { pathMove, pathFind, followPath } from "./path.js";
 
 export function finalizeUnit(u, seconds) {
   let init = Math.round(u.initiative_base + u.loadout_init);
@@ -581,70 +516,6 @@ export function generateWound(victim, sample) {
     }
   }
   return r;
-}
-
-function distToSeg(p, a, b) {
-  const abx = b.x - a.x;
-  const aby = b.y - a.y;
-  const l2 = abx * abx + aby * aby || 1;
-  const t = Math.max(0, Math.min(1, ((p.x - a.x) * abx + (p.y - a.y) * aby) / l2));
-  return Math.hypot(p.x - (a.x + abx * t), p.y - (a.y + aby * t));
-}
-
-export function pathMove(map, from, to, opts = {}) {
-  const idx = moveIndex(map);
-  const direct = slide(map, from, to, idx);
-  if (opts.cheap || length(sub(direct, to)) < 0.15) return direct;
-
-  const pts = [from, to];
-  const off = PERSON_R + CLEAR + 0.08;
-  const pad = 7;
-  const near = [];
-  for (const c of idx.blockers) {
-    const sx = c.max.x - c.min.x;
-    const sy = c.max.y - c.min.y;
-    if (sx < 0.45 && sy < 0.45) continue;
-    const mid = { x: (c.min.x + c.max.x) * 0.5, y: (c.min.y + c.max.y) * 0.5 };
-    const d = distToSeg(mid, from, to);
-    if (d > pad + Math.max(sx, sy) * 0.5) continue;
-    near.push({ c, d });
-  }
-  near.sort((a, b) => a.d - b.d);
-  for (const { c } of near.slice(0, 22)) {
-    const corners = [
-      { x: c.min.x - off, y: c.min.y - off },
-      { x: c.min.x - off, y: c.max.y + off },
-      { x: c.max.x + off, y: c.min.y - off },
-      { x: c.max.x + off, y: c.max.y + off },
-    ];
-    for (const q of corners) if (!blockedAt(idx, map, q)) pts.push(q);
-  }
-
-  const reachable = (a, b) => length(sub(slide(map, a, b, idx), b)) < 0.2;
-  const n = pts.length;
-  const dist = Array(n).fill(1e30);
-  const prev = Array(n).fill(-1);
-  dist[0] = 0;
-  const pq = [[0, 0]];
-  while (pq.length) {
-    pq.sort((a, b) => a[0] - b[0]);
-    const [d, i] = pq.shift();
-    if (d > dist[i] + 1e-5) continue;
-    if (i === 1) break;
-    for (let j = 0; j < n; j++) {
-      if (j === i || !reachable(pts[i], pts[j])) continue;
-      const nd = d + length(sub(pts[j], pts[i]));
-      if (nd + 1e-4 < dist[j]) {
-        dist[j] = nd;
-        prev[j] = i;
-        pq.push([nd, j]);
-      }
-    }
-  }
-  if (prev[1] < 0) return direct;
-  let cur = 1;
-  while (prev[cur] !== 0 && prev[cur] !== -1) cur = prev[cur];
-  return slide(map, from, pts[cur], idx);
 }
 
 export function los2d(map, a, b) {
