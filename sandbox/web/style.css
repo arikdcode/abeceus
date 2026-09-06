@@ -127,7 +127,15 @@ h2 { margin: 4px 0 6px; font-size: 11px; text-transform: uppercase; letter-spaci
 .act-table td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .act-table .cost { color: var(--gold); font-size: 10px; display: block; }
 .act-table button { padding: 2px 7px; }
-#sil { display: block; background: #0d1014; border: 1px solid var(--line); width: 100%; height: 168px; cursor: crosshair; margin: 6px 0; }
+#sil { display: block; background: #0d1014; border: 1px solid var(--line); width: 100%; height: 220px; cursor: crosshair; margin: 6px 0; }
+.disk-break { margin: 0 0 8px; }
+.disk-break .disk-total { color: var(--gold); font-variant-numeric: tabular-nums; margin: 0 0 4px; }
+.disk-break .disk-total span { color: var(--muted); font-weight: 400; font-size: 11px; }
+.disk-table { width: 100%; border-collapse: collapse; margin: 0; }
+.disk-table td { padding: 1px 0; font-size: 12px; }
+.disk-table td.num { text-align: right; font-variant-numeric: tabular-nums; width: 42px; color: var(--ink); }
+.disk-table tr.cover td { color: #c4c47a; }
+.disk-table tr.air td { color: var(--muted); }
 #inspect h3, #turnInfo h3 { margin: 0 0 4px; font-size: 14px; }
 #inspect .empty { color: var(--muted); margin: 12px 0; }
 .note { color: var(--muted); font-size: 11px; margin: 8px 0 0; }

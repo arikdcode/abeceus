@@ -399,6 +399,41 @@ function proneJoints() {
   };
 }
 
+function deadJoints() {
+  const stock = { x: 0.28, y: -0.56, z: 0.15 };
+  const muzzle = { x: 0.94, y: -0.34, z: 0.13 };
+  const axis = norm3(sub3(muzzle, stock));
+  return {
+    l_heel: { x: -0.22, y: 0.78, z: 0.06 },
+    l_toe: { x: -0.40, y: 0.92, z: 0.12 },
+    l_ankle: { x: -0.22, y: 0.74, z: 0.10 },
+    l_knee: { x: -0.26, y: 0.44, z: 0.20 },
+    l_hip: { x: -0.11, y: 0.10, z: 0.16 },
+    r_heel: { x: 0.16, y: 0.90, z: 0.05 },
+    r_toe: { x: 0.32, y: 1.10, z: 0.08 },
+    r_ankle: { x: 0.16, y: 0.86, z: 0.09 },
+    r_knee: { x: 0.13, y: 0.48, z: 0.12 },
+    r_hip: { x: 0.11, y: 0.08, z: 0.16 },
+    pelvis: { x: 0.00, y: 0.04, z: 0.16 },
+    abdomen: { x: 0.00, y: -0.12, z: 0.16 },
+    chest: { x: 0.00, y: -0.30, z: 0.16 },
+    neck: { x: 0.02, y: -0.46, z: 0.16 },
+    skull: { x: 0.05, y: -0.58, z: 0.18 },
+    l_shoulder: { x: -0.22, y: -0.26, z: 0.17 },
+    r_shoulder: { x: 0.22, y: -0.32, z: 0.17 },
+    l_elbow: { x: -0.52, y: -0.12, z: 0.10 },
+    r_elbow: { x: 0.40, y: -0.46, z: 0.12 },
+    l_wrist: { x: -0.72, y: 0.08, z: 0.07 },
+    r_wrist: { x: 0.34, y: -0.60, z: 0.14 },
+    stock,
+    muzzle,
+    l_hand: { x: -0.25, y: 0.85, z: 0.08 },
+    r_hand: axis,
+    look: { x: 0.18, y: -0.28, z: 1 },
+    proneFeet: true,
+  };
+}
+
 function shootPose() {
   return assemble(standJoints());
 }
@@ -413,6 +448,9 @@ function hidePose(lip) {
 }
 function postPose(lip) {
   return assemble(postJoints(lip + COVER_POST_CLEAR));
+}
+function deadPose() {
+  return assemble(deadJoints());
 }
 
 function gunTip(parts) {
@@ -653,7 +691,8 @@ export function formatClipReport(label, report) {
   return lines.join("\n");
 }
 
-function poseFor(posture, coverUse) {
+function poseFor(posture, coverUse, unit = null) {
+  if (unit?.downed || unit?.dead || posture === Posture.Dead) return deadPose();
   if (coverUse?.mode === CoverMode.Post && Number.isFinite(coverUse.lip)) return postPose(coverUse.lip);
   if (coverUse?.mode === CoverMode.Hide && Number.isFinite(coverUse.lip)) return hidePose(coverUse.lip);
   if (posture === Posture.Prone) return proneShootPose();
@@ -662,7 +701,7 @@ function poseFor(posture, coverUse) {
 }
 
 export function localHitboxes(posture, coverUse = null, unit = null) {
-  const pose = poseFor(posture, coverUse);
+  const pose = poseFor(posture, coverUse, unit);
   const have = new Set((unit?.armor || []).map((a) => a.id || a.region));
   const plates = armorPlates(pose).filter((p) => {
     if (!unit) return true;

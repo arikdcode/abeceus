@@ -58,6 +58,7 @@
       { key: "post", posture: Posture.Crouching, cover: { mode: CoverMode.Post, lip: 1.15 } },
       { key: "hide", posture: Posture.Crouching, cover: { mode: CoverMode.Hide, lip: 1.15 } },
       { key: "prone", posture: Posture.Prone, cover: null },
+      { key: "dead", posture: Posture.Standing, cover: null, downed: true },
     ];
     const views = [
       { key: "front", facing: -Math.PI / 2 },
@@ -72,6 +73,7 @@
         facing: view.facing,
         posture: pose.posture,
         cover_use: pose.cover,
+        downed: !!pose.downed,
         armor,
       };
     }

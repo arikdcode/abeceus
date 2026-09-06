@@ -388,12 +388,29 @@ export function previewDisk(world, attacker, target, mode, aim, aimOffset) {
   let hits = 0;
   let covers = 0;
   let n = 0;
+  const counts = new Map();
+  const bump = (id, label) => {
+    const cur = counts.get(id) || { id, label, n: 0 };
+    cur.n += 1;
+    counts.set(id, cur);
+  };
   eachDiskSample(radius, (dLat, dH) => {
     const s = resolveConeSample(world, attacker, target, mode, aim, dLat, dH, acc, aimOff);
     n += 1;
-    if (s.hit_cover) covers += 1;
-    else if (s.hit_unit && s.unit === target.id) hits += 1;
+    if (s.hit_cover) {
+      covers += 1;
+      bump("cover", "cover");
+    } else if (s.hit_unit && s.unit === target.id) {
+      hits += 1;
+      const name = s.plate || s.region;
+      bump(name, prettyPart(name) || name);
+    } else {
+      bump("air", "air");
+    }
   });
+  const breakdown = [...counts.values()]
+    .map((row) => ({ ...row, p: n ? row.n / n : 0 }))
+    .sort((a, b) => b.p - a.p || a.label.localeCompare(b.label));
   const xs = sil.flatMap((r) => [r.x0, r.x1]);
   return {
     ok: dist >= 0.2,
@@ -405,6 +422,8 @@ export function previewDisk(world, attacker, target, mode, aim, aimOffset) {
     sigma: radius,
     p_hit: n ? hits / n : 0,
     p_cover: n ? covers / n : 0,
+    p_air: n ? Math.max(0, 1 - (hits + covers) / n) : 0,
+    breakdown,
     origin: { ...attacker.pos },
     origin3: muzzleWorld(attacker),
     aim_dir: shotDir,

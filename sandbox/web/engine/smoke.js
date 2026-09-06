@@ -73,11 +73,17 @@ const enemy = eng.world.units.find((u) => u.team !== me.team && !u.downed);
     ["post", Posture.Crouching, { mode: CoverMode.Post, lip: 1.15 }],
     ["hide", Posture.Crouching, { mode: CoverMode.Hide, lip: 1.15 }],
     ["prone", Posture.Prone, null],
+    ["dead", Posture.Standing, null],
   ];
   for (const [label, posture, cover] of samples) {
-    const parts = localHitboxes(posture, cover, { armor });
+    const parts = localHitboxes(posture, cover, { armor, downed: label === "dead" });
     console.log(formatClipReport(label, clipReport(parts)));
   }
+  const corpse = unitHitboxes({ ...me, downed: true });
+  const chest = corpse.find((b) => b.name === "chest");
+  const zs = (chest?.corners || []).map((c) => c.z);
+  if (!zs.length || Math.max(...zs) > 0.55) fail("downed chest should be lying on the back");
+  if (Math.min(...zs) < -0.06) fail("downed chest should not sink through the floor");
 }
 const planned = eng.previewSchedule({ type: ActionType.Shoot, actor, target: enemy.id, shot: ShotMode.Snap });
 if (!planned.ok) fail(`previewSchedule snap failed: ${planned.error}`);
@@ -125,6 +131,12 @@ me.weapon_spread = 0.004;
 const tight = eng.previewShot(actor, enemy.id, ShotMode.Snap, AimRegion.Torso, { x: 0, z: 1.25 });
 console.log("tight open", tight.p_hit.toFixed(2), "r", tight.radius.toFixed(3));
 if (tight.p_hit < 0.98) fail("tiny disk fully on torso should be ~100%");
+if (!Array.isArray(tight.breakdown) || !tight.breakdown.length) fail("preview should include a disk breakdown");
+const hitParts = tight.breakdown.filter((r) => r.id !== "cover" && r.id !== "air");
+const sumHit = hitParts.reduce((s, r) => s + r.p, 0);
+if (Math.abs(sumHit - tight.p_hit) > 0.02) fail("breakdown parts should sum to p_hit");
+const sumAll = tight.breakdown.reduce((s, r) => s + r.p, 0);
+if (Math.abs(sumAll - 1) > 0.02) fail("breakdown should cover the whole disk");
 me.weapon_spread = savedSpread;
 eng.world.map.cover = savedCover;
 const belly = eng.previewShot(actor, enemy.id, ShotMode.Snap, AimRegion.Torso, { x: 0, z: 0.80 });

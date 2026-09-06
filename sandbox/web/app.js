@@ -1,4 +1,4 @@
-import { Engine, loadCatalog, worldFromCatalog, silhouetteFor, unitHitboxes, coverBox, muzzleWorld, rayLocalBox, rayCover, nearestUse, useBounds, resolveCoverUse, CoverMode, partFamily, prettyPart } from "./engine/engine.js";
+import { Engine, loadCatalog, worldFromCatalog, unitHitboxes, coverBox, muzzleWorld, rayLocalBox, rayCover, nearestUse, useBounds, resolveCoverUse, CoverMode, partFamily, prettyPart } from "./engine/engine.js";
 import { ActionType, Gait, ShotMode, AimRegion, Phase } from "./engine/model.js";
 import { rotate } from "./engine/vec.js";
 import { makeCam3, drawScene3, drawFloor3, drawPolyline3, drawLabel3, screenRay, hitGround, orbitCam, zoomCam, project3, eyeOf } from "./view3d.js";
@@ -30,6 +30,7 @@ let owAim = false;
 let mapMode = "3d";
 const cam3 = makeCam3();
 let camKind = "strategy";
+let silView = null;
 let savedStrategy = null;
 let orbiting = false;
 let didOrbit = false;
@@ -962,6 +963,27 @@ function fmtHit(prev) {
   return `${Math.round(prev.p_hit * 100)}%${cover}`;
 }
 
+function fmtPct(p) {
+  const n = Math.round((p || 0) * 100);
+  if (n === 0 && p > 0) return "<1%";
+  return `${n}%`;
+}
+
+function fillDiskBreak(preview) {
+  const el = document.getElementById("diskBreak");
+  if (!el) return;
+  if (!preview?.ok || !preview.breakdown?.length) {
+    el.innerHTML = "";
+    return;
+  }
+  const rows = preview.breakdown.map((r) => {
+    const cls = r.id === "cover" ? "cover" : r.id === "air" ? "air" : "";
+    return `<tr class="${cls}"><td>${r.label}</td><td class="num">${fmtPct(r.p)}</td></tr>`;
+  }).join("");
+  el.innerHTML = `<div class="disk-total">hit ${fmtPct(preview.p_hit)} <span>of aim disk</span></div>
+    <table class="disk-table">${rows}</table>`;
+}
+
 function renderInspect() {
   const box = document.getElementById("inspect");
   const u = inspectSubject();
@@ -982,7 +1004,8 @@ function renderInspect() {
         extra: [{ id: `hit-${id}`, html: "—" }, { id: `dist-${id}`, html: "—" }],
       };
     };
-    actions = `<canvas id="sil" width="220" height="168"></canvas>`
+    actions = `<canvas id="sil" width="220" height="220"></canvas>`
+      + `<div id="diskBreak" class="disk-break"></div>`
       + actionTableHtml([shotRow("snap", "Snap"), shotRow("precise", "Precise"), shotRow("burst", "Burst")], ["Hit", "Dist"]);
   } else if (friendly && view.phase === Phase.Play) {
     const qb = quoteOf(view.quotes?.actions, "bandage");
@@ -1035,7 +1058,7 @@ function renderInspect() {
       render();
     };
   });
-  if (wu) bindSilhouette(document.getElementById("sil"), wu);
+  if (wu) bindSilhouette(document.getElementById("sil"));
   updateInspectShots();
 }
 
@@ -1069,6 +1092,7 @@ function updateInspectShots() {
   const wu = worldUnit(u.id);
   const shown = hoverShotMode === "burst" ? burst : hoverShotMode === "precise" ? precise : hoverShotMode === "snap" ? snap : shotPreview;
   if (sil && wu) drawSilhouette(sil, wu, shown);
+  fillDiskBreak(shown);
 }
 
 function syncSilSize(sil) {
@@ -1081,116 +1105,168 @@ function syncSilSize(sil) {
   }
 }
 
-function silScale(sil, regions) {
-  const maxZ = Math.max(...regions.map((r) => r.z1), 1.8);
-  const maxX = Math.max(...regions.map((r) => Math.abs(r.x0)), ...regions.map((r) => Math.abs(r.x1)), 0.4);
-  const pad = 14;
-  const scale = Math.min((sil.width - pad * 2) / (maxX * 2), (sil.height - pad * 2) / maxZ);
+function boxBounds(boxes) {
+  let x0 = Infinity, y0 = Infinity, z0 = Infinity, x1 = -Infinity, y1 = -Infinity, z1 = -Infinity;
+  for (const b of boxes) {
+    for (const p of b.corners || []) {
+      x0 = Math.min(x0, p.x); y0 = Math.min(y0, p.y); z0 = Math.min(z0, p.z);
+      x1 = Math.max(x1, p.x); y1 = Math.max(y1, p.y); z1 = Math.max(z1, p.z);
+    }
+  }
+  return { x0, y0, z0, x1, y1, z1 };
+}
+
+function shotAlongPerp(actor, target) {
+  if (actor && target) {
+    const dx = target.pos.x - actor.pos.x;
+    const dy = target.pos.y - actor.pos.y;
+    const dist = Math.max(0.15, Math.hypot(dx, dy));
+    const along = { x: dx / dist, y: dy / dist };
+    return { along, perp: rotate(along, -1.5707963) };
+  }
+  const yaw = target?.facing || 0;
+  const along = { x: Math.cos(yaw), y: Math.sin(yaw) };
+  return { along, perp: rotate(along, -1.5707963) };
+}
+
+function shotWorld(target, perp, lat, z) {
   return {
-    pad,
-    scale,
-    toP: (x, z) => ({ x: sil.width / 2 + x * scale, y: sil.height - pad - z * scale }),
-    fromP: (px, py) => ({ x: (px - sil.width / 2) / scale, z: (sil.height - pad - py) / scale }),
+    x: target.pos.x + perp.x * lat,
+    y: target.pos.y + perp.y * lat,
+    z,
   };
 }
 
-function coverAtX(profile, x) {
-  if (!profile?.length) return 0;
-  if (x <= profile[0].x) return profile[0].z;
-  if (x >= profile[profile.length - 1].x) return profile[profile.length - 1].z;
-  for (let i = 1; i < profile.length; i++) {
-    const a = profile[i - 1];
-    const b = profile[i];
-    if (x <= b.x) {
-      const t = (x - a.x) / Math.max(1e-6, b.x - a.x);
-      return a.z + (b.z - a.z) * t;
-    }
+function subjectCam(actor, target, boxes) {
+  const b = boxBounds(boxes);
+  const cam = makeCam3();
+  cam.fpv = false;
+  cam.target = {
+    x: (b.x0 + b.x1) * 0.5,
+    y: (b.y0 + b.y1) * 0.5,
+    z: (b.z0 + b.z1) * 0.5,
+  };
+  if (actor && actor.id !== target.id) {
+    cam.yaw = Math.atan2(actor.pos.y - target.pos.y, actor.pos.x - target.pos.x);
+  } else {
+    cam.yaw = target.facing || 0;
   }
-  return 0;
+  cam.pitch = 0.16;
+  const span = Math.max(b.x1 - b.x0, b.y1 - b.y0, b.z1 - b.z0, 0.9);
+  cam.dist = Math.max(2.4, span * 2.15);
+  return cam;
 }
 
-function diskSampleKind(regions, profile, x, z) {
-  if (z < coverAtX(profile, x) - 0.01) return "cover";
-  for (const r of regions) {
-    if (x >= r.x0 && x <= r.x1 && z >= r.z0 && z <= r.z1) return "hit";
+function fillProjected(ctx, pts, fill, stroke, dash) {
+  if (pts.length < 3 || pts.some((p) => !p)) return;
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+  ctx.closePath();
+  if (fill) {
+    ctx.fillStyle = fill;
+    ctx.fill();
   }
-  return "miss";
+  if (stroke) {
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = 1.6;
+    ctx.setLineDash(dash || []);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+}
+
+function drawCoverOverlay(ctx, cam, w, h, target, perp, profile) {
+  if (!profile?.some((p) => p.z > 0.02)) return;
+  const bottom = [];
+  const top = [];
+  for (const p of profile) {
+    const a = project3(cam, w, h, shotWorld(target, perp, p.x, 0));
+    const b = project3(cam, w, h, shotWorld(target, perp, p.x, p.z));
+    if (!a || !b) continue;
+    bottom.push(a);
+    top.push(b);
+  }
+  if (bottom.length < 2) return;
+  fillProjected(ctx, [...bottom, ...top.reverse()], "rgba(36, 48, 22, 0.46)", "#c4c47a", [4, 3]);
+}
+
+function drawAimDisk(ctx, cam, w, h, target, perp, off, radius) {
+  const steps = 48;
+  const pts = [];
+  for (let i = 0; i <= steps; i++) {
+    const th = (i / steps) * Math.PI * 2;
+    pts.push(project3(cam, w, h, shotWorld(
+      target, perp,
+      off.x + Math.cos(th) * radius,
+      off.z + Math.sin(th) * radius,
+    )));
+  }
+  fillProjected(ctx, pts, "rgba(215, 177, 90, 0.20)", "#d7b15a");
+}
+
+function aimFromSilPixel(sx, sy) {
+  if (!silView) return null;
+  const { cam, w, h, target, along, perp } = silView;
+  const ray = screenRay(cam, w, h, sx, sy);
+  const denom = ray.dir.x * along.x + ray.dir.y * along.y;
+  if (Math.abs(denom) < 1e-6) return null;
+  const t = ((target.pos.x - ray.origin.x) * along.x + (target.pos.y - ray.origin.y) * along.y) / denom;
+  if (t < 0.05) return null;
+  const px = ray.origin.x + ray.dir.x * t;
+  const py = ray.origin.y + ray.dir.y * t;
+  const pz = ray.origin.z + ray.dir.z * t;
+  return {
+    x: (px - target.pos.x) * perp.x + (py - target.pos.y) * perp.y,
+    z: pz,
+  };
 }
 
 function drawSilhouette(sil, target, preview) {
   if (!sil) return;
   syncSilSize(sil);
   const sctx = sil.getContext("2d");
-  const regions = (preview?.silhouette && preview.silhouette.length) ? preview.silhouette : silhouetteFor(target.posture);
-  const { scale, toP } = silScale(sil, regions);
-  sctx.clearRect(0, 0, sil.width, sil.height);
+  const w = sil.width;
+  const h = sil.height;
+  sctx.clearRect(0, 0, w, h);
   sctx.fillStyle = "#0d1014";
-  sctx.fillRect(0, 0, sil.width, sil.height);
-  for (const r of regions) {
-    const a = toP(r.x0, r.z1);
-    const b = toP(r.x1, r.z0);
-    const fam = partFamily(r.name);
-    sctx.fillStyle = fam === "head" ? "#6e4a4a" : fam === "armor" ? "#8a9098"
-      : fam === "arms" || fam === "hands" ? "#4a5a6e" : fam === "legs" ? "#4a6e5a" : "#5a5a4a";
-    sctx.fillRect(a.x, a.y, b.x - a.x, b.y - a.y);
-    sctx.strokeStyle = "#c8d0da";
-    sctx.strokeRect(a.x, a.y, b.x - a.x, b.y - a.y);
+  sctx.fillRect(0, 0, w, h);
+  const actor = (preview?.actor ? worldUnit(preview.actor) : null) || worldUnit(actorId());
+  const vu = view?.units.find((x) => x.id === target.id);
+  const boxes = unitHitboxes(target).map((b) => ({
+    ...b,
+    color: partHex(b.name, vu?.team ?? target.team ?? 1, !!(vu?.downed || vu?.dead), false),
+    facing: target.facing || 0,
+  }));
+  const cam = subjectCam(actor, target, boxes);
+  const { along, perp } = shotAlongPerp(actor, target);
+  silView = { cam, w, h, target, actor, along, perp };
+  const pad = 1.15;
+  drawPolyline3(sctx, cam, w, h, [
+    { x: target.pos.x - pad, y: target.pos.y - pad, z: 0.01 },
+    { x: target.pos.x + pad, y: target.pos.y - pad, z: 0.01 },
+    { x: target.pos.x + pad, y: target.pos.y + pad, z: 0.01 },
+    { x: target.pos.x - pad, y: target.pos.y + pad, z: 0.01 },
+    { x: target.pos.x - pad, y: target.pos.y - pad, z: 0.01 },
+  ], "rgba(210, 220, 230, 0.16)");
+  drawScene3(sctx, cam, w, h, boxes);
+  if (preview?.ok) {
+    drawCoverOverlay(sctx, cam, w, h, target, perp, preview.cover_profile);
+    const off = preview.aim_offset || aimOffset || { x: 0, z: 1.15 };
+    drawAimDisk(sctx, cam, w, h, target, perp, off, preview.radius || preview.sigma || 0.15);
   }
-  const profile = preview?.cover_profile || [];
-  if (profile.some((p) => p.z > 0.02)) {
-    sctx.beginPath();
-    sctx.moveTo(toP(profile[0].x, 0).x, toP(profile[0].x, 0).y);
-    for (const p of profile) {
-      const q = toP(p.x, p.z);
-      sctx.lineTo(q.x, q.y);
-    }
-    const last = profile[profile.length - 1];
-    sctx.lineTo(toP(last.x, 0).x, toP(last.x, 0).y);
-    sctx.closePath();
-    sctx.fillStyle = "rgba(28, 36, 18, 0.62)";
-    sctx.fill();
-    sctx.strokeStyle = "#c4c47a";
-    sctx.setLineDash([4, 3]);
-    sctx.stroke();
-    sctx.setLineDash([]);
-  }
-  const off = preview?.aim_offset || aimOffset || { x: 0, z: 1.15 };
-  const c = toP(off.x, off.z);
-  const radius = preview?.radius || preview?.sigma || 0.15;
-  const rad = Math.max(2, radius * scale);
-  const steps = 36;
-  const cell = Math.max(1.2, (2 * rad) / steps);
-  for (let i = -steps; i <= steps; i++) {
-    for (let j = -steps; j <= steps; j++) {
-      const dx = (i / steps) * radius;
-      const dz = (j / steps) * radius;
-      if (dx * dx + dz * dz > radius * radius) continue;
-      const kind = diskSampleKind(regions, preview?.cover_profile, off.x + dx, off.z + dz);
-      const p = toP(off.x + dx, off.z + dz);
-      sctx.fillStyle = kind === "hit" ? "rgba(215,177,90,0.72)"
-        : kind === "cover" ? "rgba(70, 78, 36, 0.7)"
-        : "rgba(18, 20, 26, 0.72)";
-      sctx.fillRect(p.x - cell / 2, p.y - cell / 2, cell + 0.4, cell + 0.4);
-    }
-  }
-  sctx.beginPath();
-  sctx.arc(c.x, c.y, rad, 0, Math.PI * 2);
-  sctx.strokeStyle = "#d7b15a";
-  sctx.lineWidth = 2;
-  sctx.stroke();
 }
 
-function bindSilhouette(sil, target) {
+function bindSilhouette(sil) {
   if (!sil) return;
   sil.onmousedown = (ev) => {
-    const regions = (shotPreview?.silhouette && shotPreview.silhouette.length)
-      ? shotPreview.silhouette : silhouetteFor(target.posture);
-    const { fromP } = silScale(sil, regions);
     const move = (e) => {
       const rect = sil.getBoundingClientRect();
       const px = (e.clientX - rect.left) * (sil.width / rect.width);
       const py = (e.clientY - rect.top) * (sil.height / rect.height);
-      aimOffset = fromP(px, py);
+      const off = aimFromSilPixel(px, py);
+      if (!off) return;
+      aimOffset = off;
       preciseAim = true;
       updateInspectShots();
       render();
@@ -1630,6 +1706,7 @@ window.__sandbox = {
   },
   dump: () => window.__lastDump || agentDump("manual"),
   state: () => eng.dumpState({ reason: "live" }),
+  inspect(id) { inspectUnit(id); return inspectSubject(); },
   press(name) { keys.add(name); },
   release(name) { keys.delete(name); },
   tick: tickCamOnce,

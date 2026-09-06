@@ -24,7 +24,7 @@ export const ActionType = {
 export const Gait = { Walk: "walk", Run: "run", Sprint: "sprint" };
 export const ShotMode = { Snap: "snap", Precise: "precise", Aimed: "aimed", Burst: "burst" };
 export const AimRegion = { Torso: "torso", Head: "head", Legs: "legs" };
-export const Posture = { Standing: "stand", Crouching: "crouch", Prone: "prone" };
+export const Posture = { Standing: "stand", Crouching: "crouch", Prone: "prone", Dead: "dead" };
 export const CoverMode = { Post: "post", Hide: "hide" };
 export const Phase = { Contact: "contact", Play: "play", Over: "over" };
 
