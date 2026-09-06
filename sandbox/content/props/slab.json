@@ -1,6 +1,6 @@
 {
   "id": "slab",
   "parts": [
-    { "min": [-0.5, -0.5], "max": [0.5, 0.5], "z0": 0, "z1": 1, "color": "#6a7b66", "cover": true, "protection": 16, "durability": 10 }
+    { "min": [-0.5, -0.5], "max": [0.5, 0.5], "z0": 0, "z1": 1, "color": "#6a7b66", "mat": "concrete", "cover": true, "protection": 16, "durability": 10 }
   ]
 }

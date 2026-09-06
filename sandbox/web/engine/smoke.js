@@ -67,6 +67,8 @@ function toPlay(eng) {
   if (op.units.length < 8) fail("outpost should field more than a fireteam");
   if ((op.map.max.x - op.map.min.x) < 50) fail("outpost should be a large map");
   if (!op.map.surfaces?.some((s) => s.kind === "road")) fail("outpost should have a road surface");
+  if (!op.map.surfaces?.some((s) => s.kind === "tracks")) fail("outpost should have approach tracks");
+  if (!op.map.cover.some((c) => (c.id || "").startsWith("fp-"))) fail("outpost should plant fence posts");
   if (!op.map.decor?.length) fail("outpost should place elevated decor");
   if (!op.map.cover.some((c) => c.id === "tower-cabin" && (c.z0 || 0) > 4)) fail("tower cabin should sit off the ground");
   if (!op.map.cover.some((c) => c.id === "crate-gate")) fail("outpost should keep a postable gate crate");

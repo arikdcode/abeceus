@@ -1,7 +1,7 @@
 import { Engine, loadCatalog, worldFromCatalog, unitHitboxes, coverBox, muzzleWorld, rayLocalBox, rayCover, nearestUse, useBounds, resolveCoverUse, CoverMode, partFamily, prettyPart } from "./engine/engine.js";
 import { ActionType, Gait, ShotMode, AimRegion, Phase } from "./engine/model.js";
 import { rotate } from "./engine/vec.js";
-import { makeCam3, frameCam3, drawScene3, drawFloor3, drawPolyline3, drawLabel3, screenRay, hitGround, orbitCam, zoomCam, project3, eyeOf, GROUND, sliceBox3 } from "./view3d.js";
+import { makeCam3, frameCam3, frameOverview3, drawScene3, drawFloor3, drawSky3, drawContactShadows3, drawEmitPools3, drawPolyline3, drawLabel3, screenRay, hitGround, orbitCam, zoomCam, project3, eyeOf, GROUND, sliceBox3 } from "./view3d.js";
 import { stepHeldCam, stepOrbitKey } from "./engine/camstep.js";
 
 const canvas = document.getElementById("map");
@@ -30,6 +30,7 @@ let fog = false;
 let owAim = false;
 let mapMode = "3d";
 let hideRoofs = localStorage.getItem("sandbox.hideRoofs") !== "show";
+let hideGrid = localStorage.getItem("sandbox.hideGrid") === "hide";
 const cam3 = makeCam3();
 let camKind = "strategy";
 let silView = null;
@@ -349,6 +350,7 @@ function drawGrid() {
       ctx.setLineDash([]);
     }
   }
+  if (hideGrid) return;
   ctx.lineWidth = 1;
   for (let x = map.min[0]; x <= map.max[0] + 1e-6; x += step) {
     const a = toScreen([x, map.min[1]]);
@@ -665,6 +667,7 @@ function applyFpvCam() {
   cam3.fpv = true;
   cam3.fpvEye = eye;
   cam3.fpvLook = look;
+  cam3.overview = false;
   return true;
 }
 
@@ -676,11 +679,20 @@ function restoreStrategyCam() {
   cam3.fpv = false;
   cam3.fpvEye = null;
   cam3.fpvLook = null;
+  cam3.overview = false;
   if (!savedStrategy || !Number.isFinite(savedStrategy.yaw) || !Number.isFinite(savedStrategy.dist)) return;
   cam3.target = { ...savedStrategy.target };
   cam3.yaw = savedStrategy.yaw;
   cam3.pitch = savedStrategy.pitch;
   cam3.dist = savedStrategy.dist;
+}
+
+function applyOverviewCam() {
+  cam3.fpv = false;
+  cam3.fpvEye = null;
+  cam3.fpvLook = null;
+  if (view?.map) frameOverview3(cam3, view.map);
+  else cam3.overview = true;
 }
 
 function frameCameras(map) {
@@ -700,6 +712,11 @@ function frameCameras(map) {
 }
 
 function resetCam3() {
+  if (camKind === "overview" && view?.map) {
+    applyOverviewCam();
+    syncModePairs();
+    return;
+  }
   if (view?.map) frameCameras(view.map);
   else {
     const fresh = makeCam3();
@@ -710,6 +727,7 @@ function resetCam3() {
     cam3.fpv = false;
     cam3.fpvEye = null;
     cam3.fpvLook = null;
+    cam3.overview = false;
     camKind = "strategy";
     savedStrategy = snapshotStrategyCam();
     syncModePairs();
@@ -728,15 +746,21 @@ function syncModePairs() {
   setPair("projPair", mapMode);
   setPair("camPair", camKind);
   setPair("roofPair", hideRoofs ? "hide" : "show");
+  setPair("gridPair", hideGrid ? "hide" : "show");
 }
 
 function setCamKind(next) {
   if (next === camKind) return;
   if (next === "fpv") {
     if (mapMode !== "3d") return;
-    savedStrategy = snapshotStrategyCam();
+    if (camKind === "strategy") savedStrategy = snapshotStrategyCam();
     if (!applyFpvCam()) return;
     camKind = "fpv";
+  } else if (next === "overview") {
+    if (mapMode !== "3d") return;
+    if (camKind === "strategy") savedStrategy = snapshotStrategyCam();
+    applyOverviewCam();
+    camKind = "overview";
   } else {
     camKind = "strategy";
     restoreStrategyCam();
@@ -746,7 +770,9 @@ function setCamKind(next) {
 }
 
 function toggleCamKind() {
-  setCamKind(camKind === "fpv" ? "strategy" : "fpv");
+  const order = ["strategy", "overview", "fpv"];
+  const i = Math.max(0, order.indexOf(camKind));
+  setCamKind(order[(i + 1) % order.length]);
 }
 
 function asCoverRay(c) {
@@ -798,19 +824,29 @@ function hiddenByCover(eye, p, occluders) {
 
 function render3() {
   if (camKind === "fpv") applyFpvCam();
-  ctx.fillStyle = "#1a2228";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
   const map = view.map;
   const w = canvas.width;
   const h = canvas.height;
-  drawFloor3(ctx, cam3, w, h, map);
+  drawSky3(ctx, w, h, cam3);
+  drawFloor3(ctx, cam3, w, h, map, { grid: !hideGrid });
+  const groundFx = [...(map.decor || []), ...(map.cover || [])];
+  drawContactShadows3(ctx, cam3, w, h, groundFx);
+  drawEmitPools3(ctx, cam3, w, h, groundFx);
   if (camKind !== "fpv") drawCoverUseRings3();
   const worldParts = [];
   const pushBox = (c, color) => {
     if (hideRoofs && isRoof(c)) return;
     for (const slab of sliceBox3(c)) {
       const box = coverBox(slab);
-      worldParts.push({ ...box, color, facing: 0, roof: isRoof(c) });
+      worldParts.push({
+        ...box,
+        color,
+        facing: 0,
+        roof: isRoof(c),
+        mat: c.mat || null,
+        tex: c.tex || null,
+        emit: c.emit || 0,
+      });
     }
   };
   for (const c of map.decor || []) pushBox(c, c.color || "#6a7b66");
@@ -1819,7 +1855,7 @@ bindPair("fogPair", (v) => {
 });
 bindPair("projPair", (v) => {
   mapMode = v;
-  if (mapMode === "2d" && camKind === "fpv") {
+  if (mapMode === "2d" && camKind !== "strategy") {
     camKind = "strategy";
     restoreStrategyCam();
   }
@@ -1830,6 +1866,12 @@ bindPair("camPair", (v) => setCamKind(v));
 bindPair("roofPair", (v) => {
   hideRoofs = v !== "show";
   localStorage.setItem("sandbox.hideRoofs", hideRoofs ? "hide" : "show");
+  syncModePairs();
+  render();
+});
+bindPair("gridPair", (v) => {
+  hideGrid = v === "hide";
+  localStorage.setItem("sandbox.hideGrid", hideGrid ? "hide" : "show");
   syncModePairs();
   render();
 });

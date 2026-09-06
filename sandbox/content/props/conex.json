@@ -1,6 +1,6 @@
 {
   "id": "conex",
   "parts": [
-    { "min": [-3.05, -1.22], "max": [3.05, 1.22], "z0": 0, "z1": 2.45, "color": "#4a5540", "cover": true, "protection": 22, "durability": 16 }
+    { "min": [-3.05, -1.22], "max": [3.05, 1.22], "z0": 0, "z1": 2.45, "color": "#4e5c42", "mat": "metal", "tex": "ribs", "cover": true, "protection": 22, "durability": 16 }
   ]
 }

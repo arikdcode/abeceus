@@ -1,0 +1,7 @@
+{
+  "id": "fence_post",
+  "parts": [
+    { "min": [-0.09, -0.09], "max": [0.09, 0.09], "z0": 0, "z1": 2.15, "color": "#4a5056", "mat": "metal", "cover": true, "usable": false, "protection": 12, "durability": 6 },
+    { "id": "cap", "min": [-0.11, -0.11], "max": [0.11, 0.11], "z0": 2.1, "z1": 2.22, "color": "#3a4046", "mat": "metal", "cover": false }
+  ]
+}

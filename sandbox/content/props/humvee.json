@@ -1,12 +1,18 @@
 {
   "id": "humvee",
   "parts": [
-    { "id": "hull", "min": [-2.15, -1.05], "max": [2.15, 1.05], "z0": 0, "z1": 1.22, "color": "#3d4536", "cover": true, "protection": 20, "durability": 14 },
-    { "id": "cab", "min": [0.15, -1.0], "max": [2.05, 1.0], "z0": 1.18, "z1": 1.85, "color": "#353c30", "cover": true, "usable": false, "block_move": false, "protection": 18, "durability": 12 },
-    { "id": "hood", "min": [-2.1, -0.95], "max": [0.1, 0.95], "z0": 1.18, "z1": 1.38, "color": "#3a4234", "cover": true, "usable": false, "block_move": false, "protection": 16, "durability": 10 },
-    { "id": "wheel-fl", "min": [1.35, -1.15], "max": [1.95, -0.72], "z0": 0, "z1": 0.62, "color": "#2a2a2a", "cover": true, "usable": false, "protection": 10, "durability": 6 },
-    { "id": "wheel-fr", "min": [1.35, 0.72], "max": [1.95, 1.15], "z0": 0, "z1": 0.62, "color": "#2a2a2a", "cover": true, "usable": false, "protection": 10, "durability": 6 },
-    { "id": "wheel-rl", "min": [-1.95, -1.15], "max": [-1.35, -0.72], "z0": 0, "z1": 0.62, "color": "#2a2a2a", "cover": true, "usable": false, "protection": 10, "durability": 6 },
-    { "id": "wheel-rr", "min": [-1.95, 0.72], "max": [-1.35, 1.15], "z0": 0, "z1": 0.62, "color": "#2a2a2a", "cover": true, "usable": false, "protection": 10, "durability": 6 }
+    { "id": "hull", "min": [-2.15, -1.05], "max": [2.15, 1.05], "z0": 0.28, "z1": 1.22, "color": "#3d4536", "mat": "paint", "cover": true, "protection": 20, "durability": 14 },
+    { "id": "cab", "min": [0.15, -1.0], "max": [2.05, 1.0], "z0": 1.18, "z1": 1.85, "color": "#353c30", "mat": "paint", "cover": true, "usable": false, "block_move": false, "protection": 18, "durability": 12 },
+    { "id": "hood", "min": [-2.1, -0.95], "max": [0.1, 0.95], "z0": 1.18, "z1": 1.38, "color": "#3a4234", "mat": "paint", "cover": true, "usable": false, "block_move": false, "protection": 16, "durability": 10 },
+    { "id": "windshield", "min": [0.12, -0.92], "max": [0.28, 0.92], "z0": 1.38, "z1": 1.82, "color": "#1a2832", "mat": "glass", "cover": false },
+    { "id": "bumper", "min": [2.05, -1.02], "max": [2.28, 1.02], "z0": 0.35, "z1": 0.72, "color": "#2a2e28", "mat": "metal", "cover": true, "usable": false, "protection": 14, "durability": 8 },
+    { "id": "light-l", "min": [2.22, -0.82], "max": [2.32, -0.52], "z0": 0.78, "z1": 1.02, "color": "#e8d090", "mat": "emit", "emit": 0.55, "cover": false },
+    { "id": "light-r", "min": [2.22, 0.52], "max": [2.32, 0.82], "z0": 0.78, "z1": 1.02, "color": "#e8d090", "mat": "emit", "emit": 0.55, "cover": false },
+    { "id": "turret", "min": [-0.35, -0.35], "max": [0.35, 0.35], "z0": 1.82, "z1": 2.05, "color": "#32382c", "mat": "metal", "cover": false },
+    { "id": "antenna", "min": [-1.85, 0.82], "max": [-1.78, 0.9], "z0": 1.22, "z1": 2.55, "color": "#2a2a28", "mat": "metal", "cover": false },
+    { "id": "wheel-fl", "min": [1.35, -1.15], "max": [1.95, -0.72], "z0": 0, "z1": 0.62, "color": "#222220", "mat": "rubber", "cover": true, "usable": false, "protection": 10, "durability": 6 },
+    { "id": "wheel-fr", "min": [1.35, 0.72], "max": [1.95, 1.15], "z0": 0, "z1": 0.62, "color": "#222220", "mat": "rubber", "cover": true, "usable": false, "protection": 10, "durability": 6 },
+    { "id": "wheel-rl", "min": [-1.95, -1.15], "max": [-1.35, -0.72], "z0": 0, "z1": 0.62, "color": "#222220", "mat": "rubber", "cover": true, "usable": false, "protection": 10, "durability": 6 },
+    { "id": "wheel-rr", "min": [-1.95, 0.72], "max": [-1.35, 1.15], "z0": 0, "z1": 0.62, "color": "#222220", "mat": "rubber", "cover": true, "usable": false, "protection": 10, "durability": 6 }
   ]
 }
