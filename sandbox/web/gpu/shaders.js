@@ -37,6 +37,22 @@ vec2 to_uv(vec3 p, vec3 eye, vec3 r, vec3 u, vec3 f) {
   if (c.w < 0.05) return vec2(-1.0);
   return vec2(c.x / c.w, c.y / c.w) * 0.5 + 0.5;
 }
+
+float aerial_fog(vec3 world) {
+  float view_z = max(dot(world - frame_eye.xyz, frame_f.xyz), 0.05);
+  float focus = max(frame_fog.w, 1.0);
+  float density = 0.0105 * min(1.0, 12.0 / focus);
+  return min(0.48, 1.0 - exp(-view_z * density));
+}
+
+vec3 god_view_grade(vec3 lit) {
+  float god = smoothstep(24.0, 80.0, max(frame_fog.w, 1.0));
+  if (god < 0.001) return lit;
+  vec3 opened = pow(max(lit, vec3(0.0)), vec3(mix(1.0, 0.78, god)));
+  lit = mix(lit, opened, god * 0.85);
+  float lum = dot(lit, vec3(0.3, 0.59, 0.11));
+  return mix(lit, mix(vec3(lum), lit, 1.22), god * 0.65);
+}
 `;
 
 export const VS_LIT = /* glsl */ `#version 300 es
@@ -387,6 +403,7 @@ uniform sampler2D u_lgrid;
 uniform sampler2D u_lindex;
 uniform sampler2D u_prev_res;
 uniform sampler2D u_prev_color;
+uniform int u_exact;
 layout(location = 0) out vec4 frag;
 layout(location = 1) out vec4 out_res;
 
@@ -629,14 +646,15 @@ void main() {
   vec3 fill_dir = normalize(-sun_dir + vec3(0.0, 0.0, 0.42));
   lit += albedo * vec3(0.20, 0.26, 0.36) * max(dot(n, fill_dir), 0.0) * 0.22 * sun_on;
 
-  int n_local = min(fetch_local_count(world), 16);
+  int n_local = min(fetch_local_count(world), 32);
   int frame_i = int(frame_restir.x + 0.5);
   vec4 reservoir = vec4(-1.0, 0.0, 0.0, 0.0);
   float seed = hash21(gl_FragCoord.xy + float(frame_i) * 19.7);
   const int EXACT = 8;
+  bool use_exact = u_exact == 1 || n_local <= EXACT;
 
-  if (n_local > 0 && n_local <= EXACT) {
-    for (int i = 0; i < 16; i++) {
+  if (n_local > 0 && use_exact) {
+    for (int i = 0; i < 32; i++) {
       if (i >= n_local) break;
       int li = fetch_local_at(world, i);
       add_visible(lit, li, world, n, view_dir, albedo, spec_k, shine, wrap_k);
@@ -647,7 +665,7 @@ void main() {
   } else if (n_local > EXACT) {
     int nearest = fetch_local_at(world, 0);
     float nearest_p = -1.0;
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < 32; i++) {
       if (i >= n_local) break;
       int li = fetch_local_at(world, i);
       float ph = light_contrib(li, world, n, view_dir, albedo, spec_k, shine, wrap_k);
@@ -706,7 +724,7 @@ void main() {
     lit += albedo * (0.45 + emit_k * 1.15) + vec3(0.14, 0.09, 0.03) * emit_k;
   }
 
-  if (n_local > EXACT) {
+  if (!use_exact && n_local > EXACT) {
     vec2 puv = to_uv(world, frame_prev_eye.xyz, frame_prev_r.xyz, frame_prev_u.xyz, frame_prev_f.xyz);
     if (puv.x > 0.0 && puv.x < 1.0 && puv.y > 0.0 && puv.y < 1.0) {
       vec4 hist = texture(u_prev_color, puv);
@@ -756,8 +774,8 @@ void main() {
   vec3 lit = c.rgb * 0.96;
   lit = clamp((lit * (2.51 * lit + 0.03)) / (lit * (2.43 * lit + 0.59) + 0.14), 0.0, 1.0);
   vec3 world = texelFetch(u_g_world, pix, 0).xyz;
-  float fog_a = min(0.55, 1.0 - exp(-max(dot(world - frame_eye.xyz, frame_f.xyz), 0.05) * 0.0105));
-  lit = mix(lit, frame_fog.rgb, fog_a);
+  lit = mix(lit, frame_fog.rgb, aerial_fog(world));
+  lit = god_view_grade(lit);
   frag = vec4(lit, 1.0);
 }
 `;

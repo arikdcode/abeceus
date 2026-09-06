@@ -325,10 +325,17 @@ function surfaceOf(canvas) {
     indexTex: gl.createTexture(),
     lgridTex: gl.createTexture(),
     lindexTex: gl.createTexture(),
+    exactLoc: gl.getUniformLocation(restir, "u_exact"),
     prevCam: null,
   };
   surfaces.set(canvas, s);
   return s;
+}
+
+function lookDepth(cam, eye) {
+  const look = cam.fpv && cam.fpvLook ? cam.fpvLook : cam.target;
+  if (!look) return 8;
+  return Math.max(4, Math.hypot(look.x - eye.x, look.y - eye.y, (look.z || 0) - eye.z));
 }
 
 function writeFrame(gl, ubo, cam, w, h, sunOn, prev, restir) {
@@ -339,7 +346,7 @@ function writeFrame(gl, ubo, cam, w, h, sunOn, prev, restir) {
   frameData.set([f.x, f.y, f.z, 0], 8);
   frameData.set([eye.x, eye.y, eye.z, 0], 12);
   frameData.set([SUN.x, SUN.y, SUN.z, sunOn ? 1 : 0], 16);
-  frameData.set([FOG.r, FOG.g, FOG.b, 0], 20);
+  frameData.set([FOG.r, FOG.g, FOG.b, lookDepth(cam, eye)], 20);
   frameData.set([w, h, fovOf(cam), 0.04], 24);
   frameData.set([p.r.x, p.r.y, p.r.z, 0], 28);
   frameData.set([p.u.x, p.u.y, p.u.z, 0], 32);
@@ -578,6 +585,7 @@ export function drawFrame(canvas, frame) {
   gl.activeTexture(gl.TEXTURE12);
   gl.bindTexture(gl.TEXTURE_2D, readLit);
   gl.useProgram(s.restir);
+  gl.uniform1i(s.exactLoc, frame.exact === false ? 0 : 1);
   gl.drawArrays(gl.TRIANGLES, 0, 3);
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);

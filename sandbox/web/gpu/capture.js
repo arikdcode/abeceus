@@ -4,6 +4,11 @@ import { drawFrame, initRenderer, resizeCanvas } from "./renderer.js";
 
 export const PRESETS = {
   overview: { scenario: "outpost", hideRoofs: true, cam: null },
+  "overview-far": {
+    scenario: "outpost",
+    hideRoofs: true,
+    cam: { target: { x: 32, y: 24, z: 0 }, yaw: -Math.PI / 2 - 0.48, pitch: 0.62, dist: 120, overview: true },
+  },
   "fence-near": {
     scenario: "outpost",
     hideRoofs: true,
@@ -48,6 +53,12 @@ export const PRESETS = {
     scenario: "outpost",
     hideRoofs: true,
     cam: { target: { x: 37.6, y: 16.8, z: 0.2 }, yaw: 0.15, pitch: 0.58, dist: 6.8 },
+  },
+  "night-range": { scenario: "night_range", hideRoofs: true, cam: null },
+  "night-street": {
+    scenario: "night_range",
+    hideRoofs: true,
+    cam: { target: { x: 34.6, y: 22.2, z: 0.4 }, yaw: 2.9, pitch: 0.42, dist: 9.4 },
   },
 };
 

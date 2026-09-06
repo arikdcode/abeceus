@@ -82,4 +82,10 @@ if (!head) fail("workshop headlight missing");
 if (!occluded({ x: 38, y: 13, z: 0.05 }, head, worldBoxes, worldGrid)) fail("tent interior should not see the workshop headlights");
 if (occluded({ x: 41, y: 17.93, z: 0.05 }, head, worldBoxes, worldGrid)) fail("open gravel in the beam should see the headlight");
 
+const rangeEng = new Engine();
+if (!rangeEng.loadWorld(worldFromCatalog(catalog, "night_range"))) fail("night_range load");
+const rangeView = rangeEng.view({ fog: false });
+const rangeLights = collectLights([...(rangeView.map.decor || []), ...(rangeView.map.cover || [])]);
+if (rangeLights.length < 60) fail(`night range should be crowded, lights=${rangeLights.length}`);
+
 console.log("restir_test ok");

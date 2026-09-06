@@ -3,10 +3,11 @@
   "weapons": ["rifle"],
   "characters": ["alpha-1", "alpha-2", "alpha-3", "alpha-4", "bravo-1", "bravo-2", "bravo-3", "bravo-4", "bravo-5"],
   "props": ["slab", "crate", "jersey", "sandbag", "lamp", "tree", "rock", "booth", "office", "mess", "tent", "tower", "humvee", "conex", "fence_post"],
-  "maps": ["outpost", "checkpoint", "courtyard"],
+  "maps": ["outpost", "checkpoint", "courtyard", "night_range"],
   "scenarios": [
     { "id": "outpost", "name": "Forward outpost" },
     { "id": "checkpoint", "name": "Checkpoint approach" },
-    { "id": "posted_courtyard", "name": "Posted courtyard" }
+    { "id": "posted_courtyard", "name": "Posted courtyard" },
+    { "id": "night_range", "name": "Night range" }
   ]
 }

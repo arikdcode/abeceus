@@ -1,0 +1,17 @@
+{
+  "id": "night_range",
+  "name": "Night range",
+  "map": "night_range",
+  "seed": 2,
+  "skip_contact": true,
+  "units": [
+    {
+      "character": "alpha-1",
+      "pos": [
+        34.6,
+        22.2
+      ],
+      "facing": 3.14
+    }
+  ]
+}

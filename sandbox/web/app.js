@@ -30,6 +30,7 @@ let owAim = false;
 let hideRoofs = localStorage.getItem("sandbox.hideRoofs") !== "show";
 let hideGrid = localStorage.getItem("sandbox.hideGrid") === "hide";
 let sunOn = localStorage.getItem("sandbox.sun") !== "off";
+let exactLights = localStorage.getItem("sandbox.exact") !== "off";
 const cam3 = makeCam3();
 let camKind = "overview";
 let silView = null;
@@ -509,6 +510,7 @@ function syncModePairs() {
   setPair("roofPair", hideRoofs ? "hide" : "show");
   setPair("gridPair", hideGrid ? "hide" : "show");
   setPair("sunPair", sunOn ? "on" : "off");
+  setPair("samplePair", exactLights ? "exact" : "sampled");
 }
 
 function setCamKind(next) {
@@ -706,6 +708,7 @@ function collectFrame() {
     cam: cam3,
     map,
     sun: sunOn,
+    exact: exactLights,
     solids: [...worldParts, ...bodyParts],
     casters: [...worldCasters, ...bodyParts],
     marks,
@@ -1551,6 +1554,12 @@ bindPair("gridPair", (v) => {
 bindPair("sunPair", (v) => {
   sunOn = v !== "off";
   localStorage.setItem("sandbox.sun", sunOn ? "on" : "off");
+  syncModePairs();
+  render();
+});
+bindPair("samplePair", (v) => {
+  exactLights = v !== "sampled";
+  localStorage.setItem("sandbox.exact", exactLights ? "on" : "off");
   syncModePairs();
   render();
 });
